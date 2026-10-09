@@ -87,7 +87,7 @@ Static site generated from the catalog. Slice one pages:
 - **Match page** — series/game metadata, best existing copy (embedded or linked), restored access copy, before/after comparison slider, technical notes, provenance.
 - **Event page** — every series/game in the event with source grade per game (a gap map for that event).
 
-Visual direction: in-game and broadcast-inspired — Korean broadcast graphics (OSL/MSL-era overlays, player cards, brackets, score bugs) and the campaign mission-briefing screen (portrait frames, transmission-style text, race-themed consoles). Collect real reference screenshots before designing.
+Visual direction: original design that takes inspiration (not copies) from Korean broadcast graphics (OSL/MSL-era overlays, player cards, brackets, score bugs) and the campaign mission-briefing screen (portrait frames, transmission-style text, race-themed consoles). Collect reference screenshots as mood material; don't reuse Blizzard or broadcaster assets.
 
 Future pages (designed for, not built): player pages with identity timeline, map pages, era/history explorer, current-scene content, contribution form.
 
