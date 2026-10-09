@@ -1,0 +1,222 @@
+<title>Brood War Broadcast Archive</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+KR:wght@500&display=swap">
+<style>
+/* Layout: single reading column styled as an archive accession record; tape-label header, data in mono. */
+:root{
+  --bg:#f2f4f7; --surface:#ffffff; --fg:#16202b; --muted:#566273; --rule:#d4dae3;
+  --accent:#1f4fa8; --flag:#b3261e; --ok:#1d6b3a; --warn:#8a5a00;
+  --display:"Barlow Condensed","Arial Narrow",sans-serif;
+  --body:"Source Serif 4",Georgia,serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  --kr:"Noto Sans KR",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#10151c; --surface:#171e28; --fg:#e4e8ee; --muted:#9aa6b6; --rule:#2a3442;
+  --accent:#86adff; --flag:#ff8e80; --ok:#6fd394; --warn:#f0bf5a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#10151c; --surface:#171e28; --fg:#e4e8ee; --muted:#9aa6b6; --rule:#2a3442;
+  --accent:#86adff; --flag:#ff8e80; --ok:#6fd394; --warn:#f0bf5a; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:17px;line-height:1.6;padding-inline:20px;padding-block:32px 64px}
+main{max-width:46rem;margin-inline:auto;display:flex;flex-direction:column;gap:2.5rem}
+.label{border:2px solid var(--fg);background:var(--surface);display:grid;grid-template-columns:1fr auto}
+.label .name{padding:18px 20px;border-right:2px solid var(--fg)}
+.label h1{font-family:var(--display);font-weight:700;font-size:clamp(2rem,6vw,2.9rem);line-height:1;margin:0;text-transform:uppercase;letter-spacing:.01em;text-wrap:balance}
+.label .sub{font-family:var(--mono);font-size:.78rem;color:var(--muted);margin-top:8px;letter-spacing:.04em}
+.label .meta{font-family:var(--mono);font-size:.75rem;display:grid;align-content:stretch;min-width:9rem}
+.label .meta div{padding:6px 12px;border-bottom:1px solid var(--rule)}
+.label .meta div:last-child{border-bottom:0}
+.label .meta b{display:block;font-weight:500;color:var(--muted);font-size:.66rem;letter-spacing:.08em;text-transform:uppercase}
+.stamp{color:var(--flag);font-weight:500}
+@media (max-width:560px){.label{grid-template-columns:1fr}.label .name{border-right:0;border-bottom:2px solid var(--fg)}.label .meta{grid-template-columns:repeat(3,1fr)}.label .meta div{border-bottom:0;border-right:1px solid var(--rule)}}
+section{display:flex;flex-direction:column;gap:.8rem}
+h2{font-family:var(--display);font-weight:600;font-size:1.55rem;text-transform:uppercase;letter-spacing:.03em;margin:0;display:flex;gap:.6rem;align-items:baseline;border-bottom:2px solid var(--fg);padding-bottom:4px;text-wrap:balance}
+h2 .n{font-family:var(--mono);font-size:.85rem;color:var(--accent);font-weight:500}
+p{margin:0;max-width:65ch}
+.thesis{font-size:1.2rem;line-height:1.5}
+.thesis strong{color:var(--accent)}
+.gate{background:var(--surface);border-left:4px solid var(--accent);padding:14px 18px;font-size:1.05rem}
+.gate b{font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.92rem;line-height:1.45}
+th{font-family:var(--mono);font-weight:500;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-align:left;padding:6px 10px 6px 0;border-bottom:1px solid var(--fg)}
+td{padding:8px 10px 8px 0;border-bottom:1px solid var(--rule);vertical-align:top}
+code,.mono{font-family:var(--mono);font-size:.85em}
+ul,ol{margin:0;padding-left:1.3rem;display:flex;flex-direction:column;gap:.35rem;max-width:65ch}
+.kr{font-family:var(--kr)}
+.grades{display:flex;flex-wrap:wrap;gap:8px}
+.g{font-family:var(--mono);font-size:.8rem;border:1px solid var(--rule);background:var(--surface);padding:4px 10px;display:flex;gap:8px;align-items:center}
+.g span{font-weight:500;border:1.5px solid currentColor;width:1.4rem;text-align:center}
+.gA{color:var(--ok)}.gB{color:var(--accent)}.gC{color:var(--warn)}.gD{color:var(--flag)}.gX{color:var(--muted)}
+.g em{font-style:normal;color:var(--fg)}
+.steps{counter-reset:s;list-style:none;padding:0;gap:0}
+.steps li{counter-increment:s;display:grid;grid-template-columns:2.4rem 1fr;gap:4px;padding:10px 0;border-bottom:1px solid var(--rule)}
+.steps li::before{content:counter(s,decimal-leading-zero);font-family:var(--mono);color:var(--accent);font-size:.85rem;padding-top:3px}
+.steps b{font-family:var(--display);font-weight:600;font-size:1.1rem;text-transform:uppercase;letter-spacing:.03em}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem}
+.cols>div{min-width:0}
+.cols h3{font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 6px;font-weight:500}
+@media (max-width:560px){.cols{grid-template-columns:1fr}}
+footer{font-family:var(--mono);font-size:.75rem;color:var(--muted)}
+</style>
+<main>
+<header class="label">
+  <div class="name">
+    <h1>Brood War Broadcast Archive</h1>
+    <div class="sub">DESIGN SPEC · KOREAN TELEVISED STARCRAFT, 1998 ONWARD</div>
+  </div>
+  <div class="meta">
+    <div><b>Date</b>2026-10-09</div>
+    <div><b>Status</b><span class="stamp">DRAFT · REVIEW</span></div>
+    <div><b>Repo</b>broodwar-archive</div>
+  </div>
+</header>
+
+<section>
+  <p class="thesis">Find, restore, and preserve televised Korean Brood War broadcasts, and make them <strong>accessible and as complete as possible</strong>. The restored footage is the point. The catalog and site exist to serve it and to show what is still missing.</p>
+</section>
+
+<section>
+  <h2><span class="n">§2</span>Scope</h2>
+  <div class="cols">
+    <div><h3>In</h3><ul>
+      <li>Televised and official matches: OSL, MSL, Proleague, later ASL/KSL</li>
+      <li>Restoring the best available copy of each match</li>
+      <li>Player identity, including ladder and smurf IDs, stored as claims</li>
+      <li><code>.rep</code> replays attached to a game when found</li>
+    </ul></div>
+    <div><h3>Out for now</h3><ul>
+      <li>Ladder, smurf, and small-stakes games as catalog entries</li>
+      <li>Re-rendering matches from replays</li>
+      <li>Editorial history and current-scene content (planned, not built)</li>
+      <li>Hosting and streaming video ourselves</li>
+    </ul></div>
+  </div>
+</section>
+
+<section>
+  <h2><span class="n">§3</span>Principles</h2>
+  <ol>
+    <li><b>Master and access copy are never confused.</b> Each restored match has an untouched preservation master and a separately labeled copy for watching. The master lets a better future pipeline re-run instead of re-hunting the footage.</li>
+    <li><b>The master invents nothing.</b> The access copy may be enhanced conservatively, and every change is recorded.</li>
+    <li><b>Lots of copies keep stuff safe.</b> Redundancy makes the archive accessible. A takedown removes one mirror and leaves the archive intact.</li>
+    <li><b>The catalog is the spine.</b> Plain files in a public git repo, enough to rebuild everything else.</li>
+    <li><b>Knowledge is a claim with a source.</b> Claims can be disputed and upgraded.</li>
+    <li><b>Gaps are computed.</b> The "what's missing" view updates as soon as a source is added.</li>
+    <li><b>Design for contributions.</b> Completeness depends on people in the scene who hold footage and knowledge.</li>
+  </ol>
+</section>
+
+<section>
+  <h2><span class="n">§4</span>Components</h2>
+  <div class="tw"><table>
+    <tr><th>Unit</th><th>Does</th><th>Reads</th></tr>
+    <tr><td><code>catalog</code></td><td>Schema and data files for events, series, games, players, maps, sources, claims. Validation.</td><td>—</td></tr>
+    <tr><td><code>prospector</code></td><td>Finds copies of a game (yt-dlp, archive.org, known channels), probes them, records sources and segments. Never changes media.</td><td>catalog</td></tr>
+    <tr><td><code>restorer</code></td><td>Source plus approved recipe produces master, access copy, before/after stills, and notes. Rerunnable.</td><td>catalog, ledger</td></tr>
+    <tr><td><code>ledger</code></td><td>Checksums, recipe hash, tool versions, and chain of custody for every file.</td><td>—</td></tr>
+    <tr><td><code>site</code></td><td>Static public pages built from the catalog: matches, comparisons, gap map.</td><td>catalog</td></tr>
+  </table></div>
+</section>
+
+<section>
+  <h2><span class="n">§5</span>Data model</h2>
+  <p>Core chain: <code>Event → Series → Game</code>, plus <code>Player</code>, <code>Map</code> (the version is part of a map's identity), and <code>Team</code>. Three entities carry most of the design:</p>
+  <div class="tw"><table>
+    <tr><th>Entity</th><th>Why it exists</th></tr>
+    <tr><td><code>SourceSegment</code></td><td>One upload is often a whole broadcast with pre-show, ads, and several series. A segment maps <span class="mono">source + time range → game</span>, so the catalog can say set 4 is at 47:00–71:00 of an upload and set 5 is missing from it.</td></tr>
+    <tr><td><code>IdentityClaim</code></td><td><span class="mono">player ← alias</span> with <span class="mono">valid_from / valid_to</span>, kind (broadcast name, ladder ID, smurf), confidence (confirmed, community-attributed, rumored), and who asserts it. <span class="kr">임요환</span> = Lim Yo-hwan = BoxeR, with each name tied to a date range.</td></tr>
+    <tr><td><code>Restoration</code></td><td>Segment, recipe, pipeline version, output files, and ledger entry.</td></tr>
+  </table></div>
+  <p>Every source gets a quality grade. A game whose best source falls below the threshold shows up as a gap.</p>
+  <div class="grades">
+    <div class="g gA"><span>A</span><em>near source</em></div>
+    <div class="g gB"><span>B</span><em>clean re-encode</em></div>
+    <div class="g gC"><span>C</span><em>degraded, complete</em></div>
+    <div class="g gD"><span>D</span><em>partial or damaged</em></div>
+    <div class="g gX"><span>X</span><em>known lost</em></div>
+  </div>
+</section>
+
+<section>
+  <h2><span class="n">§6</span>Storage tiers</h2>
+  <div class="tw"><table>
+    <tr><th>Tier</th><th>Holds</th><th>Where</th></tr>
+    <tr><td class="mono">0 · scratch</td><td>Working files during a run</td><td>Local or external disk, deleted afterward</td></tr>
+    <tr><td class="mono">1 · master</td><td>Original file plus lossless intermediate</td><td>Cloud cold storage (B2 or R2) first, then a physical drive as the second copy (3-2-1 rule)</td></tr>
+    <tr><td class="mono">2 · access</td><td>Watchable restored files</td><td>archive.org items, plus torrents</td></tr>
+    <tr><td class="mono">3 · catalog</td><td>All metadata</td><td>Public git repo</td></tr>
+  </table></div>
+  <p>Constraint: the M3 dev machine has about 59 GB free. Slice one keeps scratch small and moves masters to tier 1 quickly.</p>
+</section>
+
+<section>
+  <h2><span class="n">§7</span>Restoration pipeline</h2>
+  <ol class="steps">
+    <li><b>Probe</b><span>ffprobe, MediaInfo, and sample frames: field order, interlaced, progressive, or telecined, true vs. flagged aspect ratio, audio offset, burned-in damage.</span></li>
+    <li><b>Recipe</b><span>The tool proposes a YAML recipe and a person approves it. Old uploads vary too much to automate the decision.</span></li>
+    <li><b>Master</b><span>Keep the original byte for byte. Make a lossless FFV1/MKV intermediate trimmed to the segment, fixing only field-order and aspect flags.</span></li>
+    <li><b>Access copy</b><span>Deinterlace with <code>bwdif</code> (QTGMC optional for important matches), correct the aspect ratio, light denoise, modest upscale, fix audio sync, encode HEVC with VideoToolbox.</span></li>
+    <li><b>Evidence</b><span>Before/after stills at the same timestamps, plus notes on what was wrong and what was changed.</span></li>
+    <li><b>Ledger</b><span>sha256 of every input and output, recipe hash, tool versions, timestamp.</span></li>
+    <li><b>Publish</b><span>Master to tier 1, access copy to archive.org, restoration record into the catalog.</span></li>
+  </ol>
+</section>
+
+<section>
+  <h2><span class="n">§8</span>Site</h2>
+  <ul>
+    <li><b>Match page:</b> metadata, best existing copy, restored copy, before/after slider, technical notes, provenance.</li>
+    <li><b>Event page:</b> every game in the event with its best source grade, which doubles as that event's gap map.</li>
+    <li><b>Later:</b> player identity timelines, map pages, an era explorer, current-scene pages, and a contribution form.</li>
+  </ul>
+</section>
+
+<section>
+  <h2><span class="n">§9</span>Slice one</h2>
+  <p>5–10 matches from one event. Pick matches that are historically notable, have a visibly bad best copy today, and can be found online. You choose the event when we write the plan.</p>
+  <div class="gate"><b>Done-gate</b>I open the public site, pick a match from the slice, see the best existing copy next to my restored copy with notes on what was fixed, and can stream or download the restored file.</div>
+  <ol class="steps">
+    <li><b>Catalog</b><span>Schema, validator, and the slice's event entered by hand. Check: valid files pass and a deliberately broken file fails.</span></li>
+    <li><b>Prospect</b><span>Find and probe copies for those games. Check: each game has source and segment records, and gaps are visible.</span></li>
+    <li><b>Restore one</b><span>Master, access copy, and stills for one game. Check: the stills show a visible fix and the checksums are in the ledger.</span></li>
+    <li><b>Publish one</b><span>Upload to tier 1 and archive.org. Check: the archive.org item streams.</span></li>
+    <li><b>Site</b><span>Build match and event pages. Check: run the done-gate on the deployed site.</span></li>
+    <li><b>Widen</b><span>Repeat restore and publish for the rest of the slice.</span></li>
+  </ol>
+</section>
+
+<section>
+  <h2><span class="n">§10</span>Stack</h2>
+  <ul>
+    <li>Python CLI for catalog, prospector, restorer, and ledger</li>
+    <li>ffmpeg 8 and yt-dlp (installed), MediaInfo (to install), VapourSynth with QTGMC (optional, later)</li>
+    <li>Catalog as YAML in git, validated against a JSON Schema</li>
+    <li>Static Astro site with free hosting</li>
+    <li><code>internetarchive</code> Python library for uploads</li>
+  </ul>
+</section>
+
+<section>
+  <h2><span class="n">§11</span>Risks</h2>
+  <div class="tw"><table>
+    <tr><th>Risk</th><th>Mitigation</th></tr>
+    <tr><td>Rights-holder takedown</td><td>No self-hosted video. Mirrors on archive.org and torrents. The catalog stands apart from every mirror.</td></tr>
+    <tr><td>Inputs are re-encodes, not masters</td><td>Grade sources honestly. Use scene contacts to find copies closer to the original broadcast.</td></tr>
+    <tr><td>Identity errors</td><td>Record each alias as a claim with confidence and a source. Never assert one without them.</td></tr>
+    <tr><td>Storage cost grows with the archive</td><td>Tiered storage with cold masters. Measure per-match size during slice one before scaling.</td></tr>
+    <tr><td>No CUDA on Apple Silicon</td><td><code>bwdif</code> by default, QTGMC only for important matches.</td></tr>
+    <tr><td>Scope creep into editorial</td><td>Out of scope until slice one passes its done-gate.</td></tr>
+  </table></div>
+</section>
+
+<section>
+  <h2><span class="n">§12</span>Verify before relying on</h2>
+  <ul>
+    <li>Liquipedia's content license and API terms, since it is the planned catalog seed</li>
+    <li>The <code>internetarchive</code> upload API, and whether archive.org's collection policy fits this material</li>
+    <li>Estimates: total broadcast matches (roughly 10,000 or more) and per-hour master and access file sizes, to be measured in slice one</li>
+  </ul>
+</section>
+
+<footer>Source: docs/superpowers/specs/2026-10-09-broodwar-archive-design.md · commit 08ecd1a</footer>
+</main>
