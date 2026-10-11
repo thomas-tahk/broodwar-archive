@@ -1,0 +1,100 @@
+<title>Slice One Survey</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;700&family=IBM+Plex+Mono:wght@400;600&family=Noto+Sans+KR:wght@400;700&family=Source+Sans+3:wght@400;600&display=swap">
+<style>
+:root{--bg:#0b1220;--panel:#121c30;--line:#24324f;--fg:#dfe6f2;--mute:#8d9ab3;--accent:#4fb3ff;--ok:#3ecf8e;--warn:#f2b84b;--bad:#ff5d5d;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font:16px/1.55 "Source Sans 3","Noto Sans KR",system-ui,sans-serif}
+main{max-width:60rem;margin:0 auto;padding-inline:16px;padding-block:2rem 4rem;display:grid;gap:2.25rem}
+h1,h2{font-family:"Barlow Condensed",sans-serif;text-transform:uppercase;letter-spacing:.04em;margin:0;text-wrap:balance}
+h1{font-size:2.4rem;line-height:1.05}
+h2{font-size:1.35rem;color:var(--accent);border-bottom:1px solid var(--line);padding-bottom:.35rem}
+p{margin:0;max-width:65ch}
+section{display:grid;gap:.9rem}
+.kicker{font:600 .75rem/1 "IBM Plex Mono",monospace;letter-spacing:.14em;color:var(--mute);text-transform:uppercase}
+.callout{background:var(--panel);border-left:4px solid var(--warn);padding:1rem 1.1rem;display:grid;gap:.5rem}
+.callout strong{color:var(--warn)}
+.wrap{overflow-x:auto;border:1px solid var(--line)}
+table{border-collapse:collapse;width:100%;min-width:44rem;font-size:.92rem}
+th,td{padding:.55rem .7rem;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:600 .72rem "IBM Plex Mono",monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);background:var(--panel)}
+td.n,.mono{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums}
+.g{display:inline-block;font:700 .75rem "IBM Plex Mono",monospace;padding:.1rem .4rem;border:1px solid currentColor}
+.ok{color:var(--ok)}.warn{color:var(--warn)}.bad{color:var(--bad)}
+ul,ol{margin:0;padding-left:1.2rem;display:grid;gap:.35rem;max-width:65ch}
+.pick{background:var(--panel);border:1px solid var(--accent);padding:1.1rem;display:grid;gap:.6rem}
+.pick h3{margin:0;font:700 1.15rem "Barlow Condensed",sans-serif;letter-spacing:.04em;text-transform:uppercase}
+.mute{color:var(--mute);font-size:.9rem}
+</style>
+<main>
+<header style="display:grid;gap:.5rem">
+  <span class="kicker">broodwar-archive · research · 2026-10-10</span>
+  <h1>Slice one: which event?</h1>
+  <p class="mute">Looked at YouTube copies of 1999–2003 broadcasts, with Liquipedia game counts as the baseline. Sample-based: we checked format details on a few videos per source, not every video.</p>
+</header>
+
+<section>
+  <h2>Headline: the premise is half-wrong</h2>
+  <div class="callout">
+    <p><strong>OGN's early StarLeague (OSL) is already preserved by OGN.</strong> The official channel <span class="mono">@TVOngamenet</span> has per-season playlists for OSL 1999–2011. In 2026 it also started posting AI-upscaled 1080p versions of the 1999–2001 seasons.</p>
+    <p><strong>MBC Game is the real gap.</strong> The channel shut down in 2012 and there's no official archive. Its successor, MBCplus, has no StarCraft playlists. What's left is scattered fan uploads at 240–288p and 15fps.</p>
+  </div>
+  <p>That shifts the project. For OSL the job becomes indexing and mirroring: map every official upload to the right game, then mirror it in case the channel disappears. Restoration matters most for MBC Game.</p>
+</section>
+
+<section>
+  <h2>Evidence</h2>
+  <div class="wrap"><table>
+    <thead><tr><th>Event</th><th>Games (Liquipedia)</th><th>Best copy found</th><th>Quality</th><th>Gap</th></tr></thead>
+    <tbody>
+      <tr><td>2000 Freechal OSL</td><td class="n">~99</td><td>OGN official 82 vids + AI 81</td><td><span class="g ok">B</span> 480p → AI 1080p</td><td class="ok">small</td></tr>
+      <tr><td>2001 Coca-Cola OSL</td><td class="n">59</td><td>OGN official 52 + AI 52</td><td><span class="g ok">B</span> 480p → AI 1080p</td><td class="ok">small</td></tr>
+      <tr><td>2001 SKY OSL</td><td class="n">66</td><td>OGN official 53 + AI 55</td><td><span class="g ok">B</span> 480p/30p (already deinterlaced)</td><td class="ok">small</td></tr>
+      <tr><td>2002 NATE / SKY OSL</td><td class="n">47 / 49</td><td>OGN official 52 / 55</td><td><span class="g ok">B</span> 480p</td><td class="ok">small</td></tr>
+      <tr><td>99 PKO · 2000 Tooniverse</td><td class="n">—</td><td>OGN AI playlists 46 / 51; fans (AbdullahGame)</td><td><span class="g ok">B</span></td><td class="ok">small</td></tr>
+      <tr><td>KPGA Tour 2001–02 (MBC Game)</td><td class="n">not pulled</td><td>Fans: 갓옐로, powerpoint98765432, nevake</td><td><span class="g bad">C/D</span> 240–288p, 15fps</td><td class="bad">large</td></tr>
+      <tr><td>2003 TG Sambo / Stout MSL</td><td class="n">not pulled</td><td>Fans: 스타다시보기, Cassiopeia Drake, 홍진호의 Bliss</td><td><span class="g warn">C</span> up to 480p/30</td><td class="warn">patchy</td></tr>
+      <tr><td>2003 MBC Game team league / KT premier league</td><td class="n">not pulled</td><td>Fan: 포에버MBCgame (full episodes, cut into parts)</td><td><span class="g bad">C/D</span> 240p, 15fps</td><td class="bad">large</td></tr>
+    </tbody>
+  </table></div>
+  <p class="mute">Grades follow the spec: A near-source · B clean re-encode · C degraded but complete · D partial or damaged · X lost. 15fps copies have lost half their motion. The 30p uploads have already been deinterlaced, so the original TV fields can't be recovered from them.</p>
+</section>
+
+<section>
+  <h2>Options</h2>
+  <div class="pick">
+    <span class="kicker">recommended</span>
+    <h3>A · 2002 KPGA Tour finals (MBC Game)</h3>
+    <ul>
+      <li>The project's thesis holds here: there's no official copy, and the fan copies are 240–288p at 15fps.</li>
+      <li>It's iconic: the 2002-04-14 1st Tour final is Hong Jin-ho vs Lim Yo-hwan (BoxeR). Four tours give 5–10 finals games.</li>
+      <li>It tests the hard parts early: messy sources, identifying which games are in multi-game uploads, and gaps.</li>
+      <li>Risk: some finals games may not be findable anywhere. That gap is a useful result too.</li>
+    </ul>
+  </div>
+  <div class="pick" style="border-color:var(--line)">
+    <h3>B · 2003 TG Sambo MSL (MBC Game)</h3>
+    <ul>
+      <li>There are more copies, with some 480p/30, so it's an easier first restoration.</li>
+      <li>The famous final (YellOw vs iloveoov, U-Boat) has several competing copies, which makes a good case for picking the best one.</li>
+      <li>The gap is smaller, so it proves less.</li>
+    </ul>
+  </div>
+  <div class="pick" style="border-color:var(--line)">
+    <h3>C · 2001 SKY OSL (OGN)</h3>
+    <ul>
+      <li>The easiest option. It would be a mirror-and-index slice that compares OGN's official upload, OGN's AI upscale, and our conservative restore.</li>
+      <li>The comparison is interesting in its own right: our archival-correct restore vs OGN's AI upscale.</li>
+      <li>It doesn't fill a real gap.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <h2>Still unverified</h2>
+  <ul>
+    <li>Game counts for the MBC Game events. Liquipedia hasn't been queried for them yet.</li>
+    <li>Whether OGN's playlists actually cover every game. 82 videos vs ~99 games for Freechal suggests some are missing; this needs a game-by-game match.</li>
+    <li>What source OGN's AI upscale was made from, and whether it invents detail. Check that before ranking it.</li>
+    <li>Pre-1999 shows and Proleague haven't been surveyed.</li>
+  </ul>
+</section>
+</main>
