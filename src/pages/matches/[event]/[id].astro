@@ -15,24 +15,33 @@ const sides = match.players.map(playerOf);
 const [a, b] = sides;
 const raceOf = (g, i) => g.races?.[i] ?? null;
 const mapName = (g) => (g.map ? maps.get(g.map)?.name ?? g.map : 'Unknown');
-const winnerName = (g) => (g.winner ? playerOf(g.winner).name : 'Unknown');
-const sideRace = (p, i) => match.games.map((g) => raceOf(g, i)).find(Boolean) ?? p.race ?? null;
-const score = match.score ? match.score.split('-') : null;
+const mapVersion = (g) => (g.map ? maps.get(g.map)?.version ?? null : null);
+const winnerName = (g) => (g.winner ? playerOf(g.winner).name ?? 'Unknown' : 'Unknown');
+const sideRace = (i) => {
+  const known = new Set(match.games.map((g) => raceOf(g, i)).filter(Boolean));
+  return known.size === 1 ? [...known][0] : null;
+};
+const scoreParts = match.score && /^\d+-\d+$/.test(match.score) ? match.score.split('-') : null;
+const scoreText = scoreParts ? `${scoreParts[0]}–${scoreParts[1]}` : match.score ?? '?–?';
+const refSources = [
+  ...sides.map((p) => ({ label: `Player ${p.name ?? p.id}`, sources: p.sources })),
+  ...[...new Set(match.games.map((g) => g.map).filter(Boolean))].map((id) => ({ label: `Map ${maps.get(id)?.name ?? id}`, sources: maps.get(id)?.sources })),
+].filter((r) => r.sources?.length);
 ---
 <Base title={`${a.name ?? 'Unknown'} vs ${b.name ?? 'Unknown'}`}>
   <p class="crumbs"><a href={href(`events/${match.event}/`)}>&larr; {event?.name ?? match.event}</a></p>
   <p class="kicker">Match // {match.stage ?? 'Stage unknown'}{match.group && ` · Group ${match.group}`}</p>
   <h1>{a.name ?? 'Unknown'} vs {b.name ?? 'Unknown'}</h1>
-  <p class="meta">Date: {match.date ?? 'Unknown'} · Format: {match.format ?? 'Unknown'} · Result: {match.winner ? `${playerOf(match.winner).name} won${match.score ? ` (${match.score})` : ''}` : 'Unknown'}</p>
+  <p class="meta">Date: {match.date ?? 'Unknown'} · Format: {match.format ?? 'Unknown'} · Result: {match.winner ? `${playerOf(match.winner).name ?? 'Unknown'} won${match.score ? ` (${match.score})` : ''}` : 'Unknown'}</p>
 
   <div class="bug">
     {sides.map((p, i) => (
       <>
-        {i === 1 && <div class="score">{score ? `${score[0]}–${score[1]}` : '?–?'}<small>SCORE</small></div>}
-        <div class={`side r-${sideRace(p, i) ?? 'none'} ${i === 1 ? 'right' : ''} ${match.winner && match.winner === p.id ? 'win' : ''}`}>
+        {i === 1 && <div class="score">{scoreText}<small>SCORE</small></div>}
+        <div class={`side r-${sideRace(i) ?? 'none'} ${i === 1 ? 'right' : ''} ${match.winner && match.winner === p.id ? 'win' : ''}`}>
           <div class="nm">{p.name ?? 'Unknown'}</div>
           <div class="kr">{p.hangul ?? 'Hangul unknown'}</div>
-          <Race race={sideRace(p, i)} />
+          <Race race={sideRace(i)} />
         </div>
       </>
     ))}
@@ -45,7 +54,7 @@ const score = match.score ? match.score.split('-') : null;
       <section class="game" aria-label={`Game ${g.set}`}>
         <header>
           <h3>Game {g.set}</h3>
-          <span class="mono">Map: {mapName(g)}</span>
+          <span class="mono">Map: {mapName(g)}{mapVersion(g) && ` (${mapVersion(g)})`}</span>
           <span class="mono">Winner: {winnerName(g)}</span>
           <span class="mono">{sides.map((_, i) => <Race race={raceOf(g, i)} />)}</span>
           <GradeBadge grade={bestGrade(g)} none={copies.length === 0} />
@@ -64,7 +73,7 @@ const score = match.score ? match.score.split('-') : null;
                   <dt>Grade note</dt><dd>{c.grade_note ?? 'Unknown'}</dd>
                   <dt>Segment</dt><dd>{c.segment ? `${c.segment.start} – ${c.segment.end}` : 'Whole upload / unknown'}</dd>
                 </dl>
-                <a class="watch" href={c.url} target="_blank" rel="noopener noreferrer">Watch on {host(c.url)} &#8599;</a>
+                <a class="watch" href={c.url} target="_blank" rel="noopener noreferrer" aria-label={`Watch game ${g.set}, ${c.kind}, grade ${c.grade ?? 'ungraded'}, on ${host(c.url)}`}>Watch on {host(c.url)} &#8599;</a>
               </li>
             ))}
           </ul>
@@ -73,4 +82,10 @@ const score = match.score ? match.score.split('-') : null;
     );
   })}
   <Sources sources={match.sources} fieldSources={match.field_sources} />
+  {refSources.map((r) => (
+    <>
+      <h3 class="refhead">{r.label}</h3>
+      <ul class="sources">{r.sources.map((s) => <li><a href={s.url} target="_blank" rel="noopener noreferrer">{s.url}</a>{s.note && <span class="mute"> — {s.note}</span>}</li>)}</ul>
+    </>
+  ))}
 </Base>

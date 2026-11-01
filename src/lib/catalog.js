@@ -5,7 +5,7 @@ const dir = path.resolve(process.cwd(), process.env.CATALOG_DIR || 'catalog');
 const catalog = loadCatalog(dir);
 
 const byId = (list) => new Map(list.map((x) => [x.id, x]));
-export const players = byId(catalog.players);
+const players = byId(catalog.players);
 export const maps = byId(catalog.maps);
 export const events = [...catalog.events].sort((a, b) => (b.year ?? 0) - (a.year ?? 0) || a.id.localeCompare(b.id));
 
@@ -19,7 +19,7 @@ export function matchesOf(eventId) {
 export const allMatches = catalog.matches;
 
 export function playerOf(id) {
-  return players.get(id) ?? { id, name: id ?? null, hangul: null, race: null };
+  return players.get(id) ?? { id, name: null, hangul: null, race: null };
 }
 
 export function host(url) {
