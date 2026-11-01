@@ -13,6 +13,15 @@ test('pages.yml triggers only on push to main and workflow_dispatch', () => {
   const on = workflow('pages.yml').on;
   assert.deepEqual(Object.keys(on).sort(), ['push', 'workflow_dispatch']);
   assert.deepEqual(on.push.branches, ['main']);
+  assert.ok(!('pull_request' in on));
+});
+
+test('pages.yml uploads dist and deploys only from main', () => {
+  const wf = workflow('pages.yml');
+  const steps = Object.values(wf.jobs).flatMap((j) => j.steps);
+  const upload = steps.find((s) => s.uses?.startsWith('actions/upload-pages-artifact@'));
+  assert.equal(upload.with.path, 'dist');
+  assert.equal(wf.jobs.deploy.if, "github.ref == 'refs/heads/main'");
 });
 
 test('ci.yml runs on push and pull_request, with validate, test, build', () => {
@@ -32,13 +41,17 @@ const htmlFiles = (dir) =>
 
 test('default-catalog build emits only base-prefixed root-relative URLs', () => {
   const out = fs.mkdtempSync(path.join(os.tmpdir(), 'bw-dist-'));
-  execSync(`npm run build -- --outDir ${out}`, { stdio: 'pipe' });
-  assert.ok(fs.existsSync(path.join(out, 'index.html')));
-  const bad = [];
-  for (const f of htmlFiles(out)) {
-    for (const m of fs.readFileSync(f, 'utf8').matchAll(/\b(?:href|src)="(\/[^"]*)"/g)) {
-      if (!m[1].startsWith('/broodwar-archive/')) bad.push(`${f}: ${m[1]}`);
+  try {
+    execSync(`npm run build -- --outDir ${out}`, { stdio: 'pipe' });
+    assert.ok(fs.existsSync(path.join(out, 'index.html')));
+    const bad = [];
+    for (const f of htmlFiles(out)) {
+      for (const m of fs.readFileSync(f, 'utf8').matchAll(/\b(?:href|src)="(\/[^"]*)"/g)) {
+        if (!m[1].startsWith('/broodwar-archive/')) bad.push(`${f}: ${m[1]}`);
+      }
     }
+    assert.deepEqual(bad, []);
+  } finally {
+    fs.rmSync(out, { recursive: true, force: true });
   }
-  assert.deepEqual(bad, []);
 });
