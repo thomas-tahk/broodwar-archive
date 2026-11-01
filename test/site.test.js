@@ -1,0 +1,129 @@
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { execSync } from 'node:child_process';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import { loadCatalog } from '../tools/catalog/load.js';
+import { bestGrade } from '../tools/catalog/grades.js';
+
+const FIXTURE = 'test/fixtures/catalog';
+const BASE = '/broodwar-archive/';
+const read = (p) => fs.readFileSync(`dist/${p}/index.html`, 'utf8');
+const build = (catalogDir) => {
+  fs.rmSync('dist', { recursive: true, force: true });
+  execSync('npm run build', { env: { ...process.env, CATALOG_DIR: catalogDir }, stdio: 'pipe' });
+};
+const copyFixture = () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'bw-cat-'));
+  fs.cpSync(FIXTURE, dir, { recursive: true });
+  return dir;
+};
+const has = (html, text) => assert.ok(html.includes(text), `missing: ${text}`);
+const esc = (s) => s.replace(/&/g, '&amp;');
+
+const cat = loadCatalog(FIXTURE);
+const mapsById = new Map(cat.maps.map((m) => [m.id, m]));
+const playersById = new Map(cat.players.map((p) => [p.id, p]));
+
+test('fixture catalog renders everything it knows', async (t) => {
+  build(FIXTURE);
+
+  await t.test('home links every event under base', () => {
+    const html = read('');
+    for (const e of cat.events) has(html, `href="${BASE}events/${e.id}/"`);
+  });
+
+  await t.test('event page links every match, shows per-game best grade and sources', () => {
+    for (const e of cat.events) {
+      const html = read(`events/${e.id}`);
+      for (const s of e.sources) { has(html, s.url); if (s.note) has(html, s.note); }
+      for (const u of Object.values(e.field_sources ?? {})) has(html, u);
+      for (const m of cat.matches.filter((x) => x.event === e.id)) {
+        const row = html.split(`href="${BASE}matches/${m.event}/${m.id}/"`)[1]?.split('</a>')[0];
+        assert.ok(row, `no link for ${m.fullId}`);
+        for (const g of m.games) {
+          const want = bestGrade(g) ?? 'none';
+          assert.match(row, new RegExp(`G${g.set}\\s*<span[^>]*data-grade="${want}"`), `${m.fullId} G${g.set}`);
+        }
+      }
+    }
+  });
+
+  await t.test('match pages show every copy, grade, detail and source', () => {
+    for (const m of cat.matches) {
+      const html = read(`matches/${m.event}/${m.id}`);
+      for (const s of m.sources) { has(html, s.url); if (s.note) has(html, s.note); }
+      for (const u of Object.values(m.field_sources ?? {})) has(html, u);
+      for (const id of m.players.filter(Boolean)) {
+        const pl = playersById.get(id);
+        for (const s of pl.sources) { has(html, s.url); if (s.note) has(html, s.note); }
+        for (const u of Object.values(pl.field_sources ?? {})) has(html, u);
+      }
+      const games = html.split('<section class="game"').slice(1);
+      assert.equal(games.length, m.games.length);
+      m.games.forEach((g, gi) => {
+        const want = bestGrade(g) ?? 'none';
+        assert.match(games[gi].split('</header>')[0], new RegExp(`data-grade="${want}"`));
+        if (g.map) {
+          const mp = mapsById.get(g.map);
+          for (const s of mp.sources) { has(html, s.url); if (s.note) has(html, s.note); }
+          for (const u of Object.values(mp.field_sources ?? {})) has(html, u);
+        }
+        const copies = games[gi].split('<li class="copy">').slice(1);
+        assert.equal(copies.length, g.copies.length, `${m.fullId} g${g.set} copy count`);
+        g.copies.forEach((c, ci) => {
+          const chunk = copies[ci];
+          has(chunk, esc(c.url));
+          assert.match(chunk, new RegExp(`data-grade="${c.grade ?? 'none'}"`));
+          for (const v of [c.kind, c.title, c.uploader, c.resolution, c.grade_note].filter(Boolean)) has(chunk, v);
+          if (c.fps != null) has(chunk, `${c.fps} fps`);
+          if (c.segment) { has(chunk, c.segment.start); has(chunk, c.segment.end); }
+          has(chunk, 'Watch on example.com');
+          has(chunk, 'rel="noopener noreferrer"');
+        });
+      });
+    }
+  });
+
+  await t.test('lost game shows X and lost text', () => {
+    const html = read('matches/fixture-league/final');
+    has(html, 'Footage known lost.');
+    assert.match(html, /data-grade="X"/);
+  });
+
+  await t.test('game with no copy and null fields says so plainly', () => {
+    const html = read('matches/fixture-league/ro8-a-2');
+    has(html, 'No copy known.');
+    has(html, 'Date: Unknown');
+    has(html, 'Map: Unknown');
+    has(html, 'Winner: Unknown');
+    has(html, 'Result: Unknown');
+  });
+
+  await t.test('races are only shown when known', () => {
+    const html = read('matches/fixture-league/final');
+    has(html, 'Terran');
+    has(html, 'Zerg');
+    has(html, 'Race unknown');
+    has(html, 'https://example.com/players/alpha-hangul');
+    has(html, '알파');
+  });
+});
+
+test('score that is not N-N is shown raw; build fails on bad catalog', () => {
+  const dir = copyFixture();
+  const file = path.join(dir, 'matches/fixture-league/final.yaml');
+  const original = fs.readFileSync(file, 'utf8');
+  fs.writeFileSync(file, original.replace('score: "1-2"', 'score: "walkover"'));
+  build(dir);
+  has(read('matches/fixture-league/final'), 'walkover');
+
+  fs.writeFileSync(file, original.replace('https://example.com/video/fan-final', 'javascript:alert(1)'));
+  assert.throws(() => build(dir));
+});
+
+test('build succeeds with an explicit empty catalog dir', () => {
+  build(fs.mkdtempSync(path.join(os.tmpdir(), 'bw-empty-')));
+  has(read(''), 'No events');
+});

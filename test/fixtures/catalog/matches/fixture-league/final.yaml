@@ -26,7 +26,7 @@ games:
         segment: {start: "00:00:00", end: "00:18:40"}
   - set: 2
     map: map-two
-    races: [T, Z]
+    races: [null, null]
     winner: charlie
     lost: true
     copies: []

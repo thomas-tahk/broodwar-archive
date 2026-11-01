@@ -1,0 +1,7 @@
+---
+// grade: 'A'-'D' | 'X' | null. none: true when the game has no copy at all.
+const { grade = null, none = false } = Astro.props;
+const key = grade ?? 'none';
+const label = grade === 'X' ? 'X · Lost' : grade ?? (none ? 'No copy' : 'Ungraded');
+---
+<span class="grade" data-grade={key}>{label}</span>
