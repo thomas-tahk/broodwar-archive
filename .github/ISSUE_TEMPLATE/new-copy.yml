@@ -1,0 +1,32 @@
+name: New copy found
+description: You found a copy of a match we don't list yet.
+labels: ["new-copy"]
+body:
+  - type: input
+    id: match
+    attributes:
+      label: Match
+      description: Event, round and players, e.g. 2001 SKY OSL, Round of 16, BoxeR vs Garimto.
+    validations:
+      required: true
+  - type: input
+    id: link
+    attributes:
+      label: Link to the copy
+      description: A link only. Please don't upload video.
+    validations:
+      required: true
+  - type: textarea
+    id: quality
+    attributes:
+      label: Quality notes
+      description: Resolution, watermarks, missing parts, which games it holds. Whatever you can tell.
+    validations:
+      required: false
+  - type: textarea
+    id: found
+    attributes:
+      label: Where you found it
+      description: Channel, forum thread, torrent site, a friend's drive...
+    validations:
+      required: true
