@@ -1,0 +1,51 @@
+# Test fixture — fictional. Bo3: set 1 degraded (D, still a gap), set 2 lost (X), set 3 ungraded copy.
+id: final
+event: fixture-league
+stage: Final
+group: null
+date: 2000-06-01
+format: Bo3
+players: [alpha, charlie]
+winner: charlie
+score: "1-2"
+games:
+  - set: 1
+    map: map-one
+    races: [T, Z]
+    winner: alpha
+    lost: false
+    copies:
+      - url: https://example.com/video/fan-final
+        kind: fan-upload
+        title: final part 1
+        uploader: somefan
+        resolution: 240p
+        fps: 15
+        grade: D
+        grade_note: 15fps, cut off before the end
+        segment: {start: "00:00:00", end: "00:18:40"}
+  - set: 2
+    map: no-such-map
+    races: [T, Z]
+    winner: charlie
+    lost: true
+    copies: []
+  - set: 3
+    map: map-one
+    races: [T, Z]
+    winner: charlie
+    lost: false
+    copies:
+      - url: https://example.com/video/ai-final-3
+        kind: ogn-ai-upscale
+        title: null
+        uploader: Example TV
+        resolution: 1080p
+        fps: 30
+        grade: null
+        grade_note: null
+        segment: null
+sources:
+  - url: https://example.com/fixture-league/bracket
+field_sources:
+  games: https://example.com/fixture-league/final-vod-thread
