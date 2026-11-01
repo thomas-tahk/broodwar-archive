@@ -3,7 +3,7 @@ import Base from '../../layouts/Base.astro';
 import GapGrid from '../../components/GapGrid.astro';
 import GradeBadge from '../../components/GradeBadge.astro';
 import Sources from '../../components/Sources.astro';
-import { events, matchesOf, playerOf, href, stageOf } from '../../lib/catalog.js';
+import { events, matchesOf, nameOf, href, stageOf } from '../../lib/catalog.js';
 import { bestGrade } from '../../../tools/catalog/grades.js';
 
 export function getStaticPaths() {
@@ -11,7 +11,6 @@ export function getStaticPaths() {
 }
 const { event } = Astro.props;
 const matches = matchesOf(event.id);
-const label = (id) => playerOf(id).name ?? 'Unknown';
 ---
 <Base title={event.name}>
   <p class="crumbs"><a href={href('')}>&larr; All events</a></p>
@@ -30,7 +29,7 @@ const label = (id) => playerOf(id).name ?? 'Unknown';
       {matches.map((m) => (
         <li><a class="row" href={href(`matches/${m.event}/${m.id}/`)}>
           <span class="mono mute">{stageOf(m)}<br />{m.date ?? 'Date unknown'}</span>
-          <span class="who">{m.players.map(label).join(' vs ')}{m.score && <span class="mono mute"> {m.score}</span>}</span>
+          <span class="who">{m.players.map(nameOf).join(' vs ')}{m.score && <span class="mono mute"> {m.score}</span>}</span>
           <span class="badges">
             {m.games.map((g) => (
               <span class="mono mute">G{g.set} <GradeBadge grade={bestGrade(g)} none={(g.copies ?? []).length === 0} /></span>

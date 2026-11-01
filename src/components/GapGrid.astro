@@ -2,14 +2,14 @@
 // Gap view (issue #4). Derived at build time from the catalog; nothing stored.
 import GradeBadge from './GradeBadge.astro';
 import { bestGrade, isGap } from '../../tools/catalog/grades.js';
-import { href, playerOf, stageOf } from '../lib/catalog.js';
+import { href, nameOf, stageOf, REPO_URL } from '../lib/catalog.js';
 
 const { event, matches } = Astro.props;
 const cells = matches.flatMap((m) =>
   m.games.map((g) => ({
     url: href(`matches/${m.event}/${m.id}/`),
     set: g.set,
-    who: m.players.map((id) => playerOf(id).name ?? 'Unknown').join(' vs '),
+    who: m.players.map(nameOf).join(' vs '),
     stage: stageOf(m),
     game: `G${g.set}`,
     grade: bestGrade(g),
@@ -19,6 +19,9 @@ const cells = matches.flatMap((m) =>
 );
 const good = cells.filter((c) => !c.gap).length;
 const missing = Math.max(0, (event.expected_games ?? 0) - cells.length);
+const COLLAPSE_OVER = 6;
+const ISSUE_URL = `${REPO_URL}/issues/new/choose`;
+const needsHelp = missing > 0 || cells.some((c) => c.gap);
 ---
 <section class="gapview" aria-labelledby="gap-h">
   <h2 id="gap-h">Gap view</h2>
@@ -44,11 +47,14 @@ const missing = Math.max(0, (event.expected_games ?? 0) - cells.length);
           </a>
         </li>
       ))}
-      {Array.from({ length: missing }, () => (
+      {missing > COLLAPSE_OVER ? (
+        <li class="placeholder-wide"><div class="gcell placeholder" data-placeholder-count={missing}><span class="mono mute">{missing} games not catalogued yet</span></div></li>
+      ) : Array.from({ length: missing }, () => (
         <li><div class="gcell placeholder" data-placeholder="true"><span class="mono mute">Not catalogued</span></div></li>
       ))}
     </ul>
   )}
+  {needsHelp && <p class="gap-help"><a href={ISSUE_URL} rel="noopener noreferrer">Know where a copy is? Add it</a></p>}
   <ul class="gaplegend" aria-label="Legend">
     {['A', 'B', 'C', 'D'].map((g) => <li><span class="grade" data-grade={g}>{g}</span> grade {g}</li>)}
     <li><span class="grade" data-grade="X">X</span> lost</li>

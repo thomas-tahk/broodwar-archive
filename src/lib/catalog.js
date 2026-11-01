@@ -22,6 +22,9 @@ export function playerOf(id) {
   return players.get(id) ?? { id, name: null, hangul: null, race: null };
 }
 
+/** Display name for a player id; 'Unknown' when no name is known. */
+export const nameOf = (id) => playerOf(id).name ?? 'Unknown';
+
 export function host(url) {
   try { return new URL(url).hostname.replace(/^www\./, ''); } catch { return url; }
 }
@@ -33,3 +36,5 @@ export function href(p) {
 
 /** "Round of 8 · Group A" style stage line for a match. */
 export const stageOf = (m) => [m.stage ?? 'Stage unknown', m.group && `Group ${m.group}`].filter(Boolean).join(' · ');
+
+export const REPO_URL = 'https://github.com/thomas-tahk/broodwar-archive';

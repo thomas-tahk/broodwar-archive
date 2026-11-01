@@ -1,5 +1,5 @@
 ---
-import { href } from '../lib/catalog.js';
+import { href, REPO_URL } from '../lib/catalog.js';
 import '../styles/site.css';
 const { title } = Astro.props;
 ---
@@ -19,6 +19,12 @@ const { title } = Astro.props;
       <span class="bar-tag">Transmission log // StarCraft: Brood War broadcast footage</span>
     </header>
     <main><slot /></main>
-    <footer class="foot">Link index only. No video is hosted here; every “Watch” link leaves this site.</footer>
+    <footer class="foot">
+      <p>Link index only. No video is hosted here; every “Watch” link leaves this site.</p>
+      <p class="foot-links">
+        <a href={`${REPO_URL}/blob/main/CONTRIBUTING.md`} rel="noopener noreferrer">Help fill the gaps</a>
+        <a href={REPO_URL} rel="noopener noreferrer">Source on GitHub</a>
+      </p>
+    </footer>
   </body>
 </html>

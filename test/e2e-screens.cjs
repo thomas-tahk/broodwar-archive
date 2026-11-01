@@ -17,7 +17,6 @@ const out = 'docs/milestones/m1-screens';
     await page.screenshot({ path: `${out}/site-home-${name}.png`, fullPage: true });
     await page.click('a[href$="/events/fixture-league/"]');
     await page.waitForURL('**/events/fixture-league/');
-    await page.screenshot({ path: `${out}/site-event-${name}.png`, fullPage: true });
     await page.screenshot({ path: `${out}/gap-${name}.png`, fullPage: true });
     const ev = await page.evaluate(() => [document.documentElement.scrollWidth, innerWidth]);
     console.log(name, 'event page scrollWidth', ev[0], 'innerWidth', ev[1]);
