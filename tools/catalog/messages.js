@@ -27,6 +27,14 @@ function missingMessage(field) {
   return `this field is missing. Add "${field}:"${hint}`;
 }
 
+function typeMessage(e) {
+  const type = [].concat(e.params.type);
+  if (!e.instancePath && type.includes('object')) return 'file is empty or not a set of fields (key: value lines)';
+  if (type.length === 1 && type[0] === 'array') return 'must be a list (each item on its own line starting with "- ")';
+  if (type.length === 1 && type[0] === 'object') return 'must be a set of fields (key: value lines), e.g. "url: https://..."';
+  return `must be ${describeType(e.params.type)}`;
+}
+
 const BUILDERS = {
   required: (e) => ({
     path: formatPath(`${e.instancePath}/${e.params.missingProperty}`),
@@ -42,7 +50,13 @@ const BUILDERS = {
   }),
   type: (e) => ({
     path: formatPath(e.instancePath),
-    message: `must be ${describeType(e.params.type)}`,
+    message: typeMessage(e),
+  }),
+  format: (e) => ({
+    path: formatPath(e.instancePath),
+    message: e.params.format === 'date'
+      ? 'is not a real calendar date. Write it as YYYY-MM-DD (e.g. 2001-08-10), or null if unknown'
+      : `is not a valid ${e.params.format}`,
   }),
   pattern: (e) => ({ path: formatPath(e.instancePath), message: patternMessage(e.params.pattern) }),
   minItems: (e) => ({

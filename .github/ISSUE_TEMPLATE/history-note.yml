@@ -1,0 +1,24 @@
+name: History note
+description: Context or history about the broadcasts, players or events.
+labels: ["history-note"]
+body:
+  - type: input
+    id: topic
+    attributes:
+      label: Topic
+    validations:
+      required: true
+  - type: textarea
+    id: note
+    attributes:
+      label: Note
+      description: What you know. Say what you remember vs. what you can prove.
+    validations:
+      required: true
+  - type: textarea
+    id: sources
+    attributes:
+      label: Sources
+      description: Links, one per line.
+    validations:
+      required: false

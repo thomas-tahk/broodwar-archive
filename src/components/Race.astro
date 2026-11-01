@@ -1,4 +1,6 @@
 ---
 const { race = null } = Astro.props;
+const NAMES = { T: 'Terran', P: 'Protoss', Z: 'Zerg', R: 'Random' };
+const name = NAMES[race] ?? 'Race unknown';
 ---
-{race ? <span class={`race ${race}`} title={`Race: ${race}`}>{race}</span> : <span class="race" title="Race unknown">?</span>}
+<span class={`race ${race ?? ''}`.trim()}><span aria-hidden="true">{race ?? '?'}</span><span class="sr">{name}</span></span>

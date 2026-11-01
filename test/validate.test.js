@@ -16,22 +16,39 @@ test('real catalog/ passes', () => {
   assert.equal(r.status, 0, r.stdout + r.stderr);
 });
 
+// Each case lists every expectation: [file, field, message pattern]. All must appear.
 const cases = {
-  'missing-sources': ['ro8-a-2.yaml', 'sources'],
-  'bad-grade': ['final.yaml', 'games[0].copies[0].grade'],
-  'dangling-player': ['final.yaml', 'players[1]'],
-  'dangling-map': ['final.yaml', 'games[1].map'],
-  'duplicate-id': ['ro8-a-2.yaml', 'id'],
-  'filename-mismatch': ['bravo.yaml', 'id'],
-  'copy-no-url': ['final.yaml', 'games[0].copies[0].url'],
-  'winner-not-player': ['final.yaml', 'winner'],
+  'missing-sources': [['ro8-a-2.yaml', 'sources', /needs at least one source/]],
+  'bad-grade': [['final.yaml', 'games[0].copies[0].grade', /must be one of: A, B, C, D, null/]],
+  'dangling-player': [['final.yaml', 'players[1]', /player "nobody" does not exist/]],
+  'dangling-map': [['final.yaml', 'games[1].map', /map "no-such-map" does not exist/]],
+  // A true duplicate id needs two files with the same name, which a folder forbids,
+  // so a duplicate always also trips the filename rule. Pin both rules.
+  'duplicate-id': [
+    ['ro8-a-2.yaml', 'id', /must match the file name/],
+    ['ro8-a-2.yaml', 'id', /already used by/],
+  ],
+  'filename-mismatch': [['bravo.yaml', 'id', /must match the file name/]],
+  'copy-no-url': [['final.yaml', 'games[0].copies[0].url', /field is missing/]],
+  'winner-not-player': [['final.yaml', 'winner', /not one of this match's players/]],
+  'same-player': [['ro8-a-2.yaml', 'players[1]', /listed twice/]],
+  'bad-date': [['ro8-a-2.yaml', 'date', /not a real calendar date/]],
+  'misplaced-file': [['alpha-copy.yml', '(file location)', /wrong place/]],
 };
 
-for (const [name, [file, field]] of Object.entries(cases)) {
-  test(`broken/${name} fails naming file and field`, () => {
+for (const [name, expectations] of Object.entries(cases)) {
+  test(`broken/${name} fails naming file, field and rule`, () => {
     const r = run(`test/fixtures/broken/${name}`);
     assert.equal(r.status, 1, r.stdout + r.stderr);
-    const line = r.stderr.split('\n').find((l) => l.includes(file) && l.includes(`: ${field}: `));
-    assert.ok(line, `no "<file>: ${field}: msg" line in:\n${r.stderr}`);
+    const lines = r.stderr.split('\n');
+    for (const [file, field, message] of expectations) {
+      const hit = lines.find((l) => l.includes(file) && l.includes(`: ${field}: `) && message.test(l));
+      assert.ok(hit, `no "<file>: ${field}: ${message}" line in:\n${r.stderr}`);
+    }
   });
 }
+
+test('importing validate.js does not run the CLI', async () => {
+  const mod = await import('../tools/catalog/validate.js');
+  assert.equal(typeof mod.validateCatalog, 'function');
+});
