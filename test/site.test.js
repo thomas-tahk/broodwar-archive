@@ -37,7 +37,7 @@ test('fixture catalog renders everything it knows', async (t) => {
   await t.test('event page links every match, shows per-game best grade and sources', () => {
     for (const e of cat.events) {
       const html = read(`events/${e.id}`);
-      for (const s of e.sources) has(html, s.url);
+      for (const s of e.sources) { has(html, s.url); if (s.note) has(html, s.note); }
       for (const u of Object.values(e.field_sources ?? {})) has(html, u);
       for (const m of cat.matches.filter((x) => x.event === e.id)) {
         const row = html.split(`href="${BASE}matches/${m.event}/${m.id}/"`)[1]?.split('</a>')[0];
@@ -53,17 +53,23 @@ test('fixture catalog renders everything it knows', async (t) => {
   await t.test('match pages show every copy, grade, detail and source', () => {
     for (const m of cat.matches) {
       const html = read(`matches/${m.event}/${m.id}`);
-      for (const s of m.sources) has(html, s.url);
+      for (const s of m.sources) { has(html, s.url); if (s.note) has(html, s.note); }
       for (const u of Object.values(m.field_sources ?? {})) has(html, u);
       for (const id of m.players.filter(Boolean)) {
-        for (const s of playersById.get(id).sources) has(html, s.url);
+        const pl = playersById.get(id);
+        for (const s of pl.sources) { has(html, s.url); if (s.note) has(html, s.note); }
+        for (const u of Object.values(pl.field_sources ?? {})) has(html, u);
       }
       const games = html.split('<section class="game"').slice(1);
       assert.equal(games.length, m.games.length);
       m.games.forEach((g, gi) => {
         const want = bestGrade(g) ?? 'none';
         assert.match(games[gi].split('</header>')[0], new RegExp(`data-grade="${want}"`));
-        if (g.map) for (const s of mapsById.get(g.map).sources) has(html, s.url);
+        if (g.map) {
+          const mp = mapsById.get(g.map);
+          for (const s of mp.sources) { has(html, s.url); if (s.note) has(html, s.note); }
+          for (const u of Object.values(mp.field_sources ?? {})) has(html, u);
+        }
         const copies = games[gi].split('<li class="copy">').slice(1);
         assert.equal(copies.length, g.copies.length, `${m.fullId} g${g.set} copy count`);
         g.copies.forEach((c, ci) => {
@@ -99,6 +105,9 @@ test('fixture catalog renders everything it knows', async (t) => {
     const html = read('matches/fixture-league/final');
     has(html, 'Terran');
     has(html, 'Zerg');
+    has(html, 'Race unknown');
+    has(html, 'https://example.com/players/alpha-hangul');
+    has(html, '알파');
   });
 });
 

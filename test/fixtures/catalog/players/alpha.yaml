@@ -1,6 +1,7 @@
 # Test fixture — fictional.
 id: alpha
 name: Alpha
-hangul: null
+hangul: 알파
 race: T
 sources: [{url: https://example.com/players/alpha}]
+field_sources: {hangul: https://example.com/players/alpha-hangul}

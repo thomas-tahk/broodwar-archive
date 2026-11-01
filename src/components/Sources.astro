@@ -1,8 +1,8 @@
 ---
-const { sources = [], fieldSources = null } = Astro.props;
+const { sources = [], fieldSources = null, heading = null } = Astro.props;
 const fields = Object.entries(fieldSources ?? {});
 ---
-<h2>Sources</h2>
+{heading ? <h3 class="refhead">{heading}</h3> : <h2>Sources</h2>}
 <ul class="sources">
   {sources.map((s) => (
     <li><a href={s.url} target="_blank" rel="noopener noreferrer">{s.url}</a>{s.note && <span class="mute"> — {s.note}</span>}</li>

@@ -24,8 +24,8 @@ const sideRace = (i) => {
 const scoreParts = match.score && /^\d+-\d+$/.test(match.score) ? match.score.split('-') : null;
 const scoreText = scoreParts ? `${scoreParts[0]}–${scoreParts[1]}` : match.score ?? '?–?';
 const refSources = [
-  ...sides.map((p) => ({ label: `Player ${p.name ?? p.id}`, sources: p.sources })),
-  ...[...new Set(match.games.map((g) => g.map).filter(Boolean))].map((id) => ({ label: `Map ${maps.get(id)?.name ?? id}`, sources: maps.get(id)?.sources })),
+  ...sides.map((p) => ({ label: `Player ${p.name ?? p.id}`, sources: p.sources, fieldSources: p.field_sources })),
+  ...[...new Set(match.games.map((g) => g.map).filter(Boolean))].map((id) => ({ label: `Map ${maps.get(id)?.name ?? id}`, sources: maps.get(id)?.sources, fieldSources: maps.get(id)?.field_sources })),
 ].filter((r) => r.sources?.length);
 ---
 <Base title={`${a.name ?? 'Unknown'} vs ${b.name ?? 'Unknown'}`}>
@@ -82,10 +82,5 @@ const refSources = [
     );
   })}
   <Sources sources={match.sources} fieldSources={match.field_sources} />
-  {refSources.map((r) => (
-    <>
-      <h3 class="refhead">{r.label}</h3>
-      <ul class="sources">{r.sources.map((s) => <li><a href={s.url} target="_blank" rel="noopener noreferrer">{s.url}</a>{s.note && <span class="mute"> — {s.note}</span>}</li>)}</ul>
-    </>
-  ))}
+  {refSources.map((r) => <Sources heading={r.label} sources={r.sources} fieldSources={r.fieldSources} />)}
 </Base>
