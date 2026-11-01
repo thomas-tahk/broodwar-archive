@@ -66,3 +66,37 @@ test('event with no matches shows only placeholders, no summary', () => {
   assert.ok(html.includes('66 more games expected (per source) are not catalogued yet'));
   assert.ok(!html.includes('gap-summary'));
 });
+
+const withCatalog = (expected, dropMatches = []) => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'bw-catx-'));
+  try {
+    fs.cpSync(FIXTURE, dir, { recursive: true });
+    for (const m of dropMatches) fs.rmSync(`${dir}/matches/fixture-league/${m}.yaml`);
+    const ev = `${dir}/events/fixture-league.yaml`;
+    fs.writeFileSync(ev, fs.readFileSync(ev, 'utf8').replace('expected_games: 6', `expected_games: ${expected}`));
+    return buildEvent(dir);
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+};
+const count = (html, re) => (html.match(re) ?? []).length;
+
+test('collapse threshold: shortfall 6 keeps tiles', () => {
+  const html = withCatalog(11); // 5 catalogued + 6 missing
+  assert.equal(count(html, /data-placeholder="true"/g), 6);
+  assert.ok(!html.includes('data-placeholder-count'));
+});
+
+test('collapse threshold: shortfall 7 collapses to one block', () => {
+  const html = withCatalog(12); // 5 catalogued + 7 missing
+  assert.equal(count(html, /data-placeholder-count="7"/g), 1);
+  assert.equal(count(html, /data-placeholder="true"/g), 0);
+  assert.ok(html.includes('7 games not catalogued yet'));
+});
+
+test('no gaps and no shortfall: no call to action', () => {
+  const html = withCatalog(1, ['final', 'ro8-a-2']); // only the A-graded game
+  assert.ok(html.includes('data-good="1" data-total="1"'));
+  assert.ok(!html.includes('Know where a copy is? Add it'));
+  assert.ok(!html.includes('gap-help'));
+});

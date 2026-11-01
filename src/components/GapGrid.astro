@@ -2,7 +2,7 @@
 // Gap view (issue #4). Derived at build time from the catalog; nothing stored.
 import GradeBadge from './GradeBadge.astro';
 import { bestGrade, isGap } from '../../tools/catalog/grades.js';
-import { href, nameOf, stageOf } from '../lib/catalog.js';
+import { href, nameOf, stageOf, REPO_URL } from '../lib/catalog.js';
 
 const { event, matches } = Astro.props;
 const cells = matches.flatMap((m) =>
@@ -20,7 +20,7 @@ const cells = matches.flatMap((m) =>
 const good = cells.filter((c) => !c.gap).length;
 const missing = Math.max(0, (event.expected_games ?? 0) - cells.length);
 const COLLAPSE_OVER = 6;
-const ISSUE_URL = 'https://github.com/thomas-tahk/broodwar-archive/issues/new/choose';
+const ISSUE_URL = `${REPO_URL}/issues/new/choose`;
 const needsHelp = missing > 0 || cells.some((c) => c.gap);
 ---
 <section class="gapview" aria-labelledby="gap-h">

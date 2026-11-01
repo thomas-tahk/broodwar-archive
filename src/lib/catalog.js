@@ -36,3 +36,5 @@ export function href(p) {
 
 /** "Round of 8 · Group A" style stage line for a match. */
 export const stageOf = (m) => [m.stage ?? 'Stage unknown', m.group && `Group ${m.group}`].filter(Boolean).join(' · ');
+
+export const REPO_URL = 'https://github.com/thomas-tahk/broodwar-archive';
