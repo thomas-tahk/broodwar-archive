@@ -30,3 +30,6 @@ export function host(url) {
 export function href(p) {
   return `${import.meta.env.BASE_URL.replace(/\/$/, '')}/${p}`.replace(/\/+$/, '/');
 }
+
+/** "Round of 8 · Group A" style stage line for a match. */
+export const stageOf = (m) => [m.stage ?? 'Stage unknown', m.group && `Group ${m.group}`].filter(Boolean).join(' · ');

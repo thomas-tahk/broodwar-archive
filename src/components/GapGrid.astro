@@ -1,4 +1,60 @@
 ---
-// Slot for the gap view (issue #4). Intentionally renders nothing.
+// Gap view (issue #4). Derived at build time from the catalog; nothing stored.
+import GradeBadge from './GradeBadge.astro';
+import { bestGrade, isGap } from '../../tools/catalog/grades.js';
+import { href, playerOf, stageOf } from '../lib/catalog.js';
+
 const { event, matches } = Astro.props;
+const cells = matches.flatMap((m) =>
+  m.games.map((g) => ({
+    url: href(`matches/${m.event}/${m.id}/`),
+    set: g.set,
+    who: m.players.map((id) => playerOf(id).name ?? 'Unknown').join(' vs '),
+    stage: stageOf(m),
+    game: `G${g.set}`,
+    grade: bestGrade(g),
+    none: (g.copies ?? []).length === 0,
+    gap: isGap(g),
+  }))
+);
+const good = cells.filter((c) => !c.gap).length;
+const missing = Math.max(0, (event.expected_games ?? 0) - cells.length);
 ---
+<section class="gapview" aria-labelledby="gap-h">
+  <h2 id="gap-h">Gap view</h2>
+  {cells.length > 0 && (
+    <p class="gap-summary" data-good={good} data-total={cells.length}>
+      {good} of {cells.length} catalogued games have a good copy (A–C)
+    </p>
+  )}
+  {missing > 0 && (
+    <p class="gap-short" data-missing={missing}>{missing} more {missing === 1 ? 'game' : 'games'} expected (per source) {missing === 1 ? 'is' : 'are'} not catalogued yet</p>
+  )}
+  {cells.length + missing === 0 ? (
+    <p class="state">No games catalogued for this event yet.</p>
+  ) : (
+    <ul class="gapgrid">
+      {cells.map((c) => (
+        <li>
+          <a class="gcell" href={c.url} data-set={c.set} data-grade={c.grade ?? 'none'} data-gap={String(c.gap)}>
+            <span class="who">{c.who} · {c.game}</span>
+            <span class="mono mute">{c.stage}</span>
+            <GradeBadge grade={c.grade} none={c.none} />
+            {c.gap && <span class="gaptag">GAP</span>}
+          </a>
+        </li>
+      ))}
+      {Array.from({ length: missing }, () => (
+        <li><div class="gcell placeholder" data-placeholder="true"><span class="mono mute">Not catalogued</span></div></li>
+      ))}
+    </ul>
+  )}
+  <ul class="gaplegend" aria-label="Legend">
+    {['A', 'B', 'C', 'D'].map((g) => <li><span class="grade" data-grade={g}>{g}</span> grade {g}</li>)}
+    <li><span class="grade" data-grade="X">X</span> lost</li>
+    <li><span class="grade" data-grade="none">No copy</span> no copy known</li>
+    <li><span class="grade" data-grade="none">Ungraded</span> copy not graded</li>
+    <li><span class="gaptag">GAP</span> no copy graded A–C</li>
+    <li><span class="legend-empty"></span> not catalogued</li>
+  </ul>
+</section>

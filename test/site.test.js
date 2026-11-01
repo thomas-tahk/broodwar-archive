@@ -40,7 +40,7 @@ test('fixture catalog renders everything it knows', async (t) => {
       for (const s of e.sources) { has(html, s.url); if (s.note) has(html, s.note); }
       for (const u of Object.values(e.field_sources ?? {})) has(html, u);
       for (const m of cat.matches.filter((x) => x.event === e.id)) {
-        const row = html.split(`href="${BASE}matches/${m.event}/${m.id}/"`)[1]?.split('</a>')[0];
+        const row = html.split(`class="row" href="${BASE}matches/${m.event}/${m.id}/"`)[1]?.split('</a>')[0];
         assert.ok(row, `no link for ${m.fullId}`);
         for (const g of m.games) {
           const want = bestGrade(g) ?? 'none';
