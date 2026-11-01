@@ -1,0 +1,5 @@
+# Test fixture — fictional.
+id: map-two
+name: Map Two
+version: null
+sources: [{url: https://example.com/maps/map-two}]
