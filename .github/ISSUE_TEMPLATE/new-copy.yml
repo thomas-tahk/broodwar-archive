@@ -6,7 +6,7 @@ body:
     id: match
     attributes:
       label: Match
-      description: Event, round and players, e.g. 2001 SKY OSL, Round of 16, BoxeR vs Garimto.
+      description: Event, round and both players.
     validations:
       required: true
   - type: input

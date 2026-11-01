@@ -12,11 +12,11 @@ Want to add or fix something? You don't need to code. See [CONTRIBUTING.md](CONT
 
 ## Layout
 
-- `catalog/` - the data: plain YAML files for events, matches, players, maps
+- `catalog/` - the data: YAML for events, matches, players, maps; schemas in `catalog/schema/`
+- `tools/catalog/` - the validator that checks every catalog file
+- `src/`, `astro.config.mjs` - the website, built from the catalog
 - `docs/` - catalog format (`docs/catalog-format.md`), design spec, plans
-- `tools/` - the validator that checks every catalog file
-- `site/` - the website, built from the catalog
-- `.github/` - issue forms and automatic checks
+- `.github/` - issue forms and CI workflows (`.github/workflows/`)
 
 ## Local dev
 
@@ -25,3 +25,5 @@ npm install
 npm run validate
 npm run dev
 ```
+
+Other scripts: `npm test`, `npm run build`, `npm run preview`.
