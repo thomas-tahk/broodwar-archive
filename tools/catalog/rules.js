@@ -1,3 +1,4 @@
+import fs from 'node:fs';
 import path from 'node:path';
 
 /** Cross-file rules. Each returns [{file, path, message}]. */
@@ -67,10 +68,17 @@ function gameErrors(entry, game, i, ctx) {
   ];
 }
 
+function samePlayerErrors(entry, players) {
+  const [a, b] = players;
+  if (a == null || a !== b) return [];
+  return [err(entry, 'players[1]', `player "${a}" is listed twice. A match needs two different players`)];
+}
+
 function matchErrors(entry, known) {
   const m = entry.data;
   const players = Array.isArray(m.players) ? m.players : [];
   const errors = [
+    ...samePlayerErrors(entry, players),
     ...refError(entry, 'event', m.event, 'event', known.events),
     ...players.flatMap((p, i) => refError(entry, `players[${i}]`, p, 'player', known.players)),
     ...winnerError(entry, 'winner', m.winner, players),
@@ -94,4 +102,27 @@ export function crossFileErrors(allEntries) {
     ...duplicateErrors(entries),
     ...entries.filter((e) => e.kind === 'match').flatMap((e) => matchErrors(e, known)),
   ];
+}
+
+const PLACED = [
+  /^events\/[^/]+\.yaml$/,
+  /^players\/[^/]+\.yaml$/,
+  /^maps\/[^/]+\.yaml$/,
+  /^matches\/[^/]+\/[^/]+\.yaml$/,
+  /^schema\/[^/]+$/,
+  /(^|\/)\.gitkeep$/,
+];
+
+function walk(dir, rel = '') {
+  return fs.readdirSync(path.join(dir, rel), { withFileTypes: true }).flatMap((e) => {
+    const next = rel ? `${rel}/${e.name}` : e.name;
+    return e.isDirectory() ? walk(dir, next) : [next];
+  });
+}
+
+export function misplacedFileErrors(dir) {
+  const expected = 'Files must be events/<id>.yaml, players/<id>.yaml, maps/<id>.yaml or matches/<event-id>/<id>.yaml';
+  return walk(dir)
+    .filter((f) => !PLACED.some((re) => re.test(f)))
+    .map((f) => ({ file: f, path: '(file location)', message: `this file is in the wrong place or has the wrong name. ${expected}` }));
 }

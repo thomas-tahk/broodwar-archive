@@ -1,0 +1,6 @@
+# Test fixture — fictional.
+id: charlie
+name: Charlie
+hangul: null
+race: Z
+sources: [{url: https://example.com/players/charlie}]

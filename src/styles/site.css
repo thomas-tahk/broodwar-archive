@@ -14,7 +14,6 @@ h2{font-size:1.35rem;color:var(--accent);border-bottom:2px solid var(--line);pad
 .mono,.kicker{font-family:"IBM Plex Mono",monospace}
 .kicker{font-size:.75rem;font-weight:600;letter-spacing:.14em;color:var(--mute);text-transform:uppercase;margin:0 0 .4rem}
 .mute{color:var(--mute)}
-.unknown{color:var(--mute);font-style:italic}
 .bar{display:flex;flex-wrap:wrap;gap:.2rem 1rem;align-items:center;padding:.4rem 1rem;background:#000;border-bottom:3px solid var(--accent)}
 .brand{font:700 1.4rem "Barlow Condensed",sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--fg);text-decoration:none;min-height:44px;display:inline-flex;align-items:center}
 .brand span{color:var(--accent);margin:0 .1em}
@@ -30,7 +29,6 @@ h2{font-size:1.35rem;color:var(--accent);border-bottom:2px solid var(--line);pad
 .card h3{font-size:1.4rem;color:var(--fg)}
 .meta{font:.82rem "IBM Plex Mono",monospace;color:var(--mute);margin:.2rem 0 0}
 .state{border:2px dashed var(--line);padding:1.2rem;font-family:"IBM Plex Mono",monospace}
-.state.error{border-color:var(--Z);color:var(--fg)}
 /* score bug: matchup row */
 .bug{display:grid;grid-template-columns:1fr auto 1fr;align-items:stretch;background:var(--panel2);border:1px solid var(--line);margin:.8rem 0}
 .side{padding:.6rem .8rem;border-top:4px solid var(--mute)}
@@ -71,3 +69,5 @@ h2{font-size:1.35rem;color:var(--accent);border-bottom:2px solid var(--line);pad
 .sources{padding-left:1.2rem}
 .sources li{margin:.3rem 0}
 .sources a{display:inline-block;padding:.35rem 0}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.refhead{font-size:1.05rem;margin:1rem 0 .2rem;color:var(--mute)}

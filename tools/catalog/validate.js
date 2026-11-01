@@ -6,13 +6,13 @@ import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 import { readCatalogFiles } from './load.js';
 import { explain } from './messages.js';
-import { crossFileErrors } from './rules.js';
+import { crossFileErrors, misplacedFileErrors } from './rules.js';
 
 const SCHEMA_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), '../../catalog/schema');
 const KINDS = ['event', 'match', 'player', 'map'];
 
 function buildValidators() {
-  const ajv = new Ajv({ allErrors: true, strict: false });
+  const ajv = new Ajv({ allErrors: true, strict: true, allowUnionTypes: true });
   addFormats(ajv);
   const read = (name) => JSON.parse(fs.readFileSync(path.join(SCHEMA_DIR, name), 'utf8'));
   ajv.addSchema(read('common.schema.json'));
@@ -34,6 +34,7 @@ export function validateCatalog(dir) {
   const errors = [
     ...entries.flatMap((e) => schemaErrors(e, validators)),
     ...crossFileErrors(entries.filter((e) => !e.parseError)),
+    ...misplacedFileErrors(dir),
   ];
   const count = (kind) => entries.filter((e) => e.kind === kind).length;
   return { errors, counts: { events: count('event'), matches: count('match'), players: count('player'), maps: count('map') } };
@@ -55,4 +56,4 @@ function main() {
   console.log(`OK: ${events} events, ${matches} matches, ${players} players, ${maps} maps`);
 }
 
-main();
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) main();

@@ -9,7 +9,7 @@
     "event": { "$ref": "common.schema.json#/definitions/id" },
     "stage": { "$ref": "common.schema.json#/definitions/nullableString" },
     "group": { "$ref": "common.schema.json#/definitions/nullableString" },
-    "date": { "type": ["string", "null"], "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+    "date": { "type": ["string", "null"], "format": "date" },
     "format": { "enum": ["Bo1", "Bo3", "Bo5", "Bo7", null] },
     "players": {
       "type": "array",
@@ -40,7 +40,7 @@
     },
     "copy": {
       "type": "object",
-      "required": ["url", "kind", "grade"],
+      "required": ["url", "kind", "title", "uploader", "resolution", "fps", "grade", "grade_note", "segment"],
       "additionalProperties": false,
       "properties": {
         "url": { "$ref": "common.schema.json#/definitions/url" },
