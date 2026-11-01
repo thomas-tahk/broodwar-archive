@@ -12,7 +12,7 @@
     "year": { "type": "integer", "minimum": 1990, "maximum": 2100 },
     "broadcaster": { "$ref": "common.schema.json#/definitions/nullableString" },
     "organizer": { "$ref": "common.schema.json#/definitions/nullableString" },
-    "expected_games": { "type": "integer", "minimum": 0 },
+    "expected_games": { "type": ["integer", "null"], "minimum": 0 },
     "sources": { "$ref": "common.schema.json#/definitions/sources" },
     "field_sources": { "$ref": "common.schema.json#/definitions/fieldSources" }
   }

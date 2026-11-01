@@ -26,4 +26,4 @@ npm run validate
 npm run dev
 ```
 
-Other scripts: `npm test`, `npm run build`, `npm run preview`.
+Other scripts: `npm test`, `npm run build`, `npm run preview`. Optional: `node test/e2e-screens.cjs` takes screenshots (needs Playwright installed globally).

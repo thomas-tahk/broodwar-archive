@@ -33,6 +33,8 @@ const cases = {
   'winner-not-player': [['final.yaml', 'winner', /not one of this match's players/]],
   'same-player': [['ro8-a-2.yaml', 'players[1]', /listed twice/]],
   'bad-date': [['ro8-a-2.yaml', 'date', /not a real calendar date/]],
+  'field-sources-bad': [['ro8-a-1.yaml', 'field_sources', /"dat" is not a field of a match/]],
+  'map-version-number': [['map-one.yaml', 'version', /Put it in quotes, e\.g\. "1\.1"/]],
   'misplaced-file': [['alpha-copy.yml', '(file location)', /wrong place/]],
 };
 
@@ -51,4 +53,12 @@ for (const [name, expectations] of Object.entries(cases)) {
 test('importing validate.js does not run the CLI', async () => {
   const mod = await import('../tools/catalog/validate.js');
   assert.equal(typeof mod.validateCatalog, 'function');
+});
+
+test('CATALOG_DIR is used when no argument is given', () => {
+  const r = spawnSync('node', ['tools/catalog/validate.js'], {
+    encoding: 'utf8', env: { ...process.env, CATALOG_DIR: 'test/fixtures/catalog' },
+  });
+  assert.equal(r.status, 0, r.stdout + r.stderr);
+  assert.match(r.stdout, /3 matches/);
 });
