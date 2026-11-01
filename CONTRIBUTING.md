@@ -36,14 +36,14 @@ You can also just [open an issue](https://github.com/thomas-tahk/broodwar-archiv
 1. Open the file with the wrong info on github.com (a match under `catalog/matches/`, or a player/map/event).
 2. Click the **pencil** (Edit).
 3. Change the value. Don't know the right value? Use `null`.
-4. Add your source. Look at the `sources:` of the file:
+4. If your source backs the whole file, add it to `sources:`. Look at the `sources:` of the file:
    - Multi-line list: add a line, lined up with the others:
      ```yaml
        - url: https://example.com/where-you-saw-it
          note: what it says
      ```
    - One line like `sources: [{url: https://a.com}]`: add inside the brackets: `sources: [{url: https://a.com}, {url: https://example.com/new, note: what it says}]`
-5. Is the new fact from a different source than the file's others? Name it under `field_sources:` (add that key at the bottom if missing), field name then link:
+5. Otherwise (your source backs only the value you changed), skip step 4 and name it under `field_sources:` (add that key at the bottom if missing), field name then link:
    ```yaml
    field_sources:
      date: https://example.com/where-you-saw-it
