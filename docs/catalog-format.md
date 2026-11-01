@@ -28,7 +28,7 @@ sponsor: SKY           # or null
 year: 2001
 broadcaster: OnGameNet # or null
 organizer: null
-expected_games: 66     # optional: how many games the event had, per a source
+expected_games: 66     # optional; or null if unknown. How many games the event had, per a source
 sources:
   - url: https://...
     note: optional, what this source says

@@ -20,13 +20,17 @@ function put(dir, rel, text) {
 
 test('CONTRIBUTING templates, applied as written, pass the validator', () => {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'contrib-'));
-  fs.cpSync('test/fixtures/catalog', dir, { recursive: true });
-  put(dir, 'players/player-one.yaml', template('player'));
-  put(dir, 'players/player-two.yaml', template('player').replaceAll('player-one', 'player-two'));
-  put(dir, 'maps/map-id.yaml', template('map'));
-  // Only substitution: the event folder must be a real event in the copied fixture.
-  put(dir, 'matches/fixture-league/match-id.yaml', template('match').replace('event-id', 'fixture-league'));
-  const r = spawnSync('node', ['tools/catalog/validate.js', dir], { encoding: 'utf8' });
-  assert.equal(r.status, 0, r.stdout + r.stderr);
-  assert.match(r.stdout, /4 matches, 5 players, 3 maps/);
+  try {
+    fs.cpSync('test/fixtures/catalog', dir, { recursive: true });
+    put(dir, 'players/player-one.yaml', template('player'));
+    put(dir, 'players/player-two.yaml', template('player').replaceAll('player-one', 'player-two'));
+    put(dir, 'maps/map-id.yaml', template('map'));
+    // Only substitution: the event folder must be a real event in the copied fixture.
+    put(dir, 'matches/fixture-league/match-id.yaml', template('match').replace('event-id', 'fixture-league'));
+    const r = spawnSync('node', ['tools/catalog/validate.js', dir], { encoding: 'utf8' });
+    assert.equal(r.status, 0, r.stdout + r.stderr);
+    assert.match(r.stdout, /4 matches, 5 players, 3 maps/);
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
 });

@@ -39,7 +39,7 @@ Order of work:
 
 1. Check that both players and the map already exist: `catalog/players/<id>.yaml`, `catalog/maps/<id>.yaml`. Missing ones come first.
 2. On github.com open the repository, click **Add file**, then **Create new file**. Type the whole path in the name box, e.g. `catalog/players/flash.yaml`. Paste the template, replace the example values, then **Commit changes...**, **Propose changes**, **Create pull request**.
-3. Last, the match: `catalog/matches/<event-id>/<match-id>.yaml`, same way. The event (`catalog/events/<event-id>.yaml`) must already exist.
+3. Last, the match: `catalog/matches/<event-id>/<match-id>.yaml`, same way. The event (`catalog/events/<event-id>.yaml`) must already exist. If it doesn't, [open an issue](https://github.com/thomas-tahk/broodwar-archive/issues/new/choose) and we'll add it.
 
 The file name is the id plus `.yaml`. Ids use only lowercase `a-z`, digits `0-9` and `-`. No spaces, no capitals. The `id:` inside the file must equal the file name.
 

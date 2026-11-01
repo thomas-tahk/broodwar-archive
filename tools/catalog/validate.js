@@ -36,7 +36,7 @@ function fieldSourceErrors(entry) {
   return Object.keys(sources).filter((k) => !fields.includes(k)).map((k) => ({
     file: entry.file,
     path: 'field_sources',
-    message: `field_sources: "${k}" is not a field of a ${entry.kind}`,
+    message: `"${k}" is not a field of a ${entry.kind}`,
   }));
 }
 
@@ -54,7 +54,7 @@ export function validateCatalog(dir) {
 }
 
 function main() {
-  const dir = process.argv[2] ?? process.env.CATALOG_DIR ?? 'catalog';
+  const dir = process.argv[2] ?? (process.env.CATALOG_DIR || 'catalog');
   if (!fs.existsSync(dir)) {
     console.error(`${dir}: (folder): this folder does not exist`);
     process.exit(1);
