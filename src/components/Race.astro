@@ -1,0 +1,4 @@
+---
+const { race = null } = Astro.props;
+---
+{race ? <span class={`race ${race}`} title={`Race: ${race}`}>{race}</span> : <span class="race" title="Race unknown">?</span>}

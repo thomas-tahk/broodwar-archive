@@ -1,0 +1,24 @@
+---
+import { href } from '../lib/catalog.js';
+import '../styles/site.css';
+const { title } = Astro.props;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title} · Brood War Archive</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;700&family=IBM+Plex+Mono:wght@400;600&family=Noto+Sans+KR:wght@400;700&display=swap" />
+  </head>
+  <body>
+    <header class="bar">
+      <a class="brand" href={href('')}>BW<span>/</span>Archive</a>
+      <span class="bar-tag">Transmission log // StarCraft: Brood War broadcast footage</span>
+    </header>
+    <main><slot /></main>
+    <footer class="foot">Link index only. No video is hosted here; every “Watch” link leaves this site.</footer>
+  </body>
+</html>

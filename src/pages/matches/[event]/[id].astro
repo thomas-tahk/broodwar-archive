@@ -1,0 +1,76 @@
+---
+import Base from '../../../layouts/Base.astro';
+import GradeBadge from '../../../components/GradeBadge.astro';
+import Race from '../../../components/Race.astro';
+import Sources from '../../../components/Sources.astro';
+import { allMatches, events, maps, playerOf, host, href } from '../../../lib/catalog.js';
+import { bestGrade } from '../../../../tools/catalog/grades.js';
+
+export function getStaticPaths() {
+  return allMatches.map((match) => ({ params: { event: match.event, id: match.id }, props: { match } }));
+}
+const { match } = Astro.props;
+const event = events.find((e) => e.id === match.event);
+const sides = match.players.map(playerOf);
+const [a, b] = sides;
+const raceOf = (g, i) => g.races?.[i] ?? null;
+const mapName = (g) => (g.map ? maps.get(g.map)?.name ?? g.map : 'Unknown');
+const winnerName = (g) => (g.winner ? playerOf(g.winner).name : 'Unknown');
+const sideRace = (p, i) => match.games.map((g) => raceOf(g, i)).find(Boolean) ?? p.race ?? null;
+const score = match.score ? match.score.split('-') : null;
+---
+<Base title={`${a.name ?? 'Unknown'} vs ${b.name ?? 'Unknown'}`}>
+  <p class="crumbs"><a href={href(`events/${match.event}/`)}>&larr; {event?.name ?? match.event}</a></p>
+  <p class="kicker">Match // {match.stage ?? 'Stage unknown'}{match.group && ` · Group ${match.group}`}</p>
+  <h1>{a.name ?? 'Unknown'} vs {b.name ?? 'Unknown'}</h1>
+  <p class="meta">Date: {match.date ?? 'Unknown'} · Format: {match.format ?? 'Unknown'} · Result: {match.winner ? `${playerOf(match.winner).name} won${match.score ? ` (${match.score})` : ''}` : 'Unknown'}</p>
+
+  <div class="bug">
+    {sides.map((p, i) => (
+      <>
+        {i === 1 && <div class="score">{score ? `${score[0]}–${score[1]}` : '?–?'}<small>SCORE</small></div>}
+        <div class={`side r-${sideRace(p, i) ?? 'none'} ${i === 1 ? 'right' : ''} ${match.winner && match.winner === p.id ? 'win' : ''}`}>
+          <div class="nm">{p.name ?? 'Unknown'}</div>
+          <div class="kr">{p.hangul ?? 'Hangul unknown'}</div>
+          <Race race={sideRace(p, i)} />
+        </div>
+      </>
+    ))}
+  </div>
+
+  <h2>Games ({match.games.length})</h2>
+  {match.games.map((g) => {
+    const copies = g.copies ?? [];
+    return (
+      <section class="game" aria-label={`Game ${g.set}`}>
+        <header>
+          <h3>Game {g.set}</h3>
+          <span class="mono">Map: {mapName(g)}</span>
+          <span class="mono">Winner: {winnerName(g)}</span>
+          <span class="mono">{sides.map((_, i) => <Race race={raceOf(g, i)} />)}</span>
+          <GradeBadge grade={bestGrade(g)} none={copies.length === 0} />
+        </header>
+        {g.lost && <p class="nocopy">Footage known lost.</p>}
+        {copies.length === 0 && !g.lost && <p class="nocopy">No copy known.</p>}
+        {copies.length > 0 && (
+          <ul class="copies">
+            {copies.map((c) => (
+              <li class="copy">
+                <GradeBadge grade={c.grade} /> <span class="mono">{c.kind}</span>
+                <dl>
+                  <dt>Title</dt><dd>{c.title ?? 'Unknown'}</dd>
+                  <dt>Uploader</dt><dd>{c.uploader ?? 'Unknown'}</dd>
+                  <dt>Quality</dt><dd>{c.resolution ?? 'Unknown'} @ {c.fps != null ? `${c.fps} fps` : 'Unknown fps'}</dd>
+                  <dt>Grade note</dt><dd>{c.grade_note ?? 'Unknown'}</dd>
+                  <dt>Segment</dt><dd>{c.segment ? `${c.segment.start} – ${c.segment.end}` : 'Whole upload / unknown'}</dd>
+                </dl>
+                <a class="watch" href={c.url} target="_blank" rel="noopener noreferrer">Watch on {host(c.url)} &#8599;</a>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+    );
+  })}
+  <Sources sources={match.sources} fieldSources={match.field_sources} />
+</Base>

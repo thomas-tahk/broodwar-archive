@@ -1,0 +1,45 @@
+---
+import Base from '../../layouts/Base.astro';
+import GapGrid from '../../components/GapGrid.astro';
+import GradeBadge from '../../components/GradeBadge.astro';
+import Sources from '../../components/Sources.astro';
+import { events, matchesOf, playerOf, href } from '../../lib/catalog.js';
+import { bestGrade } from '../../../tools/catalog/grades.js';
+
+export function getStaticPaths() {
+  return events.map((event) => ({ params: { id: event.id }, props: { event } }));
+}
+const { event } = Astro.props;
+const matches = matchesOf(event.id);
+const label = (id) => playerOf(id).name ?? 'Unknown';
+const stageOf = (m) => [m.stage ?? 'Stage unknown', m.group && `Group ${m.group}`].filter(Boolean).join(' · ');
+---
+<Base title={event.name}>
+  <p class="crumbs"><a href={href('')}>&larr; All events</a></p>
+  <p class="kicker">Event // {event.league ?? 'League unknown'}</p>
+  <h1>{event.name}</h1>
+  <p class="meta">
+    {event.year ?? 'Unknown'} · Broadcaster: {event.broadcaster ?? 'Unknown'} · Sponsor: {event.sponsor ?? 'Unknown'} · Organizer: {event.organizer ?? 'Unknown'}
+    {event.expected_games != null && <> · Expected games: {event.expected_games}</>}
+  </p>
+  <GapGrid event={event} matches={matches} />
+  <h2>Matches ({matches.length})</h2>
+  {matches.length === 0 ? (
+    <p class="state">No matches catalogued for this event yet.</p>
+  ) : (
+    <ul class="rows">
+      {matches.map((m) => (
+        <li><a class="row" href={href(`matches/${m.event}/${m.id}/`)}>
+          <span class="mono mute">{stageOf(m)}<br />{m.date ?? 'Date unknown'}</span>
+          <span class="who">{m.players.map(label).join(' vs ')}{m.score && <span class="mono mute"> {m.score}</span>}</span>
+          <span class="badges">
+            {m.games.map((g) => (
+              <span class="mono mute">G{g.set} <GradeBadge grade={bestGrade(g)} none={(g.copies ?? []).length === 0} /></span>
+            ))}
+          </span>
+        </a></li>
+      ))}
+    </ul>
+  )}
+  <Sources sources={event.sources} fieldSources={event.field_sources} />
+</Base>
