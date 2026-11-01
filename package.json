@@ -11,7 +11,7 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "prebuild": "node tools/catalog/validate.js \"${CATALOG_DIR:-catalog}\""
+    "prebuild": "node tools/catalog/validate.js"
   },
   "dependencies": {
     "ajv": "^8.20.0",

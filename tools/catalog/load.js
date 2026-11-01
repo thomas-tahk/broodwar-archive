@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { parse } from 'yaml';
 
-const KINDS = { events: 'event', matches: 'match', players: 'player', maps: 'map' };
+export const KINDS = { events: 'event', matches: 'match', players: 'player', maps: 'map' };
 
 function listYaml(dir) {
   if (!fs.existsSync(dir)) return [];

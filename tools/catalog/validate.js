@@ -4,17 +4,18 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
-import { readCatalogFiles } from './load.js';
+import { KINDS as FOLDER_KINDS, readCatalogFiles } from './load.js';
 import { explain } from './messages.js';
 import { crossFileErrors, misplacedFileErrors } from './rules.js';
 
 const SCHEMA_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), '../../catalog/schema');
-const KINDS = ['event', 'match', 'player', 'map'];
+const KINDS = Object.values(FOLDER_KINDS);
+
+const read = (name) => JSON.parse(fs.readFileSync(path.join(SCHEMA_DIR, name), 'utf8'));
 
 function buildValidators() {
   const ajv = new Ajv({ allErrors: true, strict: true, allowUnionTypes: true });
   addFormats(ajv);
-  const read = (name) => JSON.parse(fs.readFileSync(path.join(SCHEMA_DIR, name), 'utf8'));
   ajv.addSchema(read('common.schema.json'));
   return Object.fromEntries(KINDS.map((k) => [k, ajv.compile(read(`${k}.schema.json`))]));
 }
@@ -28,11 +29,23 @@ function schemaErrors(entry, validators) {
   return validate.errors.map((e) => ({ file: entry.file, ...explain(e) }));
 }
 
+function fieldSourceErrors(entry) {
+  const sources = entry.data?.field_sources;
+  if (!sources || typeof sources !== 'object' || Array.isArray(sources)) return [];
+  const fields = Object.keys(read(`${entry.kind}.schema.json`).properties);
+  return Object.keys(sources).filter((k) => !fields.includes(k)).map((k) => ({
+    file: entry.file,
+    path: 'field_sources',
+    message: `field_sources: "${k}" is not a field of a ${entry.kind}`,
+  }));
+}
+
 export function validateCatalog(dir) {
   const validators = buildValidators();
   const entries = readCatalogFiles(dir);
   const errors = [
     ...entries.flatMap((e) => schemaErrors(e, validators)),
+    ...entries.flatMap(fieldSourceErrors),
     ...crossFileErrors(entries.filter((e) => !e.parseError)),
     ...misplacedFileErrors(dir),
   ];
@@ -41,7 +54,7 @@ export function validateCatalog(dir) {
 }
 
 function main() {
-  const dir = process.argv[2] ?? 'catalog';
+  const dir = process.argv[2] ?? process.env.CATALOG_DIR ?? 'catalog';
   if (!fs.existsSync(dir)) {
     console.error(`${dir}: (folder): this folder does not exist`);
     process.exit(1);

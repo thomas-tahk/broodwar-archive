@@ -28,6 +28,7 @@ function missingMessage(field) {
 }
 
 function typeMessage(e) {
+  if (e.instancePath === '/version') return 'must be text. Put it in quotes, e.g. "1.1"';
   const type = [].concat(e.params.type);
   if (!e.instancePath && type.includes('object')) return 'file is empty or not a set of fields (key: value lines)';
   if (type.length === 1 && type[0] === 'array') return 'must be a list (each item on its own line starting with "- ")';
