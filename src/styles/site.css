@@ -80,6 +80,11 @@ h2{font-size:1.35rem;color:var(--accent);border-bottom:2px solid var(--line);pad
 .gcell[data-gap=true]{background:repeating-linear-gradient(135deg,#2a0b10 0 8px,var(--panel) 8px 16px)}
 .gaptag{font:700 .72rem "IBM Plex Mono",monospace;color:#fff;background:#c4162a;padding:.05rem .4rem;letter-spacing:.08em}
 .gcell.placeholder{background:transparent;border:2px dashed var(--mute);justify-content:center}
+.placeholder-wide{grid-column:1/-1}
+.foot p{margin:.2rem 0}
+.foot-links{display:flex;flex-wrap:wrap;gap:0 1.2rem}
+.foot-links a,.gap-help a{display:inline-block;padding:.8rem 0;min-height:44px;box-sizing:border-box;color:var(--P);font-weight:600}
+.gap-help{margin:.4rem 0;font:.9rem "IBM Plex Mono",monospace}
 .gap-summary{font:700 1rem "IBM Plex Mono",monospace;margin:.4rem 0}
 .gap-short{font:.9rem "IBM Plex Mono",monospace;color:var(--P);margin:.2rem 0}
 .gaplegend{display:flex;flex-wrap:wrap;gap:.5rem 1rem;font:.8rem "IBM Plex Mono",monospace;color:var(--mute)}

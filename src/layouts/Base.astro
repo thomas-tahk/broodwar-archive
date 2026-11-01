@@ -19,6 +19,12 @@ const { title } = Astro.props;
       <span class="bar-tag">Transmission log // StarCraft: Brood War broadcast footage</span>
     </header>
     <main><slot /></main>
-    <footer class="foot">Link index only. No video is hosted here; every “Watch” link leaves this site.</footer>
+    <footer class="foot">
+      <p>Link index only. No video is hosted here; every “Watch” link leaves this site.</p>
+      <p class="foot-links">
+        <a href="https://github.com/thomas-tahk/broodwar-archive/blob/main/CONTRIBUTING.md" rel="noopener noreferrer">Help fill the gaps</a>
+        <a href="https://github.com/thomas-tahk/broodwar-archive" rel="noopener noreferrer">Source on GitHub</a>
+      </p>
+    </footer>
   </body>
 </html>

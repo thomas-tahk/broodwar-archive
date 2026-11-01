@@ -1,4 +1,4 @@
-import { test } from 'node:test';
+import { test, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { execSync } from 'node:child_process';
 import fs from 'node:fs';
@@ -9,13 +9,18 @@ import { bestGrade } from '../tools/catalog/grades.js';
 
 const FIXTURE = 'test/fixtures/catalog';
 const BASE = '/broodwar-archive/';
-const read = (p) => fs.readFileSync(`dist/${p}/index.html`, 'utf8');
+// Own outDir (never the repo's dist/); every temp dir is removed in after().
+const tmpDirs = [];
+const tmp = (prefix) => { const d = fs.mkdtempSync(path.join(os.tmpdir(), prefix)); tmpDirs.push(d); return d; };
+let outDir;
+after(() => { for (const d of tmpDirs) fs.rmSync(d, { recursive: true, force: true }); });
+const read = (p) => fs.readFileSync(`${outDir}/${p}/index.html`, 'utf8');
 const build = (catalogDir) => {
-  fs.rmSync('dist', { recursive: true, force: true });
-  execSync('npm run build', { env: { ...process.env, CATALOG_DIR: catalogDir }, stdio: 'pipe' });
+  outDir = tmp('bw-out-');
+  execSync(`npm run build -- --outDir ${outDir}`, { env: { ...process.env, CATALOG_DIR: catalogDir }, stdio: 'pipe' });
 };
 const copyFixture = () => {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'bw-cat-'));
+  const dir = tmp('bw-cat-');
   fs.cpSync(FIXTURE, dir, { recursive: true });
   return dir;
 };
@@ -28,6 +33,17 @@ const playersById = new Map(cat.players.map((p) => [p.id, p]));
 
 test('fixture catalog renders everything it knows', async (t) => {
   build(FIXTURE);
+
+  await t.test('footer links to the repo on every page', () => {
+    const pages = ['', ...cat.events.map((e) => `events/${e.id}`), ...cat.matches.map((m) => `matches/${m.event}/${m.id}`)];
+    for (const p of pages) {
+      const html = read(p);
+      has(html, 'href="https://github.com/thomas-tahk/broodwar-archive/blob/main/CONTRIBUTING.md"');
+      has(html, 'Help fill the gaps');
+      has(html, 'href="https://github.com/thomas-tahk/broodwar-archive"');
+      has(html, 'Source on GitHub');
+    }
+  });
 
   await t.test('home links every event under base', () => {
     const html = read('');
@@ -124,6 +140,6 @@ test('score that is not N-N is shown raw; build fails on bad catalog', () => {
 });
 
 test('build succeeds with an explicit empty catalog dir', () => {
-  build(fs.mkdtempSync(path.join(os.tmpdir(), 'bw-empty-')));
+  build(tmp('bw-empty-'));
   has(read(''), 'No events');
 });

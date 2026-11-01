@@ -22,6 +22,9 @@ export function playerOf(id) {
   return players.get(id) ?? { id, name: null, hangul: null, race: null };
 }
 
+/** Display name for a player id; 'Unknown' when no name is known. */
+export const nameOf = (id) => playerOf(id).name ?? 'Unknown';
+
 export function host(url) {
   try { return new URL(url).hostname.replace(/^www\./, ''); } catch { return url; }
 }

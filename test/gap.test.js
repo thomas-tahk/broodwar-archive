@@ -9,8 +9,12 @@ const FIXTURE = 'test/fixtures/catalog';
 // Own outDir so this file never races other tests over dist/.
 const buildEvent = (catalogDir) => {
   const out = fs.mkdtempSync(path.join(os.tmpdir(), 'bw-gap-'));
-  execSync(`npm run build -- --outDir ${out}`, { env: { ...process.env, CATALOG_DIR: catalogDir }, stdio: 'pipe' });
-  return fs.readFileSync(`${out}/events/fixture-league/index.html`, 'utf8');
+  try {
+    execSync(`npm run build -- --outDir ${out}`, { env: { ...process.env, CATALOG_DIR: catalogDir }, stdio: 'pipe' });
+    return fs.readFileSync(`${out}/events/fixture-league/index.html`, 'utf8');
+  } finally {
+    fs.rmSync(out, { recursive: true, force: true });
+  }
 };
 const cells = (html) => (html.match(/<a class="gcell"[\s\S]*?<\/a>/g) ?? []);
 const find = (html, match, set) => {
@@ -42,6 +46,9 @@ test('fixture event gap grid', () => {
   assert.ok(html.includes('1 of 5 catalogued games have a good copy (A–C)'));
   assert.ok(html.includes('1 more game expected (per source) is not catalogued yet'));
   assert.equal((html.match(/data-placeholder="true"/g) ?? []).length, 1);
+  assert.ok(!html.includes('data-placeholder-count'));
+  assert.ok(html.includes('href="https://github.com/thomas-tahk/broodwar-archive/issues/new/choose"'));
+  assert.ok(html.includes('Know where a copy is? Add it'));
 });
 
 test('event with no matches shows only placeholders, no summary', () => {
@@ -50,8 +57,12 @@ test('event with no matches shows only placeholders, no summary', () => {
   fs.rmSync(`${dir}/matches/fixture-league`, { recursive: true });
   const ev = `${dir}/events/fixture-league.yaml`;
   fs.writeFileSync(ev, fs.readFileSync(ev, 'utf8').replace('expected_games: 6', 'expected_games: 66'));
-  const html = buildEvent(dir);
-  assert.equal((html.match(/data-placeholder="true"/g) ?? []).length, 66);
+  let html;
+  try { html = buildEvent(dir); } finally { fs.rmSync(dir, { recursive: true, force: true }); }
+  assert.equal((html.match(/data-placeholder="true"/g) ?? []).length, 0);
+  assert.equal((html.match(/data-placeholder-count="66"/g) ?? []).length, 1);
+  assert.ok(html.includes('66 games not catalogued yet'));
+  assert.ok(html.includes('Know where a copy is? Add it'));
   assert.ok(html.includes('66 more games expected (per source) are not catalogued yet'));
   assert.ok(!html.includes('gap-summary'));
 });
