@@ -1,0 +1,18 @@
+# 2001 SKY OSL. Only facts verified from a reachable source are filled in.
+# The M1 cloud build could not reach Liquipedia, YouTube, Wikipedia or archive.org
+# (network policy), so no match is catalogued yet. See docs/milestones/M1.md.
+id: 2001-sky-osl
+name: 2001 SKY OSL
+league: OSL
+sponsor: SKY
+year: 2001
+broadcaster: OnGameNet
+organizer: null
+expected_games: 66
+sources:
+  - url: https://github.com/thomas-tahk/broodwar-archive/blob/main/docs/research/2026-10-10-slice-one-survey.html
+    note: >-
+      Project survey (2026-10-10). Gives the event, broadcaster (OGN), and Liquipedia's
+      game count (66); notes OGN's official channel has 53 videos and 55 AI-upscaled
+      videos for it, B grade, 480p/30p. The count has not yet been checked
+      against the Liquipedia bracket itself.
