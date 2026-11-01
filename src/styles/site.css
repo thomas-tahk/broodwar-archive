@@ -86,3 +86,4 @@ h2{font-size:1.35rem;color:var(--accent);border-bottom:2px solid var(--line);pad
 .legend-empty{display:inline-block;width:1.4rem;height:1rem;border:2px dashed var(--mute);vertical-align:middle}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .refhead{font-size:1.05rem;margin:1rem 0 .2rem;color:var(--mute)}
+.gcell .who{font-weight:700;font-size:.85rem}
