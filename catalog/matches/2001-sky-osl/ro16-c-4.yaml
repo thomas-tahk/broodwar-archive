@@ -1,0 +1,40 @@
+# 2001 SKY OSL. Imported 2026-11-01 from Liquipedia + OGN's YouTube playlists; every field cites a source below.
+id: ro16-c-4
+event: 2001-sky-osl
+stage: Round of 16
+group: C
+date: 2001-11-09
+format: Bo1
+players: [asmodey, yellow]
+winner: asmodey
+score: "1-0"
+games:
+  - set: 1
+    map: neo-vertigo
+    races: [P, Z]
+    winner: asmodey
+    lost: false
+    copies:
+      - url: https://www.youtube.com/watch?v=5vBbZWLubAM
+        kind: ogn-official
+        title: "[2001.11.09] 2001 SKY배 온게임넷 스타리그 16강 C조 4경기 (네오 버티고) 홍진호(Zerg) vs 세르게이(Protoss)"
+        uploader: OGN
+        resolution: 480p
+        fps: 30
+        grade: B
+        grade_note: "Provisional, from the 2026-10-10 project survey: OGN's official upload is a clean re-encode (480p/30p, already deinterlaced). 18:41 long; not yet watched end to end."
+        segment: null
+      - url: https://www.youtube.com/watch?v=8hkf3aqHfXM
+        kind: ogn-ai-upscale
+        title: "AI 업스케일 | [2001.11.09] 2001 SKY배 온게임넷 스타리그 16강 C조 4경기 (네오 버티고) 홍진호(Zerg) vs 세르게이 삼소노프(Protoss)"
+        uploader: OGN
+        resolution: 1080p
+        fps: 30
+        grade: null
+        grade_note: "OGN's own 2026 AI upscale of the broadcast, 18:46 long. Not graded: upscaling changes the picture, so it needs a side-by-side with the original first."
+        segment: null
+sources:
+  - url: https://liquipedia.net/starcraft/index.php?title=2001_SKY_OSL&oldid=532826
+    note: "Liquipedia event page: players, races, maps, winners, date."
+  - url: https://www.youtube.com/playlist?list=PLWQeRMoEALvo2MhFXLG3MD-0WxgM0FG9r
+    note: "OGN official playlist: copies and video titles"

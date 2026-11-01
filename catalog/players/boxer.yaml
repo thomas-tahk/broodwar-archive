@@ -1,0 +1,8 @@
+id: boxer
+name: BoxeR
+hangul: "임요환"
+race: T
+sources:
+  - url: https://liquipedia.net/starcraft/BoxeR
+field_sources:
+  hangul: https://www.youtube.com/playlist?list=PLWQeRMoEALvo2MhFXLG3MD-0WxgM0FG9r

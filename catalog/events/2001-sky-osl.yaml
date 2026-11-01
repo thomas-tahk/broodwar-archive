@@ -1,6 +1,4 @@
-# 2001 SKY OSL. Only facts verified from a reachable source are filled in.
-# The M1 cloud build could not reach Liquipedia, YouTube, Wikipedia or archive.org
-# (network policy), so no match is catalogued yet. See docs/milestones/M1.md.
+# 2001 SKY OSL. Matches imported 2026-11-01 from Liquipedia and OGN's two official YouTube playlists.
 id: 2001-sky-osl
 name: 2001 SKY OSL
 league: OSL
@@ -8,11 +6,16 @@ sponsor: SKY
 year: 2001
 broadcaster: OnGameNet
 organizer: null
-expected_games: 66
+expected_games: 58
 sources:
-  - url: https://github.com/thomas-tahk/broodwar-archive/blob/main/docs/research/2026-10-10-slice-one-survey.html
+  - url: https://liquipedia.net/starcraft/index.php?title=2001_SKY_OSL&oldid=532826
     note: >-
-      Project survey (2026-10-10). Gives the event, broadcaster (OGN), and Liquipedia's
-      game count (66); notes OGN's official channel has 53 videos and 55 AI-upscaled
-      videos for it, B grade, 480p/30p. The count has not yet been checked
-      against the Liquipedia bracket itself.
+      Liquipedia event page (revision 532826): 49 matches, 58 games across the Round of 16
+      (with two tiebreaker groups), Round of 8, semifinals, third-place match and final.
+      The 2026-10-10 survey's figure of 66 games was not borne out by the bracket.
+  - url: https://www.youtube.com/playlist?list=PLWQeRMoEALvo2MhFXLG3MD-0WxgM0FG9r
+    note: OGN official playlist, 53 videos, 480p/30fps, one game per video.
+  - url: https://www.youtube.com/playlist?list=PLWQeRMoEALvp75uolIpIEEuwsGHsiw0cu
+    note: OGN AI-upscale playlist, 55 videos, 1080p/30fps, one game per video.
+  - url: https://github.com/thomas-tahk/broodwar-archive/blob/main/docs/research/2026-10-10-slice-one-survey.html
+    note: Project survey (2026-10-10). Source of the provisional B grade for OGN's official uploads.
