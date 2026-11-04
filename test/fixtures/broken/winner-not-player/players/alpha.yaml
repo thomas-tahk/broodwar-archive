@@ -1,0 +1,6 @@
+# Test fixture — fictional.
+id: alpha
+name: Alpha
+hangul: null
+race: T
+sources: [{url: https://example.com/players/alpha}]

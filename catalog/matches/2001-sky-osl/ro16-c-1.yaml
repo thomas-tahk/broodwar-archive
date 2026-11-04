@@ -1,0 +1,40 @@
+# 2001 SKY OSL. Imported 2026-11-01 from Liquipedia + OGN's YouTube playlists; every field cites a source below.
+id: ro16-c-1
+event: 2001-sky-osl
+stage: Round of 16
+group: C
+date: 2001-10-19
+format: Bo1
+players: [asmodey, marine-jung-yoo-seok]
+winner: asmodey
+score: "1-0"
+games:
+  - set: 1
+    map: silent-vortex
+    races: [P, T]
+    winner: asmodey
+    lost: false
+    copies:
+      - url: https://www.youtube.com/watch?v=hB1_U7R6Ua4
+        kind: ogn-official
+        title: "[2001.10.19] 2001 SKY배 온게임넷 스타리그 16강 C조 1경기 (사일런트 볼텍스) 세르게이(Protoss) vs 정유석(Terran)"
+        uploader: OGN
+        resolution: 480p
+        fps: 30
+        grade: B
+        grade_note: "Provisional, from the 2026-10-10 project survey: OGN's official upload is a clean re-encode (480p/30p, already deinterlaced). 30:19 long; not yet watched end to end."
+        segment: null
+      - url: https://www.youtube.com/watch?v=XPMGo9Fb_Mc
+        kind: ogn-ai-upscale
+        title: "AI 업스케일 | [2001.10.19] 2001 SKY배 온게임넷 스타리그 16강 C조 1경기 (사일런트 볼텍스) 세르게이 삼소노프(Protoss) vs 정유석(Terran)"
+        uploader: OGN
+        resolution: 1080p
+        fps: 30
+        grade: null
+        grade_note: "OGN's own 2026 AI upscale of the broadcast, 30:23 long. Not graded: upscaling changes the picture, so it needs a side-by-side with the original first."
+        segment: null
+sources:
+  - url: https://liquipedia.net/starcraft/index.php?title=2001_SKY_OSL&oldid=532826
+    note: "Liquipedia event page: players, races, maps, winners, date."
+  - url: https://www.youtube.com/playlist?list=PLWQeRMoEALvo2MhFXLG3MD-0WxgM0FG9r
+    note: "OGN official playlist: copies and video titles"

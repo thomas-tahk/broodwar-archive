@@ -1,0 +1,42 @@
+# 2001 SKY OSL. Imported 2026-11-01 from Liquipedia + OGN's YouTube playlists; every field cites a source below.
+id: ro16-a-3
+event: 2001-sky-osl
+stage: Round of 16
+group: A
+date: 2001-11-02
+format: Bo1
+players: [beatace, h-love-wiii]
+winner: beatace
+score: "1-0"
+games:
+  - set: 1
+    map: silent-vortex
+    races: [T, Z]
+    winner: beatace
+    lost: false
+    copies:
+      - url: https://www.youtube.com/watch?v=-jTCPDrL2p4
+        kind: ogn-official
+        title: "[2001.11.02] 2001 SKY배 온게임넷 스타리그 16강 A조 3경기 (사일런트 볼텍스) 조창우(Zerg) vs 김재훈(Terran)"
+        uploader: OGN
+        resolution: 480p
+        fps: 30
+        grade: B
+        grade_note: "Provisional, from the 2026-10-10 project survey: OGN's official upload is a clean re-encode (480p/30p, already deinterlaced). 18:41 long; not yet watched end to end."
+        segment: null
+      - url: https://www.youtube.com/watch?v=fh4WpjWkw3w
+        kind: ogn-ai-upscale
+        title: "AI 업스케일 | [2001.11.02] 2001 SKY배 온게임넷 스타리그 16강 A조 3경기 (사일런트 볼텍스) 조창우(Zerg) vs 김재훈(Terran)"
+        uploader: OGN
+        resolution: 1080p
+        fps: 30
+        grade: null
+        grade_note: "OGN's own 2026 AI upscale of the broadcast, 18:53 long. Not graded: upscaling changes the picture, so it needs a side-by-side with the original first."
+        segment: null
+sources:
+  - url: https://liquipedia.net/starcraft/index.php?title=2001_SKY_OSL&oldid=532826
+    note: "Liquipedia event page: players, races, maps, winners."
+  - url: https://www.youtube.com/playlist?list=PLWQeRMoEALvo2MhFXLG3MD-0WxgM0FG9r
+    note: "OGN official playlist: copies and video titles"
+field_sources:
+  date: https://www.youtube.com/watch?v=-jTCPDrL2p4

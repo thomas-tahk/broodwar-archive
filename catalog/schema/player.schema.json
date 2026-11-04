@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "player.schema.json",
+  "type": "object",
+  "required": ["id", "name", "hangul", "race", "sources"],
+  "additionalProperties": false,
+  "properties": {
+    "id": { "$ref": "common.schema.json#/definitions/id" },
+    "name": { "type": "string", "minLength": 1 },
+    "hangul": { "$ref": "common.schema.json#/definitions/nullableString" },
+    "race": { "enum": ["T", "P", "Z", "R", null] },
+    "sources": { "$ref": "common.schema.json#/definitions/sources" },
+    "field_sources": { "$ref": "common.schema.json#/definitions/fieldSources" }
+  }
+}

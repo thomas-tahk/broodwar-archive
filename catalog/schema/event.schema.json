@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "event.schema.json",
+  "type": "object",
+  "required": ["id", "name", "league", "sponsor", "year", "broadcaster", "organizer", "sources"],
+  "additionalProperties": false,
+  "properties": {
+    "id": { "$ref": "common.schema.json#/definitions/id" },
+    "name": { "type": "string", "minLength": 1 },
+    "league": { "$ref": "common.schema.json#/definitions/nullableString" },
+    "sponsor": { "$ref": "common.schema.json#/definitions/nullableString" },
+    "year": { "type": "integer", "minimum": 1990, "maximum": 2100 },
+    "broadcaster": { "$ref": "common.schema.json#/definitions/nullableString" },
+    "organizer": { "$ref": "common.schema.json#/definitions/nullableString" },
+    "expected_games": { "type": ["integer", "null"], "minimum": 0 },
+    "sources": { "$ref": "common.schema.json#/definitions/sources" },
+    "field_sources": { "$ref": "common.schema.json#/definitions/fieldSources" }
+  }
+}

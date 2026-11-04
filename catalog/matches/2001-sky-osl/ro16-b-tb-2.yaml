@@ -1,0 +1,42 @@
+# 2001 SKY OSL. Imported 2026-11-01 from Liquipedia + OGN's YouTube playlists; every field cites a source below.
+id: ro16-b-tb-2
+event: 2001-sky-osl
+stage: Round of 16 tiebreaker
+group: B
+date: 2001-11-28
+format: Bo1
+players: [grrrr, eugene]
+winner: grrrr
+score: "1-0"
+games:
+  - set: 1
+    map: incubus
+    races: [P, Z]
+    winner: grrrr
+    lost: false
+    copies:
+      - url: https://www.youtube.com/watch?v=M4EP25jsfq4
+        kind: ogn-official
+        title: "[2001.11.29] 2001 SKY배 온게임넷 스타리그 16강 재경기 B조 재경기 2경기 (인큐버스) 기욤(Protoss) vs 안형모(Zerg)"
+        uploader: OGN
+        resolution: 480p
+        fps: 30
+        grade: B
+        grade_note: "Provisional, from the 2026-10-10 project survey: OGN's official upload is a clean re-encode (480p/30p, already deinterlaced). 20:33 long; not yet watched end to end."
+        segment: null
+      - url: https://www.youtube.com/watch?v=LJylsaHijxg
+        kind: ogn-ai-upscale
+        title: "AI 업스케일 | [2001.11.28] 2001 SKY배 온게임넷 스타리그 16강 재경기 B조 2경기 (인큐버스) 기욤 패트리(Protoss) vs 안형모(Zerg)"
+        uploader: OGN
+        resolution: 1080p
+        fps: 30
+        grade: null
+        grade_note: "OGN's own 2026 AI upscale of the broadcast, 20:37 long. Not graded: upscaling changes the picture, so it needs a side-by-side with the original first."
+        segment: null
+sources:
+  - url: https://liquipedia.net/starcraft/index.php?title=2001_SKY_OSL&oldid=532826
+    note: "Liquipedia event page: players, races, maps, winners. OGN's two uploads disagree on the date (2001-11-29 vs 2001-11-28); the AI-upscale title matches Liquipedia elsewhere in this event."
+  - url: https://www.youtube.com/playlist?list=PLWQeRMoEALvo2MhFXLG3MD-0WxgM0FG9r
+    note: "OGN official playlist: copies and video titles"
+field_sources:
+  date: https://www.youtube.com/watch?v=LJylsaHijxg

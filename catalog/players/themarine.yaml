@@ -1,0 +1,8 @@
+id: themarine
+name: TheMarine
+hangul: "김정민"
+race: T
+sources:
+  - url: https://liquipedia.net/starcraft/TheMarine
+field_sources:
+  hangul: https://www.youtube.com/playlist?list=PLWQeRMoEALvo2MhFXLG3MD-0WxgM0FG9r

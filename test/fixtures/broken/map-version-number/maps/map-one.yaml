@@ -1,0 +1,5 @@
+# Test fixture — fictional.
+id: map-one
+name: Map One
+version: 1.1
+sources: [{url: https://example.com/maps/map-one}]

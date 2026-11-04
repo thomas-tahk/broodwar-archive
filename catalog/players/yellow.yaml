@@ -1,0 +1,8 @@
+id: yellow
+name: YellOw
+hangul: "홍진호"
+race: Z
+sources:
+  - url: https://liquipedia.net/starcraft/YellOw
+field_sources:
+  hangul: https://www.youtube.com/playlist?list=PLWQeRMoEALvo2MhFXLG3MD-0WxgM0FG9r
