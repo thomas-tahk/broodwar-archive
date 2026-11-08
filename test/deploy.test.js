@@ -9,19 +9,36 @@ import YAML from 'yaml';
 const workflow = (name) => YAML.parse(fs.readFileSync(`.github/workflows/${name}`, 'utf8'));
 const runs = (wf) => Object.values(wf.jobs).flatMap((j) => j.steps.map((s) => s.run).filter(Boolean));
 
-test('pages.yml triggers only on push to main and workflow_dispatch', () => {
+test('pages.yml deploys every branch except gh-pages', () => {
   const on = workflow('pages.yml').on;
   assert.deepEqual(Object.keys(on).sort(), ['push', 'workflow_dispatch']);
-  assert.deepEqual(on.push.branches, ['main']);
+  assert.deepEqual(on.push['branches-ignore'], ['gh-pages']);
   assert.ok(!('pull_request' in on));
 });
 
-test('pages.yml uploads dist and deploys only from main', () => {
-  const wf = workflow('pages.yml');
-  const steps = Object.values(wf.jobs).flatMap((j) => j.steps);
-  const upload = steps.find((s) => s.uses?.startsWith('actions/upload-pages-artifact@'));
-  assert.equal(upload.with.path, 'dist');
-  assert.equal(wf.jobs.deploy.if, "github.ref == 'refs/heads/main'");
+test('pages.yml builds under the branch path and publishes dist to gh-pages', () => {
+  const cmds = runs(workflow('pages.yml')).join('\n');
+  assert.match(cmds, /SITE_BASE="\$base" npm run build/);
+  assert.match(cmds, /tools\/deploy_pages\.sh "\$BRANCH" dist/);
+});
+
+test('SITE_BASE moves every link under the preview path', () => {
+  const out = fs.mkdtempSync(path.join(os.tmpdir(), 'bw-dist-'));
+  try {
+    execSync(`npm run build -- --outDir ${out}`, {
+      stdio: 'pipe',
+      env: { ...process.env, SITE_BASE: '/broodwar-archive/some-branch/' },
+    });
+    const bad = [];
+    for (const f of htmlFiles(out)) {
+      for (const m of fs.readFileSync(f, 'utf8').matchAll(/\b(?:href|src)="(\/[^"]*)"/g)) {
+        if (!m[1].startsWith('/broodwar-archive/some-branch/')) bad.push(`${f}: ${m[1]}`);
+      }
+    }
+    assert.deepEqual(bad, []);
+  } finally {
+    fs.rmSync(out, { recursive: true, force: true });
+  }
 });
 
 test('ci.yml runs on push and pull_request, with validate, test, build', () => {
