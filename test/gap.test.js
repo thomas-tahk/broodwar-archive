@@ -22,17 +22,17 @@ const find = (html, match, set) => {
   assert.ok(c, `cell ${match} G${set}`);
   return c;
 };
-const badge = (c) => c.match(/<span class="grade"[^>]*>([^<]*)<\/span>/)[1];
+const badge = (c) => c.match(/<span class="grade"[^>]*>([^<]*)/)[1];
 
 test('fixture event gap grid', () => {
   const html = buildEvent(FIXTURE);
   assert.match(html, /class="gapgrid"/);
   const expected = [
-    ['ro8-a-1', 1, 'A', 'false', 'A', 'Alpha vs Bravo · G1'],
+    ['ro8-a-1', 1, 'A', 'false', 'Original', 'Alpha vs Bravo · G1'],
     ['ro8-a-2', 1, 'none', 'true', 'No copy', 'Bravo vs Charlie · G1'],
-    ['final', 1, 'D', 'true', 'D', 'Alpha vs Charlie · G1'],
-    ['final', 2, 'X', 'true', 'X · Lost', 'Alpha vs Charlie · G2'],
-    ['final', 3, 'none', 'true', 'Ungraded', 'Alpha vs Charlie · G3'],
+    ['final', 1, 'D', 'true', 'Damaged', 'Alpha vs Charlie · G1'],
+    ['final', 2, 'X', 'true', 'Lost', 'Alpha vs Charlie · G2'],
+    ['final', 3, 'none', 'true', 'Not graded', 'Alpha vs Charlie · G3'],
   ];
   for (const [m, set, grade, gap, text, label] of expected) {
     const c = find(html, m, set);

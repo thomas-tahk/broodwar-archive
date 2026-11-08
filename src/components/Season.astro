@@ -1,0 +1,49 @@
+---
+// Season view of one event: Final hero, round tabs, grouped match rows. Tabs need JS; without it every round is listed.
+import MatchHero from './MatchHero.astro';
+import MatchRow from './MatchRow.astro';
+import { stageTabs } from '../lib/catalog.js';
+
+const { event, matches, id = 'season' } = Astro.props;
+const finalMatch = matches.find((m) => m.stage === 'Final');
+const tabs = stageTabs(matches);
+const start = Math.max(0, tabs.findIndex((t) => t.key === 'Round of 8'));
+---
+<div class="season" id={id}>
+  {finalMatch && <MatchHero match={finalMatch} watch />}
+  {matches.length === 0 ? (
+    <p class="state">No matches catalogued for this event yet.</p>
+  ) : (
+    <>
+      <h2>Choose a round</h2>
+      <div class="tabs js-only flex" role="group" aria-label="Round" data-start={start}>
+        {tabs.map((t, i) => <button type="button" data-panel={`${id}-r${i}`} aria-label={t.key} aria-pressed={i === start ? 'true' : 'false'}>{t.label}</button>)}
+      </div>
+      {tabs.map((t, i) => (
+        <section class="panel" id={`${id}-r${i}`} aria-label={t.key}>
+          <h2 class="sr">{t.key}</h2>
+          {t.groups.map((g) => (
+            <>
+              {g.title && <div class="grp">{g.title}</div>}
+              <ul class="rows">{g.matches.map((m) => <li><MatchRow match={m} /></li>)}</ul>
+            </>
+          ))}
+        </section>
+      ))}
+    </>
+  )}
+</div>
+<script is:inline>
+  document.querySelectorAll('.season .tabs').forEach(function (tabs) {
+    var btns = tabs.querySelectorAll('button');
+    function show(btn) {
+      btns.forEach(function (b) {
+        var on = b === btn;
+        b.setAttribute('aria-pressed', on);
+        document.getElementById(b.dataset.panel).hidden = !on;
+      });
+    }
+    btns.forEach(function (b) { b.addEventListener('click', function () { show(b); }); });
+    show(btns[Number(tabs.dataset.start)]);
+  });
+</script>

@@ -58,10 +58,8 @@ test('fixture catalog renders everything it knows', async (t) => {
       for (const m of cat.matches.filter((x) => x.event === e.id)) {
         const row = html.split(`class="row" href="${BASE}matches/${m.event}/${m.id}/"`)[1]?.split('</a>')[0];
         assert.ok(row, `no link for ${m.fullId}`);
-        for (const g of m.games) {
-          const want = bestGrade(g) ?? 'none';
-          assert.match(row, new RegExp(`G${g.set}\\s*<span[^>]*data-grade="${want}"`), `${m.fullId} G${g.set}`);
-        }
+        const n = m.games.reduce((k, g) => k + g.copies.length, 0);
+        assert.ok(row.includes(n ? `${n} video` : 'No video known'), `${m.fullId} video count`);
       }
     }
   });
@@ -92,7 +90,7 @@ test('fixture catalog renders everything it knows', async (t) => {
           const chunk = copies[ci];
           has(chunk, esc(c.url));
           assert.match(chunk, new RegExp(`data-grade="${c.grade ?? 'none'}"`));
-          for (const v of [c.kind, c.title, c.uploader, c.resolution, c.grade_note].filter(Boolean)) has(chunk, v);
+          for (const v of [{ 'fan-upload': 'Fan upload', 'ogn-ai-upscale': 'AI upscale', 'ogn-official': 'Original broadcast', torrent: 'Torrent', other: 'Other copy' }[c.kind] ?? c.kind, c.title, c.uploader, c.resolution, c.grade_note].filter(Boolean)) has(chunk, v);
           if (c.fps != null) has(chunk, `${c.fps} fps`);
           if (c.segment) { has(chunk, c.segment.start); has(chunk, c.segment.end); }
           has(chunk, 'Watch on example.com');
@@ -142,4 +140,33 @@ test('score that is not N-N is shown raw; build fails on bad catalog', () => {
 test('build succeeds with an explicit empty catalog dir', () => {
   build(tmp('bw-empty-'));
   has(read(''), 'No events');
+});
+
+test('real catalog: Find page, race matrix and embedded player', async (t) => {
+  const real = loadCatalog('catalog');
+  const games = real.matches.flatMap((m) => m.games);
+  build('catalog');
+
+  await t.test('Find page lists every game and is linked from the header', () => {
+    const html = read('find');
+    assert.equal((html.match(/<li class="frow"/g) ?? []).length, games.length);
+    assert.equal(games.length, 58);
+    has(html, `href="${BASE}find/"`);
+    has(read(''), `href="${BASE}find/"`);
+  });
+
+  await t.test('matrix has 6 distinct matchups summing to games with known races', () => {
+    const html = read('find');
+    const cells = [...html.matchAll(/<button type="button" data-mu="([A-Z]{2})"[^>]*aria-label="[^"]*, (\d+) games"/g)];
+    assert.equal(cells.length, 9);
+    const byKey = new Map(cells.map((c) => [c[1], Number(c[2])]));
+    assert.equal(byKey.size, 6);
+    const known = games.filter((g) => g.races?.every((r) => ['T', 'P', 'Z'].includes(r))).length;
+    assert.equal([...byKey.values()].reduce((a, b) => a + b, 0), known);
+  });
+
+  await t.test('match page embeds a youtube-nocookie player', () => {
+    has(read('matches/2001-sky-osl/final'), 'https://www.youtube-nocookie.com/embed/MRsg5nqqmLU');
+    has(read('matches/2001-sky-osl/final'), 'Open on YouTube');
+  });
 });

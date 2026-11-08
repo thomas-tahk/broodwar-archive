@@ -1,7 +1,8 @@
 ---
 // grade: 'A'-'D' | 'X' | null. none: true when the game has no copy at all.
+import { GRADE_WORDS } from '../lib/catalog.js';
 const { grade = null, none = false } = Astro.props;
 const key = grade ?? 'none';
-const label = grade === 'X' ? 'X · Lost' : grade ?? (none ? 'No copy' : 'Ungraded');
+const word = grade ? GRADE_WORDS[grade] : none ? 'No copy' : 'Not graded';
 ---
-<span class="grade" data-grade={key}>{label}</span>
+<span class="grade" data-grade={key}>{word}{grade && <small aria-label={`grade ${grade}`}>{grade}</small>}</span>

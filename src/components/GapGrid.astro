@@ -1,6 +1,7 @@
 ---
 // Gap view (issue #4). Derived at build time from the catalog; nothing stored.
 import GradeBadge from './GradeBadge.astro';
+import QualityLegend from './QualityLegend.astro';
 import { bestGrade, isGap } from '../../tools/catalog/grades.js';
 import { href, nameOf, stageOf, REPO_URL } from '../lib/catalog.js';
 
@@ -56,11 +57,11 @@ const needsHelp = missing > 0 || cells.some((c) => c.gap);
   )}
   {needsHelp && <p class="gap-help"><a href={ISSUE_URL} rel="noopener noreferrer">Know where a copy is? Add it</a></p>}
   <ul class="gaplegend" aria-label="Legend">
-    {['A', 'B', 'C', 'D'].map((g) => <li><span class="grade" data-grade={g}>{g}</span> grade {g}</li>)}
-    <li><span class="grade" data-grade="X">X</span> lost</li>
-    <li><span class="grade" data-grade="none">No copy</span> no copy known</li>
-    <li><span class="grade" data-grade="none">Ungraded</span> copy not graded</li>
+    {['A', 'B', 'C', 'D', 'X'].map((g) => <li><GradeBadge grade={g} /></li>)}
+    <li><GradeBadge none /> no copy known</li>
+    <li><GradeBadge /> copy not graded</li>
     <li><span class="gaptag">GAP</span> no copy graded A–C</li>
     <li><span class="legend-empty"></span> not catalogued</li>
   </ul>
+  <QualityLegend />
 </section>
