@@ -1,0 +1,313 @@
+<title>Archive Structure Choices</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+/* Layout: one reading column of lessons, then a tabbed phone-frame mockup bench, then the questions. Single deliberate dark look (Broadcast, the direction he picked). */
+:root{
+  color-scheme:dark;
+  --bg:#07123a;--panel:#0b1a55;--panel2:#0d1f66;--line:#2a45b8;
+  --ac:#00d4ff;--ac2:#ff7a00;--gold:#ffe14d;--tx:#ffffff;--mu:#b9c8f5;
+  --T:#4aa8ff;--P:#ffd23f;--Z:#d070ff;
+  --display:'Barlow Condensed','Arial Narrow',sans-serif;
+  --body:'Barlow',system-ui,sans-serif;
+  --mono:'Share Tech Mono',ui-monospace,monospace;
+}
+body{background:var(--bg);color:var(--tx);font:16px/1.55 var(--body)}
+.wrap{max-width:980px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 60px}
+h1,h2,h3{font-family:var(--display);text-transform:uppercase;letter-spacing:.03em;text-wrap:balance;margin:0}
+h1{font-size:clamp(32px,7vw,52px);line-height:1}
+h2{font-size:28px;margin:44px 0 10px;display:flex;gap:10px;align-items:center}
+h2 .tag{background:var(--ac2);color:#000;font-size:16px;padding:2px 10px;transform:skewX(-12deg)}
+h3{font-size:21px;color:var(--ac);margin-bottom:4px}
+p{margin:0 0 10px;max-width:68ch}
+a{color:var(--ac)}
+.kicker{font:700 14px var(--display);letter-spacing:.14em;color:var(--ac2);text-transform:uppercase}
+.lede{color:var(--mu);font-size:18px;margin-top:10px}
+.lessons{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+.lesson{background:var(--panel);border-left:6px solid var(--ac2);padding:14px 16px;min-width:0}
+.lesson p{font-size:15px;color:var(--mu);margin:0 0 8px}
+.lesson p b{color:var(--tx)}
+.src{font:13px var(--mono);color:var(--mu)}
+.src a{color:var(--ac)}
+/* model diagram */
+.model{overflow-x:auto;background:#050d2b;border:2px solid var(--line);padding:14px;margin-top:12px}
+.model svg{display:block;min-width:640px;width:100%;height:auto}
+.model text{font-family:var(--display);fill:var(--tx)}
+.callout{background:#050d2b;border:2px dashed var(--line);padding:12px 14px;margin-top:12px;font-size:15px;color:var(--mu)}
+.callout b{color:var(--gold)}
+/* mockup bench */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0}
+.tabs button{min-height:48px;padding:0 18px;background:var(--panel);color:var(--tx);border:0;border-bottom:4px solid var(--line);font:700 19px var(--display);text-transform:uppercase;cursor:pointer}
+.tabs button[aria-pressed=true]{background:var(--ac);color:#000;border-color:var(--ac2)}
+.tabs button:focus-visible,.m button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.bench{display:grid;grid-template-columns:minmax(0,390px) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:760px){.bench{grid-template-columns:1fr}}
+.phone{border:3px solid var(--line);border-radius:22px;padding:10px;background:#030a24;max-width:390px;width:100%}
+.screen{border-radius:14px;overflow:hidden;background:var(--bg);min-height:640px}
+.why h3{margin-top:4px}
+.why ul{margin:6px 0 12px;padding-left:20px;color:var(--mu)}
+.why li{margin:4px 0}
+.why .good{color:#34e08f;font-weight:600}
+.why .bad{color:#ff9d3c;font-weight:600}
+.note{font-size:13px;color:var(--mu);font-style:italic}
+/* mockup internals */
+.m{font-size:13px;line-height:1.35}
+.m .hdr{display:flex;align-items:center;gap:8px;padding:10px 12px;background:#050d2b;border-bottom:3px solid var(--ac)}
+.m .logo{font:800 20px var(--display);text-transform:uppercase;letter-spacing:.05em}
+.m .logo i{font-style:normal;color:var(--ac2)}
+.m .hdr .sp{flex:1}
+.m .icon{width:36px;height:36px;display:grid;place-items:center;background:var(--panel);border:0;color:var(--tx);font:700 16px var(--display);cursor:pointer}
+.m .lg{display:flex;gap:4px;overflow-x:auto;padding:8px 12px;background:#0a1650}
+.m .lg button{flex:none;min-height:34px;padding:0 12px;background:var(--panel2);color:var(--tx);border:0;border-bottom:3px solid var(--line);font:700 15px var(--display);text-transform:uppercase;cursor:pointer}
+.m .lg button.on{background:var(--ac2);color:#000;border-color:var(--gold)}
+.m .sec{padding:10px 12px}
+.m .lbl{font:700 13px var(--display);color:var(--ac);letter-spacing:.12em;text-transform:uppercase;margin:0 0 6px}
+.m .feat{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
+.m .card{flex:none;width:210px;background:linear-gradient(135deg,#1830b8,#0a1a5a);border-top:3px solid var(--ac2);padding:8px 10px}
+.m .card .vs{font:800 18px var(--display);text-transform:uppercase}
+.m .card .vs b{color:var(--gold)}
+.m .card small{display:block;color:var(--mu)}
+.m .era{display:grid;grid-template-columns:44px 1fr;gap:6px;margin:4px 0}
+.m .era .yr{font:800 18px var(--display);color:var(--ac2)}
+.m .chips{display:flex;flex-wrap:wrap;gap:4px}
+.m .chip{background:var(--panel);border:1px solid var(--line);padding:2px 7px;font-size:12px}
+.m .chip.big{background:var(--ac);color:#000;border-color:var(--ac);font-weight:700}
+.m .chip.int{background:var(--gold);color:#000;border-color:var(--gold);font-weight:700}
+.m .new{display:grid;grid-template-columns:1fr auto;gap:4px;border-bottom:1px solid var(--line);padding:5px 0}
+.m .new span:last-child{color:var(--mu);font-size:11px}
+.m .kind{font:12px var(--mono);color:var(--ac2);text-transform:uppercase}
+.m .search{display:flex;gap:6px;align-items:center;background:#050d2b;border:2px solid var(--ac);padding:8px 10px;color:var(--mu)}
+.m .search.huge{font-size:16px;padding:12px}
+.m .mega{background:#050d2b;border-bottom:3px solid var(--ac2);padding:10px 12px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.m .mega div{background:var(--panel);padding:6px 8px}
+.m .mega b{font:800 16px var(--display);text-transform:uppercase;display:block}
+.m .mega span{color:var(--mu);font-size:11px}
+.m .facet{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0}
+.m .facet .chip{min-height:26px;display:inline-flex;align-items:center}
+.m .tiles{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.m .tile{background:linear-gradient(135deg,#1830b8,#0a1a5a);border-left:4px solid var(--ac2);padding:8px}
+.m .tile b{font:800 17px var(--display);text-transform:uppercase;display:block}
+.m .tile span{color:var(--mu);font-size:11px}
+.m .res{border-left:4px solid var(--ac2);background:var(--panel);padding:6px 8px;margin:4px 0}
+.m .res .kind{float:right}
+.m .band{background:linear-gradient(90deg,#1534b0,#0b1d70);border-left:6px solid var(--ac);padding:6px 8px;margin:4px 0;font:700 15px var(--display);text-transform:uppercase}
+.m .band small{font:400 11px var(--body);color:var(--mu);text-transform:none;display:block}
+.m .spine{border-left:3px solid var(--ac2);margin-left:6px;padding-left:10px}
+.m .yearhd{font:800 22px var(--display);color:var(--ac2);margin:8px 0 2px -22px;display:flex;align-items:center;gap:6px}
+.m .yearhd::before{content:"";width:9px;height:9px;background:var(--ac2);border:2px solid var(--bg);outline:2px solid var(--ac2)}
+.m .drawer{position:relative;background:#050d2b;border-top:3px solid var(--ac);padding:8px 12px}
+.m .ex{font-size:10px;color:var(--mu);text-align:center;padding:6px;border-top:1px solid var(--line)}
+/* questions */
+.q{background:var(--panel);border-left:6px solid var(--ac);padding:12px 16px;margin:10px 0}
+.q h3{color:var(--tx)}
+.q .rec{color:var(--gold);font-weight:600}
+.q p{color:var(--mu);font-size:15px}
+.reply{background:#050d2b;border:2px solid var(--ac2);padding:12px 16px;margin-top:16px}
+code{font-family:var(--mono);background:#050d2b;padding:1px 5px;color:var(--gold)}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
+</style>
+
+<div class="wrap">
+  <div class="kicker">Broodwar Archive · M2 shape · round 3</div>
+  <h1>How the archive organizes itself</h1>
+  <p class="lede">You asked how to fit the big leagues, small cups, WCG, showmatches and non-match material into one site without it collapsing. Below is what four kinds of real archives do, the data shape that follows from it, and three ways the navigation could look. Pick one at the bottom.</p>
+
+  <h2><span class="tag">1</span>What other archives teach</h2>
+  <div class="lessons">
+    <div class="lesson">
+      <h3>Folders for "where it lives", filters for "finding it"</h3>
+      <p>Libraries and museums file things in one shallow tree (collection → series → item), because a thing can only sit in one place. Then they add <b>facets</b>: independent labels like year, kind or subject you can mix freely. One tree can't also answer "everything with BoxeR in it", so that comes from labels and links, never folders.</p>
+      <div class="src"><a href="https://dictionary.archivists.org/entry/series.html">SAA glossary</a> · <a href="https://en.wikipedia.org/wiki/Faceted_classification">faceted classification</a></div>
+    </div>
+    <div class="lesson">
+      <h3>Only recurring things get a series</h3>
+      <p>Liquipedia gives OSL one <b>series page</b> with every season under it, and keeps separate <b>Major</b> and <b>Minor</b> tournament lists plus a showmatch list. A one-off cup isn't forced into a family: it just carries a tier and a year. That's your "quick menus for the big leagues, listing for the rest".</p>
+      <div class="src"><a href="https://liquipedia.net/starcraft/Major_Tournaments/2">Major</a> · <a href="https://liquipedia.net/starcraft/Minor_Tournaments">Minor</a></div>
+    </div>
+    <div class="lesson">
+      <h3>A series has many names</h3>
+      <p>MusicBrainz treats a festival or award as a <b>Series</b> with aliases and ordered members. OSL is that: "2001 SKY", "Coca-Cola", "Olympus" are season names, the series identity never changes. Sponsor names live on the season, not the series.</p>
+      <div class="src"><a href="https://musicbrainz.org/doc/Series">MusicBrainz Series</a></div>
+    </div>
+    <div class="lesson">
+      <h3>One flexible item beats many special types</h3>
+      <p>Discogs and MusicBrainz don't invent a new structure per thing; they use a few entity types joined by <b>typed links</b> ("interview <i>about</i> BoxeR", "photo <i>from</i> 2001 SKY OSL final"). New kinds of material = a new word in a list, not a redesign. That covers "whatever I later deem worth archiving".</p>
+      <div class="src"><a href="https://musicbrainz.org/doc/MusicBrainz_Database/Schema">MusicBrainz schema</a> · <a href="https://support.discogs.com/hc/articles/360005055493-Database-Guidelines-16-Master-Release">Discogs masters</a></div>
+    </div>
+    <div class="lesson">
+      <h3>Search can stay serverless for a long time</h3>
+      <p>Up to roughly 5–8 thousand games, one prebuilt list filtered in the browser gives exact filter counts instantly. Past that, <b>Pagefind</b> (free, static) loads only the slice it needs and has live filter counts built in. Build one search shape now so the swap later is invisible.</p>
+      <div class="src"><a href="https://pagefind.app/docs/filtering/">Pagefind filters</a> · size threshold is our estimate, to spike-test</div>
+    </div>
+    <div class="lesson">
+      <h3>Not being the bottleneck</h3>
+      <p>Big wikis let anyone <b>propose</b>, but approving is a granted right, and machines check the boring parts. For us: automatic checks on every submission now; trusted reviewers per era/league via GitHub's CODEOWNERS once people have a track record; a no-git submission form only when non-coders show up. Voting systems need hundreds of editors, so skip them.</p>
+      <div class="src"><a href="https://musicbrainz.org/doc/Editing_FAQ">MusicBrainz editing</a> · <a href="https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners">CODEOWNERS</a></div>
+    </div>
+  </div>
+
+  <h2><span class="tag">2</span>The shape that follows</h2>
+  <p>Five kinds of record. Arrows are links, not folders: one interview can point at a player, a match and an event at once, and shows up on all three pages.</p>
+  <div class="model">
+    <svg viewBox="0 0 900 300" role="img" aria-label="Data model: Series contains Events, Events contain Matches; Players and Maps link to Matches; Items link to anything">
+      <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff7a00"/></marker>
+      <marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#00d4ff"/></marker></defs>
+      <rect x="20" y="30" width="190" height="78" fill="#0d1f66" stroke="#00d4ff" stroke-width="2"/>
+      <text x="36" y="60" font-size="24" font-weight="800">SERIES</text>
+      <text x="36" y="86" font-size="15" fill="#b9c8f5">OSL · MSL · Proleague · WCG</text>
+      <text x="36" y="102" font-size="13" fill="#ffe14d">only for recurring things</text>
+      <rect x="300" y="30" width="230" height="78" fill="#0d1f66" stroke="#00d4ff" stroke-width="2"/>
+      <text x="316" y="60" font-size="24" font-weight="800">EVENT</text>
+      <text x="316" y="86" font-size="15" fill="#b9c8f5">2001 SKY OSL · a one-off cup</text>
+      <text x="316" y="102" font-size="13" fill="#ffe14d">tier · kind · year · tags</text>
+      <rect x="620" y="30" width="250" height="78" fill="#0d1f66" stroke="#00d4ff" stroke-width="2"/>
+      <text x="636" y="60" font-size="24" font-weight="800">MATCH → GAMES</text>
+      <text x="636" y="86" font-size="15" fill="#b9c8f5">Garimto 3–2 BoxeR</text>
+      <text x="636" y="102" font-size="13" fill="#ffe14d">copies, best one marked</text>
+      <line x1="210" y1="69" x2="296" y2="69" stroke="#00d4ff" stroke-width="3" marker-end="url(#ab)"/>
+      <line x1="530" y1="69" x2="616" y2="69" stroke="#00d4ff" stroke-width="3" marker-end="url(#ab)"/>
+      <text x="222" y="58" font-size="13" fill="#00d4ff">has seasons</text>
+      <text x="548" y="58" font-size="13" fill="#00d4ff">has matches</text>
+      <rect x="620" y="190" width="250" height="70" fill="#0b1a55" stroke="#2a45b8" stroke-width="2"/>
+      <text x="636" y="220" font-size="22" font-weight="800">PLAYER · MAP</text>
+      <text x="636" y="244" font-size="14" fill="#b9c8f5">own pages, reached by links</text>
+      <line x1="745" y1="186" x2="745" y2="112" stroke="#ff7a00" stroke-width="3" stroke-dasharray="6 4" marker-end="url(#ar)"/>
+      <rect x="20" y="190" width="420" height="70" fill="#0b1a55" stroke="#ff7a00" stroke-width="2"/>
+      <text x="36" y="220" font-size="22" font-weight="800">ITEM <tspan fill="#ff7a00" font-size="15">kind = article · interview · photo · replay pack · showmatch VOD · …</tspan></text>
+      <text x="36" y="244" font-size="14" fill="#b9c8f5">anything else worth keeping; links to any record above</text>
+      <line x1="440" y1="225" x2="614" y2="225" stroke="#ff7a00" stroke-width="3" stroke-dasharray="6 4" marker-end="url(#ar)"/>
+      <line x1="300" y1="186" x2="380" y2="112" stroke="#ff7a00" stroke-width="3" stroke-dasharray="6 4" marker-end="url(#ar)"/>
+      <line x1="460" y1="210" x2="640" y2="112" stroke="#ff7a00" stroke-width="3" stroke-dasharray="6 4" marker-end="url(#ar)"/>
+      <text x="470" y="290" font-size="13" fill="#ff7a00">dashed = "about / from / features" links</text>
+    </svg>
+  </div>
+  <div class="callout"><b>Tier</b> is a hand-set label (big / mid / small) and needs one written rule so it stays consistent. Proposed rule: <b>big</b> = televised individual or team league from OGN/MBC Game, or WCG; <b>mid</b> = other broadcast cups and invitationals; <b>small</b> = online and community cups. It decides what's prominent, never what's allowed in.</div>
+
+  <h2><span class="tag">3</span>Three ways to navigate it</h2>
+  <p>Same data, three different front doors. Each phone shows the home screen plus where Find lives. All event names except 2001 SKY OSL are placeholders.</p>
+  <div class="tabs" role="group" aria-label="Mockup">
+    <button id="t-a" aria-pressed="true" data-k="a">A · League menu</button>
+    <button id="t-b" aria-pressed="false" data-k="b">B · Timeline spine</button>
+    <button id="t-c" aria-pressed="false" data-k="c">C · Search hub</button>
+  </div>
+
+  <div class="bench" data-v="a">
+    <div class="phone"><div class="screen m">
+      <div class="hdr"><span class="logo">BW <i>Archive</i></span><span class="sp"></span><button class="icon" aria-label="Find">⌕</button><button class="icon" aria-label="Menu">☰</button></div>
+      <div class="lg"><button class="on">OSL</button><button>MSL</button><button>Proleague</button><button>WCG</button><button>All events</button></div>
+      <div class="mega">
+        <div><b>2001 SKY</b><span>Garimto champion · 58 games</span></div>
+        <div><b>2001 Coca-Cola</b><span>placeholder season</span></div>
+        <div><b>2002 NATE</b><span>placeholder season</span></div>
+        <div><b>All OSL seasons →</b><span>by year</span></div>
+      </div>
+      <div class="sec"><p class="lbl">Start here · featured</p>
+        <div class="feat">
+          <div class="card"><div class="vs"><b>Garimto</b> 3–2 BoxeR</div><small>2001 SKY OSL final · 5 games</small></div>
+          <div class="card"><div class="vs"><b>Player</b> vs Player</div><small>placeholder pick</small></div>
+        </div></div>
+      <div class="sec"><p class="lbl">Browse by year</p>
+        <div class="era"><span class="yr">2001</span><div class="chips"><span class="chip big">SKY OSL</span><span class="chip int">WCG 2001</span><span class="chip">small cup</span><span class="chip">showmatch</span></div></div>
+        <div class="era"><span class="yr">2002</span><div class="chips"><span class="chip big">OSL</span><span class="chip big">MSL</span><span class="chip">invitational</span></div></div>
+      </div>
+      <div class="sec"><p class="lbl">Latest additions</p>
+        <div class="new"><span><span class="kind">match</span> Yellow vs TheMarine</span><span>Nov 8</span></div>
+        <div class="new"><span><span class="kind">interview</span> placeholder item</span><span>Nov 6</span></div>
+      </div>
+      <div class="ex">Find = ⌕ in the header, opens the full filter page</div>
+    </div></div>
+    <div class="why">
+      <h3>A · Big leagues as a menu bar</h3>
+      <p>The league row under the header is always there; tap OSL and its seasons drop down. "All events" is the listing for everything else. Find is an icon that opens the full filter page.</p>
+      <ul>
+        <li><span class="good">Good:</span> fastest route for the 80% case (someone hunting an OSL final).</li>
+        <li><span class="good">Good:</span> closest to your own instinct and to Liquipedia.</li>
+        <li><span class="bad">Cost:</span> small cups and items sit one tap deeper; the menu bar grows if many series earn a slot.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="bench" data-v="b" hidden>
+    <div class="phone"><div class="screen m">
+      <div class="hdr"><span class="logo">BW <i>Archive</i></span><span class="sp"></span><button class="icon" aria-label="Find">⌕</button></div>
+      <div class="sec"><p class="lbl">Start here · featured</p>
+        <div class="feat">
+          <div class="card"><div class="vs"><b>Garimto</b> 3–2 BoxeR</div><small>2001 SKY OSL final</small></div>
+          <div class="card"><div class="vs"><b>Player</b> vs Player</div><small>placeholder pick</small></div>
+        </div></div>
+      <div class="sec"><p class="lbl">The timeline</p>
+        <div class="spine">
+          <div class="yearhd">2001</div>
+          <div class="band">2001 SKY OSL<small>big · OSL series · 58 games · final Dec 2001</small></div>
+          <div class="band" style="border-color:var(--gold)">WCG 2001<small>big · international · placeholder</small></div>
+          <div class="chips"><span class="chip">small cup</span><span class="chip">small cup</span><span class="chip">showmatch</span><span class="chip">photo set</span></div>
+          <div class="yearhd">2002</div>
+          <div class="band">OSL season<small>big · placeholder</small></div>
+          <div class="band">MSL season<small>big · placeholder</small></div>
+          <div class="chips"><span class="chip">invitational</span><span class="chip">interview</span></div>
+        </div></div>
+      <div class="drawer"><p class="lbl">Jump to</p><div class="chips"><span class="chip big">OSL</span><span class="chip big">MSL</span><span class="chip big">Proleague</span><span class="chip int">WCG</span><span class="chip">1999</span><span class="chip">2000</span><span class="chip">2001</span><span class="chip">…</span></div></div>
+      <div class="ex">Find = ⌕ in the header; league chips just filter the timeline</div>
+    </div></div>
+    <div class="why">
+      <h3>B · Everything on one timeline</h3>
+      <p>Home is the history itself: each year lists its big events as full-width bands, and small cups, showmatches and items as chips under them. League shortcuts are filters on the same timeline, not separate pages.</p>
+      <ul>
+        <li><span class="good">Good:</span> a WCG run or a tiny cup sits right next to the OSL of the same year; nothing is second-class.</li>
+        <li><span class="good">Good:</span> reads as an archive of an era, good for newcomers.</li>
+        <li><span class="bad">Cost:</span> long scroll once there are 15 years of content; returning fans need the jump bar to go straight to a league.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="bench" data-v="c" hidden>
+    <div class="phone"><div class="screen m">
+      <div class="hdr"><span class="logo">BW <i>Archive</i></span><span class="sp"></span><button class="icon" aria-label="Menu">☰</button></div>
+      <div class="sec">
+        <div class="search huge">⌕ Search players, events, maps…</div>
+        <div class="facet"><span class="chip big">Matches</span><span class="chip">Items</span><span class="chip">PvT</span><span class="chip">2001</span><span class="chip">Big events</span><span class="chip">+ filters</span></div>
+      </div>
+      <div class="sec"><p class="lbl">Collections</p>
+        <div class="tiles">
+          <div class="tile"><b>OSL</b><span>1 season so far</span></div>
+          <div class="tile"><b>MSL</b><span>placeholder</span></div>
+          <div class="tile"><b>Proleague</b><span>placeholder</span></div>
+          <div class="tile"><b>WCG</b><span>placeholder</span></div>
+          <div class="tile"><b>Cups &amp; invitationals</b><span>every smaller event</span></div>
+          <div class="tile"><b>Stories &amp; media</b><span>interviews, photos…</span></div>
+        </div></div>
+      <div class="sec"><p class="lbl">Start here · featured</p>
+        <div class="res"><span class="kind">match</span><b>Garimto 3–2 BoxeR</b><br><span style="color:var(--mu)">2001 SKY OSL final</span></div>
+        <div class="res"><span class="kind">item</span><b>placeholder interview</b></div>
+      </div>
+      <div class="ex">Find IS the home page; leagues are pinned collections</div>
+    </div></div>
+    <div class="why">
+      <h3>C · Search is the front door</h3>
+      <p>Like a library catalog: a big search box with filter chips on top, then tiles for the big leagues and two catch-all collections. Every page you reach is really a saved search.</p>
+      <ul>
+        <li><span class="good">Good:</span> scales best to tens of thousands of games; one system for everything.</li>
+        <li><span class="good">Good:</span> "Cups &amp; invitationals" and "Stories &amp; media" get equal billing with OSL.</li>
+        <li><span class="bad">Cost:</span> less sense of place and history; a newcomer who doesn't know names has to start from tiles.</li>
+      </ul>
+    </div>
+  </div>
+  <p class="note">All three keep your Broadcast look and the race-matrix Find page; they differ in what greets you and how leagues are reached.</p>
+
+  <h2><span class="tag">4</span>Your answers</h2>
+  <div class="q"><h3>Q11 · Which front door?</h3><p><span class="rec">My pick: A, with B's timeline as the "Browse by year" section on home.</span> It matches your instinct (quick league menus + a listing for the rest), and the timeline keeps small events and WCG visible instead of buried. C's search lives behind the ⌕ either way.</p></div>
+  <div class="q"><h3>Q12 · The data shape in section 2</h3><p><span class="rec">Yes:</span> series only for recurring leagues, every event tagged with tier/kind/year, one flexible "item" for everything that isn't a match.</p></div>
+  <div class="q"><h3>Q13 · The tier rule in the yellow box</h3><p><span class="rec">Yes as written;</span> you can move any event between tiers by hand later.</p></div>
+  <div class="q"><h3>Q14 · Contributors, stage 1 now</h3><p><span class="rec">Yes:</span> M2 adds automatic checks on every submitted file plus a short "how to contribute" page. Trusted reviewers and a submission form wait until people actually show up.</p></div>
+  <div class="reply">Reply in chat like <code>A+B, yes, yes, yes</code>, or change any part. After that I write the plan for M2.</div>
+</div>
+
+<script>
+const btns=[...document.querySelectorAll('.tabs button')];
+const views=[...document.querySelectorAll('.bench')];
+btns.forEach(b=>b.addEventListener('click',()=>{
+  btns.forEach(x=>x.setAttribute('aria-pressed',String(x===b)));
+  views.forEach(v=>{v.hidden=v.dataset.v!==b.dataset.k});
+}));
+</script>
