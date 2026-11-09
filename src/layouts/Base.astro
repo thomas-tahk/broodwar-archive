@@ -1,0 +1,34 @@
+---
+import { href, REPO_URL } from '../lib/catalog.js';
+import '../styles/site.css';
+const { title, nav = null } = Astro.props;
+const links = [['', 'Season', 'season'], ['find/', 'Find a game', 'find']];
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title} · Brood War Archive</title>
+    <script is:inline>document.documentElement.classList.add('js')</script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;600;700&family=Noto+Sans+KR:wght@400;700&display=swap" />
+  </head>
+  <body>
+    <header class="bar">
+      <a class="brand" href={href('')}>Brood War <span>Archive</span></a>
+      <nav class="nav" aria-label="Main">
+        {links.map(([p, label, key]) => <a href={href(p)} aria-current={nav === key ? 'page' : undefined}>{label}</a>)}
+      </nav>
+    </header>
+    <main><slot /></main>
+    <footer class="foot">
+      <p>Link index. No video is hosted here: players are embedded from YouTube or archive.org, and every “Watch on” link opens the original.</p>
+      <p class="foot-links">
+        <a href={`${REPO_URL}/blob/main/CONTRIBUTING.md`} rel="noopener noreferrer">Help fill the gaps</a>
+        <a href={REPO_URL} rel="noopener noreferrer">Source on GitHub</a>
+      </p>
+    </footer>
+  </body>
+</html>

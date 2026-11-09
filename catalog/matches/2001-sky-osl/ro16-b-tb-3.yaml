@@ -1,0 +1,42 @@
+# 2001 SKY OSL. Imported 2026-11-01 from Liquipedia + OGN's YouTube playlists; every field cites a source below.
+id: ro16-b-tb-3
+event: 2001-sky-osl
+stage: Round of 16 tiebreaker
+group: B
+date: 2001-11-28
+format: Bo1
+players: [eugene, st-eagle]
+winner: eugene
+score: "1-0"
+games:
+  - set: 1
+    map: neo-vertigo
+    races: [Z, T]
+    winner: eugene
+    lost: false
+    copies:
+      - url: https://www.youtube.com/watch?v=eqqTmauWi2w
+        kind: ogn-official
+        title: "[2001.11.29] 2001 SKY배 온게임넷 스타리그 16강 재경기 B조 재경기 3경기 (네오 버티고) 안형모(Zerg) vs 김대건(Terran)"
+        uploader: OGN
+        resolution: 480p
+        fps: 30
+        grade: B
+        grade_note: "Provisional, from the 2026-10-10 project survey: OGN's official upload is a clean re-encode (480p/30p, already deinterlaced). 27:00 long; not yet watched end to end."
+        segment: null
+      - url: https://www.youtube.com/watch?v=sWq7f8SwY0k
+        kind: ogn-ai-upscale
+        title: "AI 업스케일 | [2001.11.28] 2001 SKY배 온게임넷 스타리그 16강 재경기 B조 3경기 (네오 버티고) 안형모(Zerg) vs 김대건(Terran)"
+        uploader: OGN
+        resolution: 1080p
+        fps: 30
+        grade: null
+        grade_note: "OGN's own 2026 AI upscale of the broadcast, 27:05 long. Not graded: upscaling changes the picture, so it needs a side-by-side with the original first."
+        segment: null
+sources:
+  - url: https://liquipedia.net/starcraft/index.php?title=2001_SKY_OSL&oldid=532826
+    note: "Liquipedia event page: players, races, maps, winners. OGN's two uploads disagree on the date (2001-11-29 vs 2001-11-28); the AI-upscale title matches Liquipedia elsewhere in this event."
+  - url: https://www.youtube.com/playlist?list=PLWQeRMoEALvo2MhFXLG3MD-0WxgM0FG9r
+    note: "OGN official playlist: copies and video titles"
+field_sources:
+  date: https://www.youtube.com/watch?v=sWq7f8SwY0k

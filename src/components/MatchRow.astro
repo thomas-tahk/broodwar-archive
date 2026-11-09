@@ -1,0 +1,19 @@
+---
+// One match as a broadcast score bar. Whole row is the link.
+import Race from './Race.astro';
+import { maps, playerOf, sideRace, scoreText, copyCount, ymd, href } from '../lib/catalog.js';
+
+const { match } = Astro.props;
+const [a, b] = match.players.map(playerOf);
+const mapNames = [...new Set(match.games.map((g) => (g.map ? maps.get(g.map)?.name ?? g.map : null)).filter(Boolean))];
+const videos = copyCount(match);
+---
+<a class="row" href={href(`matches/${match.event}/${match.id}/`)}>
+  <span class="when">{ymd(match.date)}<br />{match.format ?? 'Format unknown'}</span>
+  <span class="sb">
+    <span class={match.winner && match.winner === a.id ? 'win' : ''}><Race race={sideRace(match, 0)} /> {a.name ?? 'Unknown'}</span>
+    <b>{scoreText(match)}</b>
+    <span class={match.winner && match.winner === b.id ? 'win' : ''}>{b.name ?? 'Unknown'} <Race race={sideRace(match, 1)} /></span>
+  </span>
+  <span class="info">{mapNames.length ? mapNames.join(' · ') : 'Map unknown'} <span class={`vid ${videos ? '' : 'none'}`}>{videos ? `▶ ${videos} video${videos === 1 ? '' : 's'}` : 'No video known'}</span></span>
+</a>

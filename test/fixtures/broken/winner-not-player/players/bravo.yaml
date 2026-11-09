@@ -1,0 +1,6 @@
+# Test fixture — fictional.
+id: bravo
+name: Bravo
+hangul: null
+race: P
+sources: [{url: https://example.com/players/bravo}]

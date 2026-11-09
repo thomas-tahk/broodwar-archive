@@ -1,0 +1,134 @@
+---
+import Base from '../../../layouts/Base.astro';
+import GradeBadge from '../../../components/GradeBadge.astro';
+import MatchHero from '../../../components/MatchHero.astro';
+import QualityLegend from '../../../components/QualityLegend.astro';
+import Race from '../../../components/Race.astro';
+import Sources from '../../../components/Sources.astro';
+import { allMatches, events, maps, playerOf, host, href, embedOf, siteName, lengthOf, COPY_KINDS } from '../../../lib/catalog.js';
+import { bestGrade } from '../../../../tools/catalog/grades.js';
+
+export function getStaticPaths() {
+  return allMatches.map((match) => ({ params: { event: match.event, id: match.id }, props: { match } }));
+}
+const { match } = Astro.props;
+const event = events.find((e) => e.id === match.event);
+const sides = match.players.map(playerOf);
+const [a, b] = sides;
+const raceOf = (g, i) => g.races?.[i] ?? null;
+const mapName = (g) => (g.map ? maps.get(g.map)?.name ?? g.map : 'Unknown');
+const mapVersion = (g) => (g.map ? maps.get(g.map)?.version ?? null : null);
+const winnerName = (g) => (g.winner ? playerOf(g.winner).name ?? 'Unknown' : 'Unknown');
+const kindName = (c) => COPY_KINDS[c.kind] ?? c.kind;
+const pickerSub = (c) => [c.resolution, c.fps != null ? `${c.fps} fps` : null, lengthOf(c)].filter(Boolean).join(' · ') || 'Details unknown';
+const playable = (g) => (g.copies ?? []).filter((c) => embedOf(c.url, c.segment));
+const refSources = [
+  ...sides.map((p) => ({ label: `Player ${p.name ?? p.id}`, sources: p.sources, fieldSources: p.field_sources })),
+  ...[...new Set(match.games.map((g) => g.map).filter(Boolean))].map((id) => ({ label: `Map ${maps.get(id)?.name ?? id}`, sources: maps.get(id)?.sources, fieldSources: maps.get(id)?.field_sources })),
+].filter((r) => r.sources?.length);
+---
+<Base title={`${a.name ?? 'Unknown'} vs ${b.name ?? 'Unknown'}`} nav="season">
+  <p class="crumbs"><a href={href(`events/${match.event}/`)}>&larr; {event?.name ?? match.event}</a></p>
+  <MatchHero match={match} />
+  <p class="meta">Date: {match.date ?? 'Unknown'} · Format: {match.format ?? 'Unknown'} · Result: {match.winner ? `${playerOf(match.winner).name ?? 'Unknown'} won${match.score ? ` (${match.score})` : ''}` : 'Unknown'}</p>
+
+  <h2>Games ({match.games.length})</h2>
+  <div class="gs js-only grid" role="group" aria-label="Choose a game">
+    {match.games.map((g, i) => (
+      <button type="button" data-game={g.set} aria-pressed={i === 0 ? 'true' : 'false'}>
+        <span class="cn">Game {g.set} · {mapName(g)}</span>
+        <small>{raceOf(g, 0) ?? '?'} v {raceOf(g, 1) ?? '?'} · won by {winnerName(g)}</small>
+      </button>
+    ))}
+  </div>
+
+  {match.games.map((g) => {
+    const copies = g.copies ?? [];
+    const options = playable(g);
+    const first = options[0];
+    return (
+      <section class="game" id={`game-${g.set}`} data-game={g.set} aria-label={`Game ${g.set}`}>
+        <header>
+          <h3>Game {g.set}</h3>
+          <span class="mono">Map: {mapName(g)}{mapVersion(g) && ` (${mapVersion(g)})`}</span>
+          <span class="mono">Winner: {winnerName(g)}</span>
+          <span class="mono">{sides.map((_, i) => <Race race={raceOf(g, i)} />)}</span>
+          <GradeBadge grade={bestGrade(g)} none={copies.length === 0} />
+        </header>
+        {g.lost && <p class="nocopy">Footage known lost.</p>}
+        {copies.length === 0 && !g.lost && <p class="nocopy">No copy known.</p>}
+        {first && (
+          <div class="js-only">
+            <div class="ply">
+              <iframe title={`Game ${g.set} video player`} data-src={embedOf(first.url, first.segment)} loading="lazy" allow="accelerometer; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
+            </div>
+            <div class="cp" role="group" aria-label={`Choose a copy of game ${g.set}`}>
+              {options.map((c, ci) => (
+                <button type="button" data-embed={embedOf(c.url, c.segment)} data-open={c.url} data-site={siteName(c.url)} aria-pressed={ci === 0 ? 'true' : 'false'}>
+                  {kindName(c)}<small>{pickerSub(c)}</small>
+                </button>
+              ))}
+            </div>
+            <a class="openlink" data-openlink href={first.url} target="_blank" rel="noopener noreferrer">Open on {siteName(first.url)} &#8599;</a>
+          </div>
+        )}
+        {copies.length > 0 && (
+          <details class="cdet" open={!first}>
+            <summary>Copy details ({copies.length})</summary>
+            <ul class="copies">
+              {copies.map((c) => (
+                <li class="copy">
+                  <GradeBadge grade={c.grade} /> <span class="mono">{kindName(c)}</span>
+                  <dl>
+                    <dt>Title</dt><dd>{c.title ?? 'Unknown'}</dd>
+                    <dt>Uploader</dt><dd>{c.uploader ?? 'Unknown'}</dd>
+                    <dt>Quality</dt><dd>{c.resolution ?? 'Unknown'} @ {c.fps != null ? `${c.fps} fps` : 'Unknown fps'}</dd>
+                    <dt>Grade note</dt><dd>{c.grade_note ?? 'Unknown'}</dd>
+                    <dt>Segment</dt><dd>{c.segment ? `${c.segment.start} – ${c.segment.end}` : 'Whole upload / unknown'}</dd>
+                  </dl>
+                  <a class="watch" href={c.url} target="_blank" rel="noopener noreferrer" aria-label={`Watch game ${g.set}, ${kindName(c)}, grade ${c.grade ?? 'ungraded'}, on ${host(c.url)}`}>Watch on {host(c.url)} &#8599;</a>
+                </li>
+              ))}
+            </ul>
+          </details>
+        )}
+      </section>
+    );
+  })}
+  <QualityLegend />
+  <Sources sources={match.sources} fieldSources={match.field_sources} />
+  {refSources.map((r) => <Sources heading={r.label} sources={r.sources} fieldSources={r.fieldSources} />)}
+<script is:inline>
+  (function () {
+    var pickers = document.querySelectorAll('.gs button');
+    var games = document.querySelectorAll('section.game');
+    function load(game) {
+      var f = game.querySelector('iframe');
+      if (f && !f.getAttribute('src')) f.setAttribute('src', f.dataset.src);
+    }
+    function select(set) {
+      var found = false;
+      games.forEach(function (g) { if (g.dataset.game === String(set)) found = true; });
+      if (!found) set = games[0].dataset.game;
+      pickers.forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.game === String(set)); });
+      games.forEach(function (g) {
+        var on = g.dataset.game === String(set);
+        g.hidden = !on;
+        if (on) load(g);
+      });
+    }
+    pickers.forEach(function (b) { b.addEventListener('click', function () { select(b.dataset.game); history.replaceState(null, '', '#game-' + b.dataset.game); }); });
+    document.querySelectorAll('.cp button').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var game = b.closest('section.game');
+        game.querySelectorAll('.cp button').forEach(function (o) { o.setAttribute('aria-pressed', o === b); });
+        game.querySelector('iframe').setAttribute('src', b.dataset.embed);
+        var link = game.querySelector('[data-openlink]');
+        link.href = b.dataset.open;
+        link.textContent = 'Open on ' + b.dataset.site + ' \u2197';
+      });
+    });
+    if (games.length) select((location.hash.match(/^#game-(\d+)$/) || [])[1] || games[0].dataset.game);
+  })();
+</script>
+</Base>

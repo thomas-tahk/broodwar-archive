@@ -1,0 +1,88 @@
+# 2001 SKY OSL. Imported 2026-11-01 from Liquipedia + OGN's YouTube playlists; every field cites a source below.
+id: sf-2
+event: 2001-sky-osl
+stage: Semifinal
+group: null
+date: 2001-12-21
+format: Bo3
+players: [boxer, themarine]
+winner: boxer
+score: "2-1"
+games:
+  - set: 1
+    map: crimson-isles
+    races: [T, T]
+    winner: boxer
+    lost: false
+    copies:
+      - url: https://www.youtube.com/watch?v=_nneJ-L7CRU
+        kind: ogn-official
+        title: "[2001.12.21] 2001 SKY배 온게임넷 스타리그 4강 B조 1경기 (크림슨 아일) 임요환(Terran) vs 김정민(Terran)"
+        uploader: OGN
+        resolution: 480p
+        fps: 30
+        grade: B
+        grade_note: "Provisional, from the 2026-10-10 project survey: OGN's official upload is a clean re-encode (480p/30p, already deinterlaced). 53:27 long; not yet watched end to end."
+        segment: null
+      - url: https://www.youtube.com/watch?v=tDp5UWM8ySc
+        kind: ogn-ai-upscale
+        title: "AI 업스케일 | [2001.12.21] 2001 SKY배 온게임넷 스타리그 4강 B조 1경기 (크림슨 아일즈) 임요환(Terran) vs 김정민(Terran)"
+        uploader: OGN
+        resolution: 1080p
+        fps: 30
+        grade: null
+        grade_note: "OGN's own 2026 AI upscale of the broadcast, 53:31 long. Not graded: upscaling changes the picture, so it needs a side-by-side with the original first."
+        segment: null
+  - set: 2
+    map: incubus
+    races: [T, T]
+    winner: themarine
+    lost: false
+    copies:
+      - url: https://www.youtube.com/watch?v=GfN9PT3eND0
+        kind: ogn-official
+        title: "[2001.12.21] 2001 SKY배 온게임넷 스타리그 4강 B조 2경기 (인큐버스) 임요환(Terran) vs 김정민(Terran)"
+        uploader: OGN
+        resolution: 480p
+        fps: 30
+        grade: B
+        grade_note: "Provisional, from the 2026-10-10 project survey: OGN's official upload is a clean re-encode (480p/30p, already deinterlaced). 33:55 long; not yet watched end to end."
+        segment: null
+      - url: https://www.youtube.com/watch?v=UmyXJIpcf98
+        kind: ogn-ai-upscale
+        title: "AI 업스케일 | [2001.12.21] 2001 SKY배 온게임넷 스타리그 4강 B조 2경기 (인큐버스) 임요환(Terran) vs 김정민(Terran)"
+        uploader: OGN
+        resolution: 1080p
+        fps: 30
+        grade: null
+        grade_note: "OGN's own 2026 AI upscale of the broadcast, 33:56 long. Not graded: upscaling changes the picture, so it needs a side-by-side with the original first."
+        segment: null
+  - set: 3
+    map: silent-vortex
+    races: [T, T]
+    winner: boxer
+    lost: false
+    copies:
+      - url: https://www.youtube.com/watch?v=7QzCZQdvCyA
+        kind: ogn-official
+        title: "[2001.12.21] 2001 SKY배 온게임넷 스타리그 4강 B조 3경기 (사일런트 볼텍스) 임요환(Terran) vs 김정민(Terran)"
+        uploader: OGN
+        resolution: 480p
+        fps: 30
+        grade: B
+        grade_note: "Provisional, from the 2026-10-10 project survey: OGN's official upload is a clean re-encode (480p/30p, already deinterlaced). 30:49 long; not yet watched end to end."
+        segment: null
+      - url: https://www.youtube.com/watch?v=_hLAbs5-RWg
+        kind: ogn-ai-upscale
+        title: "AI 업스케일 | [2001.12.21] 2001 SKY배 온게임넷 스타리그 4강 B조 3경기 (사일런트 볼텍스) 임요환(Terran) vs 김정민(Terran)"
+        uploader: OGN
+        resolution: 1080p
+        fps: 30
+        grade: null
+        grade_note: "OGN's own 2026 AI upscale of the broadcast, 38:24 long. Not graded: upscaling changes the picture, so it needs a side-by-side with the original first."
+        segment: null
+sources:
+  - url: https://liquipedia.net/starcraft/index.php?title=2001_SKY_OSL&oldid=532826
+    note: "Liquipedia event page: players, races, maps, winners, date."
+  - url: https://www.youtube.com/playlist?list=PLWQeRMoEALvo2MhFXLG3MD-0WxgM0FG9r
+    note: "OGN official playlist: copies and video titles"

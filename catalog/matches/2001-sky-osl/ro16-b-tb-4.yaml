@@ -1,0 +1,20 @@
+# 2001 SKY OSL. Imported 2026-11-01 from Liquipedia + OGN's YouTube playlists; every field cites a source below.
+id: ro16-b-tb-4
+event: 2001-sky-osl
+stage: Round of 16 tiebreaker
+group: B
+date: null
+format: Bo1
+players: [st-eagle, grrrr]
+winner: st-eagle
+score: "1-0"
+games:
+  - set: 1
+    map: silent-vortex
+    races: [T, P]
+    winner: st-eagle
+    lost: false
+    copies: []
+sources:
+  - url: https://liquipedia.net/starcraft/index.php?title=2001_SKY_OSL&oldid=532826
+    note: "Liquipedia event page: players, races, maps, winners, date."

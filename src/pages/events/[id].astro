@@ -1,0 +1,25 @@
+---
+import Base from '../../layouts/Base.astro';
+import GapGrid from '../../components/GapGrid.astro';
+import Season from '../../components/Season.astro';
+import Sources from '../../components/Sources.astro';
+import { events, matchesOf, href } from '../../lib/catalog.js';
+
+export function getStaticPaths() {
+  return events.map((event) => ({ params: { id: event.id }, props: { event } }));
+}
+const { event } = Astro.props;
+const matches = matchesOf(event.id);
+---
+<Base title={event.name} nav="season">
+  <p class="crumbs"><a href={href('')}>&larr; Season</a></p>
+  <p class="kicker">Event // {event.league ?? 'League unknown'}</p>
+  <h1>{event.name}</h1>
+  <p class="meta">
+    {event.year ?? 'Unknown'} · Broadcaster: {event.broadcaster ?? 'Unknown'} · Sponsor: {event.sponsor ?? 'Unknown'} · Organizer: {event.organizer ?? 'Unknown'}
+    {event.expected_games != null && <> · Expected games: {event.expected_games}</>}
+  </p>
+  <Season event={event} matches={matches} />
+  <GapGrid event={event} matches={matches} />
+  <Sources sources={event.sources} fieldSources={event.field_sources} />
+</Base>

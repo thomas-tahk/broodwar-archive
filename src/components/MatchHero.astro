@@ -1,0 +1,28 @@
+---
+// Broadcast-style hero for one match: lower-third, both players, big score. Winner is shown openly.
+import Race from './Race.astro';
+import { maps, playerOf, sideRace, scoreText, stageOf, ymd, href } from '../lib/catalog.js';
+
+const { match, watch = false } = Astro.props;
+const sides = match.players.map(playerOf);
+const mapLine = match.games.map((g) => {
+  const name = g.map ? maps.get(g.map)?.name ?? g.map : 'Map unknown';
+  return g.races?.[0] && g.races?.[1] ? `${name} (${g.races[0]}v${g.races[1]})` : name;
+}).join(' · ');
+---
+<section class="hero" aria-label="Match">
+  <span class="lt"><span>{stageOf(match)} · {ymd(match.date)} · {match.format ?? 'Format unknown'}</span></span>
+  <div class="vs">
+    {sides.map((p, i) => (
+      <>
+        {i === 1 && <div class="sc" aria-label={`Score ${scoreText(match)}`}>{scoreText(match)}</div>}
+        <div class={`pl ${match.winner && match.winner === p.id ? 'win' : ''}`}>
+          {p.name ?? 'Unknown'}{match.winner && match.winner === p.id && <span class="sr"> (winner)</span>}
+          <small>{p.hangul ?? 'Hangul unknown'} · <Race race={sideRace(match, i)} /></small>
+        </div>
+      </>
+    ))}
+  </div>
+  {watch && <p class="maps">{mapLine}</p>}
+  {watch && <a class="btn" href={href(`matches/${match.event}/${match.id}/`)}>Watch the {match.stage === 'Final' ? 'final' : 'match'}</a>}
+</section>

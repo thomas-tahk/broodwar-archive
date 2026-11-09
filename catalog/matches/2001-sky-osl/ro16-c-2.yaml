@@ -1,0 +1,31 @@
+# 2001 SKY OSL. Imported 2026-11-01 from Liquipedia + OGN's YouTube playlists; every field cites a source below.
+id: ro16-c-2
+event: 2001-sky-osl
+stage: Round of 16
+group: C
+date: 2001-10-26
+format: Bo1
+players: [clon, yellow]
+winner: clon
+score: "1-0"
+games:
+  - set: 1
+    map: crimson-isles
+    races: [Z, Z]
+    winner: clon
+    lost: false
+    copies:
+      - url: https://www.youtube.com/watch?v=6MJ51noThWA
+        kind: ogn-ai-upscale
+        title: "AI 업스케일 | [2001.10.26] 2001 SKY배 온게임넷 스타리그 16강 C조 2경기 (크림슨 아일즈) 홍진호(Zerg) vs 조형근(Zerg)"
+        uploader: OGN
+        resolution: 1080p
+        fps: 30
+        grade: null
+        grade_note: "OGN's own 2026 AI upscale of the broadcast, 39:09 long. Not graded: upscaling changes the picture, so it needs a side-by-side with the original first."
+        segment: null
+sources:
+  - url: https://liquipedia.net/starcraft/index.php?title=2001_SKY_OSL&oldid=532826
+    note: "Liquipedia event page: players, races, maps, winners, date."
+  - url: https://www.youtube.com/playlist?list=PLWQeRMoEALvo2MhFXLG3MD-0WxgM0FG9r
+    note: "OGN official playlist: copies and video titles"

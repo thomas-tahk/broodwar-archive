@@ -1,0 +1,64 @@
+# 2001 SKY OSL. Imported 2026-11-01 from Liquipedia + OGN's YouTube playlists; every field cites a source below.
+id: third
+event: 2001-sky-osl
+stage: Third place
+group: null
+date: 2001-12-24
+format: Bo3
+players: [yellow, themarine]
+winner: themarine
+score: "0-2"
+games:
+  - set: 1
+    map: silent-vortex
+    races: [Z, T]
+    winner: themarine
+    lost: false
+    copies:
+      - url: https://www.youtube.com/watch?v=o5vWxKOgnA4
+        kind: ogn-official
+        title: "[2001.12.27] 2001 SKY배 온게임넷 스타리그 3,4위전 1경기 (사일런트 볼텍스) 김정민(Terran) vs 홍진호(Zerg)"
+        uploader: OGN
+        resolution: 480p
+        fps: 30
+        grade: B
+        grade_note: "Provisional, from the 2026-10-10 project survey: OGN's official upload is a clean re-encode (480p/30p, already deinterlaced). 38:30 long; not yet watched end to end."
+        segment: null
+      - url: https://www.youtube.com/watch?v=xyuB1IOuSlk
+        kind: ogn-ai-upscale
+        title: "AI 업스케일 | [2001.12.24] 2001 SKY배 온게임넷 스타리그 3, 4위 결정전 1경기 (사일런트 볼텍스) 김정민(Terran) vs 홍진호(Zerg)"
+        uploader: OGN
+        resolution: 1080p
+        fps: 30
+        grade: null
+        grade_note: "OGN's own 2026 AI upscale of the broadcast, 38:35 long. Not graded: upscaling changes the picture, so it needs a side-by-side with the original first."
+        segment: null
+  - set: 2
+    map: incubus
+    races: [Z, T]
+    winner: themarine
+    lost: false
+    copies:
+      - url: https://www.youtube.com/watch?v=_w6PsoOjr5U
+        kind: ogn-official
+        title: "[2001.12.27] 2001 SKY배 온게임넷 스타리그 3,4위전 2경기 (인큐버스) 김정민(Terran) vs 홍진호(Zerg)"
+        uploader: OGN
+        resolution: 480p
+        fps: 30
+        grade: B
+        grade_note: "Provisional, from the 2026-10-10 project survey: OGN's official upload is a clean re-encode (480p/30p, already deinterlaced). 17:54 long; not yet watched end to end."
+        segment: null
+      - url: https://www.youtube.com/watch?v=B9aABABEemg
+        kind: ogn-ai-upscale
+        title: "AI 업스케일 | [2001.12.24] 2001 SKY배 온게임넷 스타리그 3, 4위 결정전 2경기 (인큐버스) 김정민(Terran) vs 홍진호(Zerg)"
+        uploader: OGN
+        resolution: 1080p
+        fps: 30
+        grade: null
+        grade_note: "OGN's own 2026 AI upscale of the broadcast, 18:00 long. Not graded: upscaling changes the picture, so it needs a side-by-side with the original first."
+        segment: null
+sources:
+  - url: https://liquipedia.net/starcraft/index.php?title=2001_SKY_OSL&oldid=532826
+    note: "Liquipedia event page: players, races, maps, winners, date. Set order follows OGN's video titles (both uploads agree); Liquipedia lists the maps in a different order. OGN's two uploads disagree on the date (2001-12-27 vs 2001-12-24); the AI-upscale title matches Liquipedia elsewhere in this event."
+  - url: https://www.youtube.com/playlist?list=PLWQeRMoEALvo2MhFXLG3MD-0WxgM0FG9r
+    note: "OGN official playlist: copies and video titles"

@@ -1,0 +1,45 @@
+name: Deploy to GitHub Pages
+
+# Every branch gets a live copy on the gh-pages branch:
+#   main     -> https://thomas-tahk.github.io/broodwar-archive/
+#   <branch> -> https://thomas-tahk.github.io/broodwar-archive/<branch>/  ("/" becomes "-")
+on:
+  push:
+    branches-ignore: [gh-pages]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: gh-pages
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Build under the branch's path
+        env:
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          folder="${BRANCH//\//-}"
+          if [ "$folder" = main ]; then base=/broodwar-archive/; else base="/broodwar-archive/$folder/"; fi
+          SITE_BASE="$base" npm run build
+      - name: Publish to gh-pages
+        env:
+          BRANCH: ${{ github.ref_name }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: tools/deploy_pages.sh "$BRANCH" dist
+      - name: Show preview link
+        env:
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          folder="${BRANCH//\//-}"
+          [ "$folder" = main ] && path="" || path="$folder/"
+          echo "### Live: https://thomas-tahk.github.io/broodwar-archive/$path" >> "$GITHUB_STEP_SUMMARY"

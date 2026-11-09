@@ -1,0 +1,19 @@
+# Test fixture — fictional. Game with no known copy (gap) and unknown date.
+id: ro8-a-1
+event: fixture-league
+stage: Round of 8
+group: A
+date: null
+format: Bo1
+players: [bravo, charlie]
+winner: null
+score: null
+games:
+  - set: 1
+    map: null
+    races: [P, Z]
+    winner: null
+    lost: false
+    copies: []
+sources:
+  - url: https://example.com/fixture-league/bracket
