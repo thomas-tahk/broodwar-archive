@@ -1,0 +1,68 @@
+name: submit
+
+# A maintainer labels a submission issue `accepted-submission` (only people with
+# triage access can label, so strangers cannot start this). The issue form is turned
+# into a catalog file, validated, and opened as a pull request that closes the issue.
+# The result of the validator is posted back on the issue. The owner merges the PR.
+#
+# The issue body is untrusted text: it only ever reaches the job through an env
+# variable and is read by tools/submit (never interpolated into a shell command).
+# Needs repo setting: Settings -> Actions -> General -> "Allow GitHub Actions to
+# create and approve pull requests".
+
+on:
+  issues:
+    types: [labeled]
+
+concurrency:
+  group: submit-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  submit:
+    if: github.event.label.name == 'accepted-submission'
+    runs-on: ubuntu-latest
+    env:
+      ISSUE_NUMBER: ${{ github.event.issue.number }}
+      ISSUE_BODY: ${{ github.event.issue.body }}
+      DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+      GH_TOKEN: ${{ github.token }}
+      RESULT_FILE: ${{ runner.temp }}/submit-result.md
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - id: submit
+        name: Turn the issue form into a catalog file and validate it
+        run: node tools/submit/run.js
+      - name: Comment the result on the issue
+        run: gh issue comment "$ISSUE_NUMBER" --body-file "$RESULT_FILE"
+      - name: Open the pull request
+        if: steps.submit.outputs.status == 'ok'
+        env:
+          BRANCH_FILE: ${{ steps.submit.outputs.file }}
+          SUBMISSION_KIND: ${{ steps.submit.outputs.kind }}
+        run: |
+          branch="submission/issue-$ISSUE_NUMBER"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -C "$branch"
+          git add -- "$BRANCH_FILE"
+          git commit -m "Submission ($SUBMISSION_KIND) from issue #$ISSUE_NUMBER"
+          git push --force origin "$branch"
+          printf 'Closes #%s\n\nGenerated from the issue form. The validator passed. Please review the file before merging.\n' "$ISSUE_NUMBER" > "$RUNNER_TEMP/pr-body.md"
+          if gh pr view "$branch" --json state --jq .state | grep -q OPEN; then
+            echo "PR for $branch already open; branch updated."
+          else
+            gh pr create --base "$DEFAULT_BRANCH" --head "$branch" \
+              --title "Submission ($SUBMISSION_KIND) from issue #$ISSUE_NUMBER" \
+              --body-file "$RUNNER_TEMP/pr-body.md"
+          fi

@@ -1,0 +1,87 @@
+name: "Submit: add a copy"
+description: "A link to footage of a game in a match that is already listed."
+labels: ["submission"]
+body:
+  - type: input
+    id: event_id
+    attributes:
+      label: "Event id"
+      description: "Example: 2001-sky-osl"
+    validations:
+      required: true
+  - type: input
+    id: match_id
+    attributes:
+      label: "Match id"
+      description: "Example: ro16-a-1"
+    validations:
+      required: true
+  - type: input
+    id: game_number
+    attributes:
+      label: "Game number"
+      description: "Which game of the match. 1 for the first."
+    validations:
+      required: true
+  - type: input
+    id: copy_link
+    attributes:
+      label: "Copy link"
+      description: "A link only. Please do not upload video."
+    validations:
+      required: true
+  - type: dropdown
+    id: copy_kind
+    attributes:
+      label: "Kind of copy"
+      description: "Pick the closest."
+      options:
+        - "fan-upload"
+        - "ogn-official"
+        - "ogn-ai-upscale"
+        - "torrent"
+        - "other"
+    validations:
+      required: true
+  - type: input
+    id: title
+    attributes:
+      label: "Title"
+      description: "Title of the upload. Blank if unknown."
+    validations:
+      required: false
+  - type: input
+    id: uploader
+    attributes:
+      label: "Uploader"
+      description: "Blank if unknown."
+    validations:
+      required: false
+  - type: input
+    id: resolution
+    attributes:
+      label: "Resolution"
+      description: "Example: 480p. Blank if unknown."
+    validations:
+      required: false
+  - type: input
+    id: fps
+    attributes:
+      label: "Frame rate"
+      description: "Example: 30. Blank if unknown."
+    validations:
+      required: false
+  - type: input
+    id: segment_start
+    attributes:
+      label: "Segment start"
+      description: "If the upload holds several games: where this game starts, HH:MM:SS. Otherwise blank."
+    validations:
+      required: false
+  - type: input
+    id: segment_end
+    attributes:
+      label: "Segment end"
+      description: "Where this game ends, HH:MM:SS. Otherwise blank."
+    validations:
+      required: false
