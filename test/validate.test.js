@@ -1,6 +1,9 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 
 const run = (...args) =>
   spawnSync('node', ['tools/catalog/validate.js', ...args], { encoding: 'utf8' });
@@ -8,7 +11,7 @@ const run = (...args) =>
 test('valid fixture catalog passes', () => {
   const r = run('test/fixtures/catalog');
   assert.equal(r.status, 0, r.stdout + r.stderr);
-  assert.match(r.stdout, /1 events?, 3 matches, 3 players, 2 maps/);
+  assert.match(r.stdout, /1 events?, 3 matches, 3 players, 2 maps, 1 series, 1 items/);
 });
 
 test('real catalog/ passes', () => {
@@ -35,6 +38,15 @@ const cases = {
   'bad-date': [['ro8-a-2.yaml', 'date', /not a real calendar date/]],
   'field-sources-bad': [['ro8-a-1.yaml', 'field_sources', /"dat" is not a field of a match/]],
   'map-version-number': [['map-one.yaml', 'version', /Put it in quotes, e\.g\. "1\.1"/]],
+  'bad-tier': [['fixture-league.yaml', 'tier', /must be one of: big, mid, small/]],
+  'unknown-series': [['fixture-league.yaml', 'series', /series "no-such-series" does not exist/]],
+  'item-no-links': [['fixture-interview.yaml', 'links', /must link to at least one/]],
+  'item-missing-player': [['fixture-interview.yaml', 'links.about[0]', /player "nobody" does not exist/]],
+  'featured-missing': [['featured.yaml', 'featured[0].ref', /event "no-such-event" does not exist/]],
+  'missing-completeness': [
+    ['fixture-league.yaml', 'completeness', /field is missing/],
+    ['final.yaml', 'completeness', /field is missing/],
+  ],
   'misplaced-file': [['alpha-copy.yml', '(file location)', /wrong place/]],
 };
 
@@ -61,4 +73,20 @@ test('CATALOG_DIR is used when no argument is given', () => {
   });
   assert.equal(r.status, 0, r.stdout + r.stderr);
   assert.match(r.stdout, /3 matches/);
+});
+
+test('item and featured refs to matches resolve as <event>/<match>', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'bw-matchref-'));
+  try {
+    fs.cpSync('test/fixtures/catalog', dir, { recursive: true });
+    const item = `${dir}/items/fixture-interview.yaml`;
+    fs.writeFileSync(item, fs.readFileSync(item, 'utf8').replace('[map:map-one]', '[match:fixture-league/final]'));
+    assert.equal(run(dir).status, 0);
+    fs.writeFileSync(item, fs.readFileSync(item, 'utf8').replace('final]', 'nope]'));
+    const r = run(dir);
+    assert.equal(r.status, 1);
+    assert.match(r.stderr, /links\.features\[0\]: match "fixture-league\/nope" does not exist/);
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
 });

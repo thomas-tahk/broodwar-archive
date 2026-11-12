@@ -2,62 +2,209 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "match.schema.json",
   "type": "object",
-  "required": ["id", "event", "stage", "group", "date", "format", "players", "winner", "score", "games", "sources"],
+  "required": [
+    "id",
+    "event",
+    "stage",
+    "group",
+    "date",
+    "format",
+    "players",
+    "winner",
+    "score",
+    "games",
+    "sources",
+    "completeness"
+  ],
   "additionalProperties": false,
   "properties": {
-    "id": { "$ref": "common.schema.json#/definitions/id" },
-    "event": { "$ref": "common.schema.json#/definitions/id" },
-    "stage": { "$ref": "common.schema.json#/definitions/nullableString" },
-    "group": { "$ref": "common.schema.json#/definitions/nullableString" },
-    "date": { "type": ["string", "null"], "format": "date" },
-    "format": { "enum": ["Bo1", "Bo3", "Bo5", "Bo7", null] },
+    "id": {
+      "$ref": "common.schema.json#/definitions/id"
+    },
+    "event": {
+      "$ref": "common.schema.json#/definitions/id"
+    },
+    "stage": {
+      "$ref": "common.schema.json#/definitions/nullableString"
+    },
+    "group": {
+      "$ref": "common.schema.json#/definitions/nullableString"
+    },
+    "date": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date"
+    },
+    "format": {
+      "enum": [
+        "Bo1",
+        "Bo3",
+        "Bo5",
+        "Bo7",
+        null
+      ]
+    },
     "players": {
       "type": "array",
       "minItems": 2,
       "maxItems": 2,
-      "items": { "$ref": "common.schema.json#/definitions/nullableId" }
+      "items": {
+        "$ref": "common.schema.json#/definitions/nullableId"
+      }
     },
-    "winner": { "$ref": "common.schema.json#/definitions/nullableId" },
-    "score": { "$ref": "common.schema.json#/definitions/nullableString" },
-    "games": { "type": "array", "items": { "$ref": "#/definitions/game" } },
-    "sources": { "$ref": "common.schema.json#/definitions/sources" },
-    "field_sources": { "$ref": "common.schema.json#/definitions/fieldSources" }
+    "winner": {
+      "$ref": "common.schema.json#/definitions/nullableId"
+    },
+    "score": {
+      "$ref": "common.schema.json#/definitions/nullableString"
+    },
+    "games": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/game"
+      }
+    },
+    "sources": {
+      "$ref": "common.schema.json#/definitions/sources"
+    },
+    "field_sources": {
+      "$ref": "common.schema.json#/definitions/fieldSources"
+    },
+    "completeness": {
+      "enum": [
+        "stub",
+        "partial",
+        "complete"
+      ]
+    }
   },
   "definitions": {
-    "race": { "enum": ["T", "P", "Z", "R", null] },
+    "race": {
+      "enum": [
+        "T",
+        "P",
+        "Z",
+        "R",
+        null
+      ]
+    },
     "game": {
       "type": "object",
-      "required": ["set", "map", "races", "winner", "lost", "copies"],
+      "required": [
+        "set",
+        "map",
+        "races",
+        "winner",
+        "lost",
+        "copies"
+      ],
       "additionalProperties": false,
       "properties": {
-        "set": { "type": "integer", "minimum": 1 },
-        "map": { "$ref": "common.schema.json#/definitions/nullableId" },
-        "races": { "type": "array", "minItems": 2, "maxItems": 2, "items": { "$ref": "#/definitions/race" } },
-        "winner": { "$ref": "common.schema.json#/definitions/nullableId" },
-        "lost": { "type": "boolean" },
-        "copies": { "type": "array", "items": { "$ref": "#/definitions/copy" } }
+        "set": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "map": {
+          "$ref": "common.schema.json#/definitions/nullableId"
+        },
+        "races": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": {
+            "$ref": "#/definitions/race"
+          }
+        },
+        "winner": {
+          "$ref": "common.schema.json#/definitions/nullableId"
+        },
+        "lost": {
+          "type": "boolean"
+        },
+        "copies": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/copy"
+          }
+        }
       }
     },
     "copy": {
       "type": "object",
-      "required": ["url", "kind", "title", "uploader", "resolution", "fps", "grade", "grade_note", "segment"],
+      "required": [
+        "url",
+        "kind",
+        "title",
+        "uploader",
+        "resolution",
+        "fps",
+        "grade",
+        "grade_note",
+        "segment"
+      ],
       "additionalProperties": false,
       "properties": {
-        "url": { "$ref": "common.schema.json#/definitions/url" },
-        "kind": { "enum": ["ogn-official", "ogn-ai-upscale", "fan-upload", "torrent", "other"] },
-        "title": { "$ref": "common.schema.json#/definitions/nullableString" },
-        "uploader": { "$ref": "common.schema.json#/definitions/nullableString" },
-        "resolution": { "$ref": "common.schema.json#/definitions/nullableString" },
-        "fps": { "type": ["number", "null"], "exclusiveMinimum": 0 },
-        "grade": { "enum": ["A", "B", "C", "D", null] },
-        "grade_note": { "$ref": "common.schema.json#/definitions/nullableString" },
+        "url": {
+          "$ref": "common.schema.json#/definitions/url"
+        },
+        "kind": {
+          "enum": [
+            "ogn-official",
+            "ogn-ai-upscale",
+            "fan-upload",
+            "torrent",
+            "other"
+          ]
+        },
+        "title": {
+          "$ref": "common.schema.json#/definitions/nullableString"
+        },
+        "uploader": {
+          "$ref": "common.schema.json#/definitions/nullableString"
+        },
+        "resolution": {
+          "$ref": "common.schema.json#/definitions/nullableString"
+        },
+        "fps": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "exclusiveMinimum": 0
+        },
+        "grade": {
+          "enum": [
+            "A",
+            "B",
+            "C",
+            "D",
+            null
+          ]
+        },
+        "grade_note": {
+          "$ref": "common.schema.json#/definitions/nullableString"
+        },
         "segment": {
-          "type": ["object", "null"],
-          "required": ["start", "end"],
+          "type": [
+            "object",
+            "null"
+          ],
+          "required": [
+            "start",
+            "end"
+          ],
           "additionalProperties": false,
           "properties": {
-            "start": { "type": "string", "pattern": "^\\d{2}:\\d{2}:\\d{2}$" },
-            "end": { "type": "string", "pattern": "^\\d{2}:\\d{2}:\\d{2}$" }
+            "start": {
+              "type": "string",
+              "pattern": "^\\d{2}:\\d{2}:\\d{2}$"
+            },
+            "end": {
+              "type": "string",
+              "pattern": "^\\d{2}:\\d{2}:\\d{2}$"
+            }
           }
         }
       }

@@ -14,13 +14,16 @@ function describeType(type) {
 
 function patternMessage(pattern) {
   if (pattern.includes('https?')) return 'must be a web link starting with http:// or https://';
+  if (pattern.includes('(event|player|map)') || pattern.includes('(series|event|player|map|item)')) {
+    return 'must look like "player:boxer", "event:2001-sky-osl", "map:incubus" or "match:<event-id>/<match-id>" (series: and item: are allowed only in featured.yaml)';
+  }
   if (pattern.includes('a-z0-9-')) return 'may only use lowercase letters a-z, digits 0-9 and "-" (no spaces or capitals)';
   if (pattern.includes('\\d{4}-')) return 'must be a date written YYYY-MM-DD (e.g. 2001-08-10), or null if unknown';
   if (pattern.includes('\\d{2}:')) return 'must be a time written HH:MM:SS (e.g. 00:47:10)';
   return `is not in the expected format (${pattern})`;
 }
 
-const NEVER_NULL = ['url', 'sources', 'id', 'name', 'start', 'end'];
+const NEVER_NULL = ['url', 'sources', 'id', 'name', 'start', 'end', 'completeness', 'tier', 'kind', 'tags', 'urls', 'links'];
 
 function missingMessage(field) {
   const hint = NEVER_NULL.includes(field) ? '' : ' (write null if the value is unknown)';

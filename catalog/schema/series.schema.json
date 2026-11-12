@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "series.schema.json",
+  "type": "object",
+  "required": ["id", "name", "aliases", "organizer", "broadcaster", "sources"],
+  "additionalProperties": false,
+  "properties": {
+    "id": { "$ref": "common.schema.json#/definitions/id" },
+    "name": { "type": "string", "minLength": 1 },
+    "aliases": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+    "organizer": { "$ref": "common.schema.json#/definitions/nullableString" },
+    "broadcaster": { "$ref": "common.schema.json#/definitions/nullableString" },
+    "sources": { "$ref": "common.schema.json#/definitions/sources" },
+    "field_sources": { "$ref": "common.schema.json#/definitions/fieldSources" }
+  }
+}

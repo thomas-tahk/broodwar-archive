@@ -18,6 +18,38 @@ export function matchesOf(eventId) {
 
 export const allMatches = catalog.matches;
 
+export const series = byId(catalog.series);
+export const items = catalog.items;
+/** Ordered featured picks: [{ ref: "event:2001-sky-osl", blurb? }]. */
+export const featured = catalog.featured;
+
+/** Seasons (events) of one series, newest first. */
+export const eventsOfSeries = (seriesId) => events.filter((e) => e.series === seriesId);
+
+/** Ref string "type:id" for a record; matches use their fullId. */
+export const refOf = (type, record) => `${type}:${type === 'match' ? record.fullId : record.id}`;
+
+/** Items whose links (about / from / features) include the ref, e.g. itemsLinkingTo("player:boxer"). */
+export function itemsLinkingTo(ref) {
+  return items.filter((item) => Object.values(item.links ?? {}).some((refs) => refs.includes(ref)));
+}
+
+/** The record a ref points to, or null. ref is "type:id" (match: "event/match"). */
+export function resolveRef(ref) {
+  const [type, ...rest] = ref.split(':');
+  const id = rest.join(':');
+  const lookup = {
+    series: () => series.get(id),
+    event: () => events.find((e) => e.id === id),
+    match: () => catalog.matches.find((m) => m.fullId === id),
+    player: () => players.get(id),
+    map: () => maps.get(id),
+    item: () => items.find((i) => i.id === id),
+  }[type];
+  const record = lookup?.();
+  return record ? { type, record } : null;
+}
+
 export function playerOf(id) {
   return players.get(id) ?? { id, name: null, hangul: null, race: null };
 }

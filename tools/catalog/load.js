@@ -2,7 +2,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { parse } from 'yaml';
 
-export const KINDS = { events: 'event', matches: 'match', players: 'player', maps: 'map' };
+export const KINDS = { events: 'event', matches: 'match', players: 'player', maps: 'map', series: 'series', items: 'item' };
+const FEATURED_FILE = 'featured.yaml';
 
 function listYaml(dir) {
   if (!fs.existsSync(dir)) return [];
@@ -38,15 +39,19 @@ function readEntry(dir, folder, file) {
 
 /** Every YAML file in the catalog with its parsed data (or parseError). Used by the validator. */
 export function readCatalogFiles(dir) {
-  return Object.keys(KINDS).flatMap((folder) =>
+  const featured = path.join(dir, FEATURED_FILE);
+  const entries = Object.keys(KINDS).flatMap((folder) =>
     filesFor(dir, folder).map((file) => readEntry(dir, folder, file)));
+  if (fs.existsSync(featured)) entries.push({ ...readEntry(dir, 'featured', featured), kind: 'featured' });
+  return entries;
 }
 
-/** Plain arrays of parsed objects. Matches get fullId "<event>/<id>". Throws on unreadable YAML. */
+/** Plain arrays of parsed objects (featured: the ordered {ref, blurb} list). Matches get fullId "<event>/<id>". Throws on unreadable YAML. */
 export function loadCatalog(dir) {
-  const out = { events: [], matches: [], players: [], maps: [] };
+  const out = { events: [], matches: [], players: [], maps: [], series: [], items: [], featured: [] };
   for (const entry of readCatalogFiles(dir)) {
     if (entry.parseError) throw new Error(`${entry.file}: ${entry.parseError}`);
+    if (entry.folder === 'featured') { out.featured = entry.data?.featured ?? []; continue; }
     const item = entry.folder === 'matches'
       ? { ...entry.data, fullId: `${entry.data.event}/${entry.data.id}` }
       : entry.data;

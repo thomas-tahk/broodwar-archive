@@ -9,7 +9,7 @@ import { explain } from './messages.js';
 import { crossFileErrors, misplacedFileErrors } from './rules.js';
 
 const SCHEMA_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), '../../catalog/schema');
-const KINDS = Object.values(FOLDER_KINDS);
+const KINDS = [...Object.values(FOLDER_KINDS), 'featured'];
 
 const read = (name) => JSON.parse(fs.readFileSync(path.join(SCHEMA_DIR, name), 'utf8'));
 
@@ -50,7 +50,7 @@ export function validateCatalog(dir) {
     ...misplacedFileErrors(dir),
   ];
   const count = (kind) => entries.filter((e) => e.kind === kind).length;
-  return { errors, counts: { events: count('event'), matches: count('match'), players: count('player'), maps: count('map') } };
+  return { errors, counts: { events: count('event'), matches: count('match'), players: count('player'), maps: count('map'), series: count('series'), items: count('item') } };
 }
 
 function main() {
@@ -65,8 +65,8 @@ function main() {
     console.error(`\n${errors.length} problem${errors.length === 1 ? '' : 's'} found.`);
     process.exit(1);
   }
-  const { events, matches, players, maps } = counts;
-  console.log(`OK: ${events} events, ${matches} matches, ${players} players, ${maps} maps`);
+  const { events, matches, players, maps, series, items } = counts;
+  console.log(`OK: ${events} events, ${matches} matches, ${players} players, ${maps} maps, ${series} series, ${items} items`);
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) main();

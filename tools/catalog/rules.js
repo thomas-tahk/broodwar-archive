@@ -90,14 +90,65 @@ function matchErrors(entry, known) {
   return errors;
 }
 
+const REF_HOME = {
+  series: 'series/<id>.yaml', event: 'events/<id>.yaml', player: 'players/<id>.yaml',
+  map: 'maps/<id>.yaml', item: 'items/<id>.yaml', match: 'matches/<event-id>/<match-id>.yaml',
+};
+
+/** Resolve "type:id" refs (match ids are "event/match"). Returns an error list. */
+function linkError(entry, field, ref, known) {
+  if (typeof ref !== 'string') return [];
+  const [type, ...rest] = ref.split(':');
+  const id = rest.join(':');
+  if (!REF_HOME[type] || known[type]?.has(id)) return [];
+  return [err(entry, field, `${type} "${id}" does not exist. Add ${REF_HOME[type].replace('<id>', id)} or fix the spelling`)];
+}
+
+const LINK_KINDS = ['about', 'from', 'features'];
+
+function linkLists(item) {
+  const links = item.links && typeof item.links === 'object' && !Array.isArray(item.links) ? item.links : {};
+  return LINK_KINDS.map((kind) => [kind, Array.isArray(links[kind]) ? links[kind] : []]);
+}
+
+function itemErrors(entry, known) {
+  const lists = linkLists(entry.data);
+  const none = err(entry, 'links', 'an item must link to at least one player, event, match or map. Add it under about:, from: or features:');
+  const errors = lists.every(([, refs]) => refs.length === 0) ? [none] : [];
+  for (const [kind, refs] of lists) {
+    refs.forEach((ref, i) => errors.push(...linkError(entry, `links.${kind}[${i}]`, ref, known)));
+  }
+  return errors;
+}
+
+function featuredErrors(entry, known) {
+  const list = Array.isArray(entry.data.featured) ? entry.data.featured : [];
+  return list.flatMap((f, i) => linkError(entry, `featured[${i}].ref`, f?.ref, known));
+}
+
+function eventSeriesErrors(entry, known) {
+  const { series } = entry.data;
+  return series == null ? [] : linkError(entry, 'series', `series:${series}`, { series: known.series });
+}
+
 export function crossFileErrors(allEntries) {
   const entries = allEntries.filter(ok);
   const known = {
     events: idSet(entries, 'event'),
     players: idSet(entries, 'player'),
     maps: idSet(entries, 'map'),
+    series: idSet(entries, 'series'),
   };
+  const refs = {
+    event: known.events, player: known.players, map: known.maps, series: known.series,
+    item: idSet(entries, 'item'),
+    match: new Set(entries.filter((e) => e.kind === 'match').map(fullIdOf)),
+  };
+  const of = (kind) => entries.filter((e) => e.kind === kind);
   return [
+    ...of('event').flatMap((e) => eventSeriesErrors(e, known)),
+    ...of('item').flatMap((e) => itemErrors(e, refs)),
+    ...of('featured').flatMap((e) => featuredErrors(e, refs)),
     ...entries.flatMap(idErrors),
     ...duplicateErrors(entries),
     ...entries.filter((e) => e.kind === 'match').flatMap((e) => matchErrors(e, known)),
@@ -108,6 +159,9 @@ const PLACED = [
   /^events\/[^/]+\.yaml$/,
   /^players\/[^/]+\.yaml$/,
   /^maps\/[^/]+\.yaml$/,
+  /^series\/[^/]+\.yaml$/,
+  /^items\/[^/]+\.yaml$/,
+  /^featured\.yaml$/,
   /^matches\/[^/]+\/[^/]+\.yaml$/,
   /^schema\/[^/]+$/,
   /(^|\/)\.gitkeep$/,
@@ -121,7 +175,7 @@ function walk(dir, rel = '') {
 }
 
 export function misplacedFileErrors(dir) {
-  const expected = 'Files must be events/<id>.yaml, players/<id>.yaml, maps/<id>.yaml or matches/<event-id>/<id>.yaml';
+  const expected = 'Files must be events/<id>.yaml, series/<id>.yaml, items/<id>.yaml, players/<id>.yaml, maps/<id>.yaml, matches/<event-id>/<id>.yaml or featured.yaml';
   return walk(dir)
     .filter((f) => !PLACED.some((re) => re.test(f)))
     .map((f) => ({ file: f, path: '(file location)', message: `this file is in the wrong place or has the wrong name. ${expected}` }));

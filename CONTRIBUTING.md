@@ -83,6 +83,7 @@ format: Bo1
 players: [player-one, player-two]
 winner: null                   # one of the two players, or null
 score: null                    # e.g. "2-1"
+completeness: partial          # stub | partial | complete
 games:
   - set: 1
     map: map-id

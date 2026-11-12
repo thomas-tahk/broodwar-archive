@@ -1,0 +1,6 @@
+# Test fixture — fictional. Not real data.
+featured:
+  - ref: event:no-such-event
+    blurb: Fixture blurb
+  - ref: series:fixture-series
+  - ref: item:fixture-interview
