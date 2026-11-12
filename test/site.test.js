@@ -104,11 +104,12 @@ test('fixture catalog renders everything it knows', async (t) => {
     const html = read('players/alpha');
     const groups = [...html.matchAll(/<section class="evgroup" aria-label="([^"]+)"/g)].map((m) => m[1]);
     // Same-year events order by latest match date (zeta 2001-09 > cup 2001-03), not by id.
-    assert.deepEqual(groups, ['Fixture Zeta 2001', 'Fixture Cup 2001', 'Fixture League 2000']);
+    // An undated event from a later year (2002) still comes first: year wins over date.
+    assert.deepEqual(groups, ['Fixture Future 2002', 'Fixture Zeta 2001','Fixture Cup 2001', 'Fixture League 2000']);
     has(html, `href="${BASE}matches/fixture-cup/semi/"`);
     has(html, `href="${BASE}matches/fixture-league/final/"`);
     has(html, `href="${BASE}matches/fixture-league/ro8-a-1/"`);
-    has(html, 'Games (7)');
+    has(html, 'Games (8)');
     const rows = html.split('<li class="grow">').slice(1);
     const rowOf = (href) => rows.find((r) => r.includes(`href="${BASE}${href}/"`));
     assert.match(rowOf('matches/fixture-cup/semi'), /<b>Loss<\/b>[\s\S]*data-grade="C"/);
@@ -116,7 +117,7 @@ test('fixture catalog renders everything it knows', async (t) => {
     assert.match(html, /<b>Loss<\/b>\s*<span class="grade" data-grade="X">Footage lost/);
     assert.ok(!html.includes('Won') && !html.includes('Lost'));
     // Undated row sorts last inside its event; unknown opponent is plain text, not a link.
-    const zeta = html.split('<section class="evgroup"')[1];
+    const zeta = html.split('<section class="evgroup"')[2];
     assert.ok(zeta.indexOf('2001.09.01') < zeta.indexOf('Date unknown'), 'undated last');
     const tbd = rowOf('matches/fixture-zeta/tbd');
     has(tbd, 'vs Unknown');

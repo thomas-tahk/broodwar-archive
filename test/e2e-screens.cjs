@@ -53,13 +53,13 @@ async function overflow(page, label, width) {
     for (const kind of ['players', 'maps']) {
       await page.goto(`${base}${kind}/`);
       await overflow(page, `${kind} index`, name);
+      await page.screenshot({ path: `${out}/${kind}-${name}.png`, fullPage: true });
       const links = await page.locator('a.row').evaluateAll((as) => as.map((a) => a.getAttribute('href')));
       if (!links.length) process.exitCode = 1;
       for (const link of links) {
         await page.goto(new URL(link, page.url()).href);
         await overflow(page, link, name);
       }
-      await page.screenshot({ path: `${out}/${kind}-${name}.png`, fullPage: true });
     }
 
     console.log(name, 'console errors', errors);

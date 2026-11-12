@@ -140,7 +140,7 @@ export function gamesGroupedByEvent(pick) {
   return events
     .map((event) => ({ event, rows: rows.filter((r) => r.match.event === event.id).sort(byDateDesc) }))
     .filter((grp) => grp.rows.length)
-    .sort((a, b) => latestDate(b.rows).localeCompare(latestDate(a.rows)) || (b.event.year ?? 0) - (a.event.year ?? 0) || a.event.id.localeCompare(b.event.id));
+    .sort((a, b) => (b.event.year ?? 0) - (a.event.year ?? 0) || latestDate(b.rows).localeCompare(latestDate(a.rows)) || a.event.id.localeCompare(b.event.id));
 }
 export const gamesOfPlayer = (id) => gamesGroupedByEvent((m) => m.players.includes(id));
 export const gamesOnMap = (id) => gamesGroupedByEvent((_, g) => g.map === id);
