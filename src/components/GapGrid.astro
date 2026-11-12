@@ -4,11 +4,13 @@ import GradeBadge from './GradeBadge.astro';
 import QualityLegend from './QualityLegend.astro';
 import { bestGrade, isGap } from '../../tools/catalog/grades.js';
 import { href, nameOf, stageOf, REPO_URL } from '../lib/catalog.js';
+import { formUrl } from '../lib/help.js';
 
 const { event, matches } = Astro.props;
 const cells = matches.flatMap((m) =>
   m.games.map((g) => ({
     url: href(`matches/${m.event}/${m.id}/`),
+    copyUrl: formUrl(REPO_URL, 'copy', { recordId: m.fullId, game: g.set }),
     set: g.set,
     who: m.players.map(nameOf).join(' vs '),
     stage: stageOf(m),
@@ -21,8 +23,7 @@ const cells = matches.flatMap((m) =>
 const good = cells.filter((c) => !c.gap).length;
 const missing = Math.max(0, (event.expected_games ?? 0) - cells.length);
 const COLLAPSE_OVER = 6;
-const ISSUE_URL = `${REPO_URL}/issues/new/choose`;
-const needsHelp = missing > 0 || cells.some((c) => c.gap);
+const addMatchUrl = formUrl(REPO_URL, 'addmatch', { recordId: event.id });
 ---
 <section class="gapview" aria-labelledby="gap-h">
   <h2 id="gap-h">Gap view</h2>
@@ -46,6 +47,7 @@ const needsHelp = missing > 0 || cells.some((c) => c.gap);
             <GradeBadge grade={c.grade} none={c.none} />
             {c.gap && <span class="gaptag">GAP</span>}
           </a>
+          {c.gap && <a class="gap-help" href={c.copyUrl} aria-label={`Add a copy of game ${c.set}, ${c.who}`} rel="noopener noreferrer">Add a copy</a>}
         </li>
       ))}
       {missing > COLLAPSE_OVER ? (
@@ -55,7 +57,7 @@ const needsHelp = missing > 0 || cells.some((c) => c.gap);
       ))}
     </ul>
   )}
-  {needsHelp && <p class="gap-help"><a href={ISSUE_URL} rel="noopener noreferrer">Know where a copy is? Add it</a></p>}
+  {missing > 0 && <p class="gap-help"><a href={addMatchUrl} rel="noopener noreferrer">Add a missing match</a></p>}
   <ul class="gaplegend" aria-label="Legend">
     {['A', 'B', 'C', 'D', 'X'].map((g) => <li><GradeBadge grade={g} /></li>)}
     <li><GradeBadge none /> no copy known</li>
