@@ -226,9 +226,9 @@ test('help-wanted page lists every gap with a record link and a prefilled form l
   }));
 
   await t.test('counts at top are pinned', () => {
-    const counts = { event: 1, match: 1, nocopy: 1, nofields: 1 };
+    const counts = { event: 3, match: 1, nocopy: 1, nofields: 1 }; // +2 stub events from the home fixtures
     for (const [k, n] of Object.entries(counts)) has(html, `data-gap="${k}" data-count="${n}"`);
-    assert.equal(rows.length, 4);
+    assert.equal(rows.length, 6);
   });
 
   await t.test('each row links to its own record and prefills the form', () => {
