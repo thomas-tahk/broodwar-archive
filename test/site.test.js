@@ -183,6 +183,9 @@ test('fixture catalog renders everything it knows', async (t) => {
     has(note, 'article · 2000.06.02');
     has(note, `href="${BASE}matches/fixture-cup/semi/"`);
     has(note, 'href="https://example.com/fixture-match-note-mirror"');
+    has(note, 'Open on example.com (1)');
+    has(note, 'Open on example.com (2)');
+    has(interview, 'Open on example.com &#8599;');
   });
 
   await t.test('an item is listed, linking to its item page, on its player, event, map and match pages', () => {
@@ -193,6 +196,11 @@ test('fixture catalog renders everything it knows', async (t) => {
     page('matches/fixture-cup/semi', 'fixture-match-note');
     assert.ok(!read('players/alpha').includes('href="https://example.com/fixture-interview"'), 'rows go to the item page, not out');
     has(read('events/fixture-zeta'), 'No items linked yet');
+  });
+
+  await t.test('Find item records point to the item page', () => {
+    const { records } = JSON.parse(fs.readFileSync(`${outDir}/find/records.json`, 'utf8'));
+    assert.equal(records.find((r) => r.id === 'item:fixture-match-note').url, 'items/fixture-match-note/');
   });
 
   await t.test('map page lists its games and items; sparse pages say so', () => {

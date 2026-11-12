@@ -65,8 +65,7 @@ function itemRecord(item, ctx) {
   return {
     id: `item:${item.id}`,
     kind: item.kind,
-    url: item.urls[0],
-    external: true,
+    url: `items/${item.id}/`,
     title: item.title,
     date: item.date,
     stage: null,

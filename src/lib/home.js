@@ -1,5 +1,5 @@
 import path from 'node:path';
-import { events, items, series, featured, resolveRef, href, nameOf } from './catalog.js';
+import { events, items, series, featured, resolveRef, href, refHref, labelOf } from './catalog.js';
 import { addedDates } from './gitDates.js';
 import { itemYear, sortLatest, sortYears, featuredFrom } from './homeLogic.js';
 
@@ -8,20 +8,6 @@ export const leagueMenu = () =>
   [...series.values()]
     .filter((s) => events.some((e) => e.series === s.id && e.tier === 'big'))
     .sort((a, b) => a.name.localeCompare(b.name));
-
-/** Where a ref lives on the site. Series/items pages come from other issues. */
-export function refHref(type, record) {
-  if (type === 'match') return href(`matches/${record.event}/${record.id}/`);
-  const dir = { series: 'series', event: 'events', item: 'items', player: 'players', map: 'maps' }[type];
-  return dir ? href(`${dir}/${record.id}/`) : null;
-}
-
-/** Name to show for any resolved record; matches read "<p1> vs <p2> · <event name>". */
-export function labelOf(type, r) {
-  if (type !== 'match') return r.name ?? r.title ?? r.id;
-  const eventName = events.find((e) => e.id === r.event)?.name ?? r.event;
-  return `${nameOf(r.players?.[0])} vs ${nameOf(r.players?.[1])} · ${eventName}`;
-}
 
 export const featuredCards = () =>
   featuredFrom(featured, resolveRef, ({ type, record }) => {

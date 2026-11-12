@@ -30,7 +30,7 @@ async function openItemFromAPlayer(page) {
     page.on('pageerror', (e) => errors.push(String(e)));
 
     const opened = await openItemFromAPlayer(page);
-    const outbound = await page.locator('a[target="_blank"][rel="noopener noreferrer"][href^="http"]').count();
+    const outbound = await page.locator('#original a[target="_blank"][rel="noopener noreferrer"][href^="http"]').count();
     const { sw, iw } = await page.evaluate(() => ({ sw: document.documentElement.scrollWidth, iw: innerWidth }));
     const small = await page.locator('main a, .items a').evaluateAll((as) => as.filter((a) => a.getBoundingClientRect().height < 44 && a.closest('.items')).length);
     console.log(name, 'opened', opened, page.url(), 'h1', opened && (await page.textContent('h1')));
