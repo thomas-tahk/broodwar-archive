@@ -2,7 +2,7 @@
 
 You only need a free GitHub account. No coding needed. Two ways to help: fill in a form (no git), or edit files on github.com (git path, further down). The form path is easiest.
 
-Not sure what to work on? The help-wanted page on the site lists records with missing results or no known copy.
+Not sure what to work on? The [help-wanted page](https://thomas-tahk.github.io/broodwar-archive/help-wanted/) lists records with missing results or no known copy.
 
 ## Add without git
 
