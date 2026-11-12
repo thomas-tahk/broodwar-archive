@@ -50,4 +50,4 @@ body:
       label: "About"
       description: "What it is about, one per line, as kind:id. Example: player:boxer, event:2001-sky-osl, match:2001-sky-osl/final"
     validations:
-      required: false
+      required: true

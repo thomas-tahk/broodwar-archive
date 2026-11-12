@@ -222,10 +222,35 @@ test('issue templates are exactly what forms.js generates (run: node tools/submi
   }
 });
 
-test('workflow never interpolates untrusted issue data into a shell', () => {
-  const wf = fs.readFileSync('.github/workflows/submit.yml', 'utf8');
-  const runBlocks = wf.split(/\n\s+run: /).slice(1).join('\n');
-  assert.doesNotMatch(runBlocks, /\$\{\{\s*github\.event\.issue\.(body|title)/);
-  assert.doesNotMatch(wf, /pull_request_target/);
-  assert.match(wf, /accepted-submission/);
+test('workflow is hardened: no ${{ in run blocks, no step contexts in job env, pinned actions', () => {
+  const raw = fs.readFileSync('.github/workflows/submit.yml', 'utf8');
+  const wf = parse(raw);
+  assert.doesNotMatch(raw, /pull_request_target/);
+  assert.equal(wf.jobs.submit.if, "github.event.label.name == 'accepted-submission'");
+  for (const [k, v] of Object.entries(wf.jobs.submit.env)) {
+    assert.doesNotMatch(String(v), /\b(runner|steps|job)\./, `job env ${k}`);
+  }
+  const steps = wf.jobs.submit.steps;
+  for (const step of steps.filter((st) => st.run)) assert.doesNotMatch(step.run, /\$\{\{/, step.name ?? step.run);
+  for (const step of steps.filter((st) => st.uses)) assert.match(step.uses, /@[0-9a-f]{40}$/, step.uses);
+  assert.equal(steps.find((st) => st.uses?.startsWith('actions/checkout')).with['persist-credentials'], false);
+  assert.match(steps.find((st) => st.run?.startsWith('npm ci')).run, /--ignore-scripts/);
+  assert.equal(steps.at(-1).if, 'always()');
+  assert.equal(wf.jobs.submit.env.GH_TOKEN, undefined);
+  assert.equal(wf.permissions.actions, 'write');
+});
+
+test('ci.yml can be dispatched (submission PRs do not trigger it on their own)', () => {
+  assert.ok('workflow_dispatch' in parse(fs.readFileSync('.github/workflows/ci.yml', 'utf8')).on);
+});
+
+test('old templates are gone, replaced by the submit forms', () => {
+  assert.ok(!fs.existsSync('.github/ISSUE_TEMPLATE/new-copy.yml'));
+  assert.ok(!fs.existsSync('.github/ISSUE_TEMPLATE/wrong-info.yml'));
+  assert.ok(fs.existsSync('.github/ISSUE_TEMPLATE/history-note.yml'));
+});
+
+test('fix: sources cannot be edited; item About is required', () => {
+  rejects('fix', { field: 'sources' }, /"sources" cannot be changed/);
+  rejects('item', { about: null }, /"About" is required/);
 });

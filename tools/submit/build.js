@@ -5,7 +5,7 @@ import { SubmissionError } from './parse.js';
 
 const ID = /^[a-z0-9-]+$/;
 const FOLDERS = { event: 'events', player: 'players', map: 'maps', series: 'series', item: 'items' };
-const BLOCKED_FIELDS = ['id', 'event'];
+const BLOCKED_FIELDS = ['id', 'event', 'sources'];
 
 const fail = (msg) => { throw new SubmissionError(msg); };
 const lines = (s) => (s ?? '').split('\n').map((l) => l.trim()).filter(Boolean);

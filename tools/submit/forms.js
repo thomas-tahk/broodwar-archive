@@ -73,7 +73,7 @@ export const FORMS = {
       input('date', 'Date', 'YYYY-MM-DD. Blank if unknown.'),
       input('language', 'Language', 'Example: en, ko. Blank if unknown.'),
       area('links', 'Links', 'One link per line. At least one. These are also the sources.', true),
-      area('about', 'About', 'What it is about, one per line, as kind:id. Example: player:boxer, event:2001-sky-osl, match:2001-sky-osl/final'),
+      area('about', 'About', 'What it is about, one per line, as kind:id. Example: player:boxer, event:2001-sky-osl, match:2001-sky-osl/final', true),
     ],
   },
   fix: {
