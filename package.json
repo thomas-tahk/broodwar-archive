@@ -8,6 +8,7 @@
   "scripts": {
     "validate": "node tools/catalog/validate.js",
     "test": "node --test --test-concurrency=1 test/*.test.js",
+    "submit:templates": "node tools/submit/gen-templates.js",
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
