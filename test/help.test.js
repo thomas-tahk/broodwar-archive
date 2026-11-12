@@ -1,6 +1,16 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { helpRows, formUrl, missingItems } from '../src/lib/help.js';
+import { helpRows, formUrl, missingItems, FORMS } from '../src/lib/help.js';
+import { FORMS as SUBMIT_FORMS } from '../tools/submit/forms.js';
+
+test('every help form uses a real template and prefills only real field ids of it', () => {
+  for (const [name, f] of Object.entries(FORMS)) {
+    const form = Object.values(SUBMIT_FORMS).find((s) => s.file === f.template);
+    assert.ok(form, `${name}: template ${f.template} exists in tools/submit/forms.js`);
+    const ids = form.fields.map((x) => x.id);
+    for (const key of Object.keys(f.fields('e/m', 1))) assert.ok(ids.includes(key), `${name}: "${key}" is a field of ${f.template}`);
+  }
+});
 
 const ev = (id, tier, year, completeness = 'partial') => ({ id, tier, year, completeness, name: id });
 const game = (copies = 0, lost = false) => ({ set: 1, lost, copies: Array.from({ length: copies }, () => ({ url: 'x' })) });
