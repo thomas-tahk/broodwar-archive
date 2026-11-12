@@ -1,0 +1,33 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>BoxeR vs ElkY · Brood War Archive</title><script>document.documentElement.classList.add('js')</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;600;700&family=Noto+Sans+KR:wght@400;700&display=swap"><link rel="stylesheet" href="/broodwar-archive/m2-shape/_astro/Base.DHuilCk8.css"></head><body><header class="bar"><a class="brand" href="/broodwar-archive/m2-shape/">Brood War <span>Archive</span></a><nav class="nav" aria-label="Main"><a href="/broodwar-archive/m2-shape/" aria-current="page">Season</a><a href="/broodwar-archive/m2-shape/find/">Find a game</a></nav></header><main><p class="crumbs"><a href="/broodwar-archive/m2-shape/events/2001-wcg/">&larr; World Cyber Games 2001 (StarCraft)</a></p><section class="hero" aria-label="Match"><span class="lt"><span>Grand Final · Date unknown · Format unknown</span></span><div class="vs"><div class="pl win">BoxeR<span class="sr"> (winner)</span><small>임요환 · <span class="rc r-T"><span aria-hidden="true">T</span><span class="sr">Terran</span></span></small></div><div class="sc" aria-label="Score 2–0">2–0</div><div class="pl ">ElkY<small>Hangul unknown · <span class="rc r-T"><span aria-hidden="true">T</span><span class="sr">Terran</span></span></small></div></div></section><p class="meta">Date: Unknown · Format: Unknown · Result: BoxeR won (2-0)</p><h2>Games (1)</h2><div class="gs js-only grid" role="group" aria-label="Choose a game"><button type="button" data-game="1" aria-pressed="true"><span class="cn">Game 1 · Unknown</span><small>T v T · won by BoxeR</small></button></div><section class="game" id="game-1" data-game="1" aria-label="Game 1"><header><h3>Game 1</h3><span class="mono">Map: Unknown</span><span class="mono">Winner: BoxeR</span><span class="mono"><span class="rc r-T"><span aria-hidden="true">T</span><span class="sr">Terran</span></span><span class="rc r-T"><span aria-hidden="true">T</span><span class="sr">Terran</span></span></span><span class="grade" data-grade="none">No copy</span></header><p class="nocopy">No copy known.</p></section><p class="qlegend"><strong>Quality labels.</strong> Original (A) = near the source · Re-encode (B) = clean copy of the broadcast · Degraded (C) · Damaged (D) · Lost (X). The letter grades are provisional: nobody has compared copies side by side yet.</p><h2>Sources</h2><ul class="sources"><li><a href="https://liquipedia.net/starcraft/World_Cyber_Games/2001" target="_blank" rel="noopener noreferrer">https://liquipedia.net/starcraft/World_Cyber_Games/2001</a><span class="mute"> — Bracket - Grand Final BoxeR 2-0 ElkY, BoxeR marked advantage=1 (Advantage of 1 game), so the score counts that game plus one played win. Both Terran (RaceDist Final = 2 Terran). No map listed.</span></li></ul><h3 class="refhead">Player BoxeR</h3><ul class="sources"><li><a href="https://liquipedia.net/starcraft/BoxeR" target="_blank" rel="noopener noreferrer">https://liquipedia.net/starcraft/BoxeR</a></li><li><span class="mono">hangul</span>: <a href="https://www.youtube.com/playlist?list=PLWQeRMoEALvo2MhFXLG3MD-0WxgM0FG9r" target="_blank" rel="noopener noreferrer">https://www.youtube.com/playlist?list=PLWQeRMoEALvo2MhFXLG3MD-0WxgM0FG9r</a></li></ul><h3 class="refhead">Player ElkY</h3><ul class="sources"><li><a href="https://liquipedia.net/starcraft/World_Cyber_Games/2001" target="_blank" rel="noopener noreferrer">https://liquipedia.net/starcraft/World_Cyber_Games/2001</a><span class="mute"> — Listed as Terran, France, WCG 2001 runner-up.</span></li></ul><script>
+  (function () {
+    var pickers = document.querySelectorAll('.gs button');
+    var games = document.querySelectorAll('section.game');
+    function load(game) {
+      var f = game.querySelector('iframe');
+      if (f && !f.getAttribute('src')) f.setAttribute('src', f.dataset.src);
+    }
+    function select(set) {
+      var found = false;
+      games.forEach(function (g) { if (g.dataset.game === String(set)) found = true; });
+      if (!found) set = games[0].dataset.game;
+      pickers.forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.game === String(set)); });
+      games.forEach(function (g) {
+        var on = g.dataset.game === String(set);
+        g.hidden = !on;
+        if (on) load(g);
+      });
+    }
+    pickers.forEach(function (b) { b.addEventListener('click', function () { select(b.dataset.game); history.replaceState(null, '', '#game-' + b.dataset.game); }); });
+    document.querySelectorAll('.cp button').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var game = b.closest('section.game');
+        game.querySelectorAll('.cp button').forEach(function (o) { o.setAttribute('aria-pressed', o === b); });
+        game.querySelector('iframe').setAttribute('src', b.dataset.embed);
+        var link = game.querySelector('[data-openlink]');
+        link.href = b.dataset.open;
+        link.textContent = 'Open on ' + b.dataset.site + ' \u2197';
+      });
+    });
+    if (games.length) select((location.hash.match(/^#game-(\d+)$/) || [])[1] || games[0].dataset.game);
+  })();
+</script></main><footer class="foot"><p>Link index. No video is hosted here: players are embedded from YouTube or archive.org, and every “Watch on” link opens the original.</p><p class="foot-links"><a href="https://github.com/thomas-tahk/broodwar-archive/blob/main/CONTRIBUTING.md" rel="noopener noreferrer">Help fill the gaps</a><a href="https://github.com/thomas-tahk/broodwar-archive" rel="noopener noreferrer">Source on GitHub</a></p></footer></body></html>
