@@ -102,17 +102,27 @@ test('fixture catalog renders everything it knows', async (t) => {
 
   await t.test('player page lists games from every event, newest event first, with result and best grade', () => {
     const html = read('players/alpha');
-    const cup = html.indexOf('Fixture Cup 2001');
-    const league = html.indexOf('Fixture League 2000');
-    assert.ok(cup > 0 && league > cup, 'both events, newest first');
+    const groups = [...html.matchAll(/<section class="evgroup" aria-label="([^"]+)"/g)].map((m) => m[1]);
+    // Same-year events order by latest match date (zeta 2001-09 > cup 2001-03), not by id.
+    assert.deepEqual(groups, ['Fixture Zeta 2001', 'Fixture Cup 2001', 'Fixture League 2000']);
     has(html, `href="${BASE}matches/fixture-cup/semi/"`);
     has(html, `href="${BASE}matches/fixture-league/final/"`);
     has(html, `href="${BASE}matches/fixture-league/ro8-a-1/"`);
-    has(html, 'Games (5)');
-    has(html, 'Lost');
-    has(html, 'Won');
-    has(html, 'data-grade="C"');
-    has(html, 'data-grade="X"');
+    has(html, 'Games (7)');
+    const rows = html.split('<li class="grow">').slice(1);
+    const rowOf = (href) => rows.find((r) => r.includes(`href="${BASE}${href}/"`));
+    assert.match(rowOf('matches/fixture-cup/semi'), /<b>Loss<\/b>[\s\S]*data-grade="C"/);
+    assert.match(rowOf('matches/fixture-league/ro8-a-1'), /<b class="win">Win<\/b>[\s\S]*data-grade="A"/);
+    assert.match(html, /<b>Loss<\/b>\s*<span class="grade" data-grade="X">Footage lost/);
+    assert.ok(!html.includes('Won') && !html.includes('Lost'));
+    // Undated row sorts last inside its event; unknown opponent is plain text, not a link.
+    const zeta = html.split('<section class="evgroup"')[1];
+    assert.ok(zeta.indexOf('2001.09.01') < zeta.indexOf('Date unknown'), 'undated last');
+    const tbd = rowOf('matches/fixture-zeta/tbd');
+    has(tbd, 'vs Unknown');
+    has(tbd, 'Result unknown');
+    assert.ok(!/vs <a/.test(tbd), 'unknown opponent not linked');
+    has(tbd, 'Map unknown');
     has(html, 'Fixture interview');
     has(html, 'https://example.com/players/alpha');
   });

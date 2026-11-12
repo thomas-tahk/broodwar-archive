@@ -31,7 +31,7 @@ test('fixture event gap grid', () => {
     ['ro8-a-1', 1, 'A', 'false', 'Original', 'Alpha vs Bravo · G1'],
     ['ro8-a-2', 1, 'none', 'true', 'No copy', 'Bravo vs Charlie · G1'],
     ['final', 1, 'D', 'true', 'Damaged', 'Alpha vs Charlie · G1'],
-    ['final', 2, 'X', 'true', 'Lost', 'Alpha vs Charlie · G2'],
+    ['final', 2, 'X', 'true', 'Footage lost', 'Alpha vs Charlie · G2'],
     ['final', 3, 'none', 'true', 'Not graded', 'Alpha vs Charlie · G3'],
   ];
   for (const [m, set, grade, gap, text, label] of expected) {

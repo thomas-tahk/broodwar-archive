@@ -103,7 +103,7 @@ export function sideRace(match, i) {
 export const copyCount = (m) => m.games.reduce((n, g) => n + (g.copies ?? []).length, 0);
 
 /** Plain-word quality labels (letter grades stay visible but small). */
-export const GRADE_WORDS = { A: 'Original', B: 'Re-encode', C: 'Degraded', D: 'Damaged', X: 'Lost' };
+export const GRADE_WORDS = { A: 'Original', B: 'Re-encode', C: 'Degraded', D: 'Damaged', X: 'Footage lost' };
 export const COPY_KINDS = { 'ogn-official': 'Original broadcast', 'ogn-ai-upscale': 'AI upscale', 'fan-upload': 'Fan upload', torrent: 'Torrent', other: 'Other copy' };
 
 /** "41:25" when the grade note states a length; null otherwise (never guessed). */
@@ -126,20 +126,21 @@ export function embedOf(url, segment = null) {
 /** "YouTube" or the host name, for "Open on ..." links. */
 export const siteName = (url) => (['youtube.com', 'youtu.be'].includes(host(url)) ? 'YouTube' : host(url));
 
+/** Latest known match date among rows, '' when none is dated. */
+const latestDate = (rows) => rows.reduce((max, r) => (r.match.date && r.match.date > max ? r.match.date : max), '');
+const byDateDesc = (a, b) => (b.match.date ?? '').localeCompare(a.match.date ?? '') || a.match.id.localeCompare(b.match.id) || a.game.set - b.game.set;
+
 /**
- * Games matching `pick(match, game)`, grouped by event (newest first), then match date (newest first).
+ * Games matching `pick(match, game)`, grouped by event. Groups: latest known match date desc, then
+ * year desc, then id. Rows inside a group: match date desc, undated last.
  * [{ event, rows: [{ match, game }] }]
  */
 export function gamesGroupedByEvent(pick) {
   const rows = catalog.matches.flatMap((match) => match.games.filter((g) => pick(match, g)).map((game) => ({ match, game })));
   return events
-    .map((event) => ({
-      event,
-      rows: rows
-        .filter((r) => r.match.event === event.id)
-        .sort((a, b) => (b.match.date ?? '').localeCompare(a.match.date ?? '') || a.match.id.localeCompare(b.match.id) || a.game.set - b.game.set),
-    }))
-    .filter((grp) => grp.rows.length);
+    .map((event) => ({ event, rows: rows.filter((r) => r.match.event === event.id).sort(byDateDesc) }))
+    .filter((grp) => grp.rows.length)
+    .sort((a, b) => latestDate(b.rows).localeCompare(latestDate(a.rows)) || (b.event.year ?? 0) - (a.event.year ?? 0) || a.event.id.localeCompare(b.event.id));
 }
 export const gamesOfPlayer = (id) => gamesGroupedByEvent((m) => m.players.includes(id));
 export const gamesOnMap = (id) => gamesGroupedByEvent((_, g) => g.map === id);

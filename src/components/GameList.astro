@@ -1,13 +1,15 @@
 ---
 // Games grouped by event. `focus` = player id (shows opponent + result for them) or null (map page: shows both players).
 import GradeBadge from './GradeBadge.astro';
-import { maps, playerOf, hasPlayer, ymd, stageOf, href } from '../lib/catalog.js';
+import { maps, nameOf, hasPlayer, ymd, stageOf, href } from '../lib/catalog.js';
 import { bestGrade } from '../../tools/catalog/grades.js';
 
 const { groups, focus = null } = Astro.props;
-const nameOf = (id) => playerOf(id).name ?? 'Unknown';
 const linkable = (id) => Boolean(id) && hasPlayer(id);
-const result = (g) => (!g.winner ? 'Result unknown' : g.winner === focus ? 'Won' : 'Lost');
+function result(g) {
+  if (!g.winner) return 'Result unknown';
+  return g.winner === focus ? 'Win' : 'Loss';
+}
 const mapName = (g) => (g.map ? maps.get(g.map)?.name ?? g.map : 'Map unknown');
 ---
 {groups.map(({ event, rows }) => (
@@ -27,7 +29,7 @@ const mapName = (g) => (g.map ? maps.get(g.map)?.name ?? g.map : 'Map unknown');
             </span>
             <span class="gend">
               {focus
-                ? <b class={game.winner === focus ? 'win' : ''}>{result(game)}</b>
+                ? <b class={game.winner === focus ? 'win' : undefined}>{result(game)}</b>
                 : <span>{game.winner ? `${nameOf(game.winner)} won` : 'Result unknown'}</span>}
               <GradeBadge grade={bestGrade(game)} none={(game.copies ?? []).length === 0} />
               <a href={href(`matches/${match.event}/${match.id}/`)}>Open match</a>

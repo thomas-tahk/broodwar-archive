@@ -49,6 +49,19 @@ async function overflow(page, label, width) {
     await page.click('.mx button[data-mu="PT"]');
     if ((await page.locator('.frow:not([hidden])').count()) !== total) process.exitCode = 1;
 
+    // Player and map pages: every page linked from the index must fit the viewport.
+    for (const kind of ['players', 'maps']) {
+      await page.goto(`${base}${kind}/`);
+      await overflow(page, `${kind} index`, name);
+      const links = await page.locator('a.row').evaluateAll((as) => as.map((a) => a.getAttribute('href')));
+      if (!links.length) process.exitCode = 1;
+      for (const link of links) {
+        await page.goto(new URL(link, page.url()).href);
+        await overflow(page, link, name);
+      }
+      await page.screenshot({ path: `${out}/${kind}-${name}.png`, fullPage: true });
+    }
+
     console.log(name, 'console errors', errors);
     if (errors.length) process.exitCode = 1;
   }
