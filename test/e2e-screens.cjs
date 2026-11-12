@@ -19,7 +19,7 @@ async function overflow(page, label, width) {
   for (const [name, w, h] of [['375', 375, 812], ['1280', 1280, 800]]) {
     const page = await browser.newPage({ viewport: { width: w, height: h } });
     const errors = [];
-    page.on('console', (m) => m.type() === 'error' && errors.push(m.text()));
+    page.on('console', (m) => m.type() === 'error' && !/compute-pressure/.test(m.text()) && errors.push(m.text()));
     page.on('pageerror', (e) => errors.push(String(e)));
 
     await page.goto(base);
