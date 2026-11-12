@@ -45,6 +45,22 @@ test('fixture catalog renders everything it knows', async (t) => {
     }
   });
 
+  await t.test('home is a front door: league menu, featured, timeline, latest', () => {
+    const html = read('');
+    has(html, `<a href="${BASE}series/fixture-series/">Fixture Series</a>`);
+    has(html, 'Featured');
+    has(html, 'Fixture blurb');
+    has(html, '<h3>2002</h3>');
+    has(html, '<h3>2000</h3>');
+    assert.ok(html.indexOf('<h3>2002</h3>') < html.indexOf('<h3>2000</h3>'), 'years descend');
+    has(html, `class="band" href="${BASE}events/fixture-big-2002/"`);
+    has(html, 'Latest additions');
+    const section = html.split('id="years-h"')[1].split('</section>')[0];
+    const entries = [...section.matchAll(/<a [^>]*>/g)].map((m) => m[0]);
+    assert.ok(entries.length >= 4);
+    for (const a of entries) assert.match(a, /href="[^"]+"/);
+  });
+
   await t.test('home links every event under base', () => {
     const html = read('');
     for (const e of cat.events) has(html, `href="${BASE}events/${e.id}/"`);

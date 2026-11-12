@@ -145,6 +145,21 @@ h2{font-size:1.8rem;color:var(--fg);margin:1.8rem 0 .6rem}
 .fsel{min-height:44px;background:var(--panel);border:2px solid var(--line);padding:0 .6rem;max-width:100%}
 .ghost{min-height:44px;padding:0 1rem;background:transparent;border:2px solid var(--mute);cursor:pointer;font-weight:600;margin-top:.6rem}
 .frow[hidden]{display:none}
+/* home: front door */
+.leagues{display:flex;flex-wrap:wrap;gap:.3rem;margin:.8rem 0 0;padding:.3rem 0;border-bottom:2px solid var(--line)}
+.leagues a{display:inline-flex;align-items:center;min-height:44px;padding:0 1rem;background:var(--panel);border-bottom:4px solid var(--accent2);color:var(--fg);font:700 1.2rem "Barlow Condensed",sans-serif;text-transform:uppercase;text-decoration:none}
+.leagues a:hover{background:var(--accent);color:#000}
+.cards,.years,.chips{list-style:none;padding:0;margin:0}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(14rem,1fr));gap:.5rem}
+.cards a{display:flex;flex-direction:column;align-items:flex-start;gap:.3rem;height:100%;min-height:44px;padding:.7rem .8rem;background:var(--panel);border-left:6px solid var(--accent2);color:var(--fg);text-decoration:none}
+.cards strong{font:800 1.4rem "Barlow Condensed",sans-serif;text-transform:uppercase}
+.years>li{padding:.6rem 0;border-top:2px solid var(--line)}
+.years h3{font-size:1.6rem;color:var(--win)}
+.band{display:flex;align-items:center;min-height:44px;margin:.4rem 0;padding:.4rem .8rem;background:linear-gradient(100deg,#0a1a5a,#1830b8 60%,#0a1a5a);border-top:3px solid var(--accent);border-bottom:3px solid var(--accent2);color:var(--fg);font:800 1.5rem "Barlow Condensed",sans-serif;text-transform:uppercase;text-decoration:none}
+.chips{display:flex;flex-wrap:wrap;gap:.4rem;margin:.4rem 0 0}
+.chips a{display:inline-flex;align-items:center;min-height:44px;padding:0 .9rem;background:var(--panel);border:1px solid var(--line);border-radius:22px;color:var(--fg);text-decoration:none}
+.chips a .mute{margin-left:.4em}
+.chips a:hover{border-color:var(--accent)}
 @media(min-width:760px){
   .row{grid-template-columns:13rem 1fr 15rem;align-items:center;gap:1rem}
   .row .info{justify-content:flex-end}
