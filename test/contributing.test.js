@@ -18,6 +18,18 @@ function put(dir, rel, text) {
   fs.writeFileSync(path.join(dir, rel), text);
 }
 
+for (const heading of ['Add without git', 'Add an item', 'Add an event', 'Add a series', 'Completeness', 'Add with git']) {
+  test(`CONTRIBUTING has a "${heading}" section`, () => {
+    assert.match(doc, new RegExp(`^## ${heading}\\b`, 'm'));
+  });
+}
+
+test('CONTRIBUTING puts the no-git path before the git path and links every form', () => {
+  assert.ok(doc.indexOf('## Add without git') < doc.indexOf('## Add with git'));
+  for (const f of ['event', 'match', 'copy', 'item', 'fix']) assert.ok(doc.includes(`template=submit-${f}.yml`), f);
+  assert.ok(doc.includes('accepted-submission'));
+});
+
 test('CONTRIBUTING templates, applied as written, pass the validator', () => {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'contrib-'));
   try {

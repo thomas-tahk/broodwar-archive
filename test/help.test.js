@@ -36,13 +36,13 @@ test('all-lost matches are not in the no-copy list; others are', () => {
   assert.deepEqual(helpRows(events, matches).map((r) => [r.type, r.recordId]), [['nocopy', 'e/mixed'], ['nocopy', 'e/none']]);
 });
 
-test('formUrl: copy form prefills match, info form prefills where', () => {
+test('formUrl: copy form prefills match_id, fix form prefills record', () => {
   const args = { recordId: 'e/m', pageUrl: 'https://x.test/matches/e/m/' };
   const copy = new URL(formUrl('https://gh.test/r', 'copy', args));
-  assert.equal(copy.searchParams.get('template'), 'new-copy.yml');
-  assert.equal(copy.searchParams.get('match'), 'e/m');
+  assert.equal(copy.searchParams.get('template'), 'submit-copy.yml');
+  assert.equal(copy.searchParams.get('match_id'), 'e/m');
   const info = new URL(formUrl('https://gh.test/r', 'info', args));
-  assert.equal(info.searchParams.get('template'), 'wrong-info.yml');
-  assert.equal(info.searchParams.get('where'), 'https://x.test/matches/e/m/');
+  assert.equal(info.searchParams.get('template'), 'submit-fix.yml');
+  assert.equal(info.searchParams.get('record'), 'e/m');
   assert.equal(info.searchParams.get('title'), '[e/m] ');
 });
