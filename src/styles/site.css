@@ -194,7 +194,7 @@ label.grp{display:block}
 .grow .when{font:700 1rem "Barlow Condensed",sans-serif;color:var(--mute);text-transform:uppercase}
 .grow .gend{display:flex;flex-wrap:wrap;gap:.3rem .8rem;align-items:center}
 .grow a,.items a{display:inline-flex;align-items:center;min-height:44px}
-.hero .plink{color:inherit;text-decoration:underline;text-underline-offset:.15em}
+.hero .plink{color:inherit;text-decoration:underline;text-underline-offset:.15em;display:inline-block;padding:8px 0;margin:-8px 0}
 .items{list-style:none;margin:0;padding:0}
 @media (min-width:700px){.grow{grid-template-columns:14rem 1fr auto;align-items:center}}
 
