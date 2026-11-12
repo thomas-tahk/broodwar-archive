@@ -140,8 +140,9 @@ test('fix: null, numbers and nested game fields work', () => {
   try {
     assert.equal(parse(processSubmission(issueBody('fix', { ...SAMPLES.fix, field: 'sponsor', new_value: 'null' }), dir).text).sponsor, null);
     assert.equal(parse(processSubmission(issueBody('fix', { ...SAMPLES.fix, field: 'year', new_value: '2001' }), dir).text).year, 2001);
-    const g = processSubmission(issueBody('fix', { ...SAMPLES.fix, record: 'match:fixture-league/ro8-a-1', field: 'games.0.map', new_value: 'map-two' }), dir);
-    assert.equal(parse(g.text).games[0].map, 'map-two');
+    const g = processSubmission(issueBody('fix', { ...SAMPLES.fix, record: 'match:fixture-league/ro8-a-1', field: 'games.1.map', new_value: 'map-two' }), dir);
+    assert.equal(parse(g.text).games[0].map, 'map-two', 'games.1 is the FIRST game');
+    assert.throws(() => processSubmission(issueBody('fix', { ...SAMPLES.fix, record: 'match:fixture-league/ro8-a-1', field: 'games.0.map', new_value: 'map-two' }), dir), /counted from 1/);
   } finally {
     fs.rmSync(dir, { recursive: true, force: true });
   }

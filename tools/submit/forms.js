@@ -82,7 +82,7 @@ export const FORMS = {
     description: 'Something in the archive is wrong. Change one field.',
     fields: [
       input('record', 'Record', 'Which record. Examples: event:2001-sky-osl, player:boxer, match:2001-sky-osl/final', true),
-      input('field', 'Field', 'Field to change. Examples: name, year, winner, games.0.map (games are counted from 0)', true),
+      input('field', 'Field', 'Field to change. Examples: name, year, winner, games.1.map (games are counted from 1, like the game number)', true),
       input('new_value', 'New value', 'The correct value. Write null for unknown.', true),
       input('source', 'Source', 'A link that shows the correct value.', true),
     ],

@@ -173,8 +173,10 @@ function recordFile(ref) {
 function fieldPath(field) {
   const segments = field.split('.').map((s) => (/^\d+$/.test(s) ? Number(s) : s));
   if (!segments.every((s) => typeof s === 'number' || /^[a-z_]+$/.test(s))) {
-    fail(`Field "${field}" is not allowed. Use names like winner or games.0.map.`);
+    fail(`Field "${field}" is not allowed. Use names like winner or games.1.map.`);
   }
+  if (segments.includes(0)) fail(`Field "${field}": list positions are counted from 1 (games.1.map is the first game).`);
+  segments.forEach((s, i) => { if (typeof s === 'number') segments[i] = s - 1; });
   if (BLOCKED_FIELDS.includes(segments[0])) fail(`Field "${segments[0]}" cannot be changed with this form. Ask a maintainer.`);
   return segments;
 }
