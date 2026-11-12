@@ -29,7 +29,7 @@ You give: an id (lowercase letters, digits, dashes), a kind (one lowercase word 
 
 An event is one tournament or season, such as the 2001 SKY OSL. Use the event form above.
 
-You give: an id, a name, a year. Add the league, tier (big, mid or small) and kind if you know them. Tier only decides how prominent the event looks; small events are just as welcome. Every event needs a source. Fields and tier rule: [docs/catalog-format.md](docs/catalog-format.md#event).
+You give: an id, a name, a year. Also pick a tier (big, mid or small) and a kind from the lists; both are required, so pick the closest. Add the league and the rest if you know them. Tier only decides how prominent the event looks; small events are just as welcome. Every event needs a source. Fields and tier rule: [docs/catalog-format.md](docs/catalog-format.md#event).
 
 ## Add a series
 
@@ -86,7 +86,7 @@ Order of work:
 
 1. Check that both players and the map already exist: `catalog/players/<id>.yaml`, `catalog/maps/<id>.yaml`. Missing ones come first.
 2. On github.com open the repository, click **Add file**, then **Create new file**. Type the whole path in the name box, e.g. `catalog/players/flash.yaml`. Paste the template, replace the example values, then **Commit changes...**, **Propose changes**, **Create pull request**.
-3. Last, the match: `catalog/matches/<event-id>/<match-id>.yaml`, same way. The event (`catalog/events/<event-id>.yaml`) must already exist. If it doesn't, [open an issue](https://github.com/thomas-tahk/broodwar-archive/issues/new/choose) and we'll add it.
+3. Last, the match: `catalog/matches/<event-id>/<match-id>.yaml`, same way. The event (`catalog/events/<event-id>.yaml`) must already exist. If it doesn't, [add the event first with the event form](https://github.com/thomas-tahk/broodwar-archive/issues/new?template=submit-event.yml).
 
 The file name is the id plus `.yaml`. Ids use only lowercase `a-z`, digits `0-9` and `-`. No spaces, no capitals. The `id:` inside the file must equal the file name.
 

@@ -5,7 +5,15 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
+import { FORMS } from '../tools/submit/forms.js';
+
 const doc = fs.readFileSync('CONTRIBUTING.md', 'utf8');
+
+test('CONTRIBUTING: a missing event points at the event form; tier and kind are documented as required like the form', () => {
+  assert.ok(doc.includes('add the event first with the event form'));
+  for (const id of ['tier', 'event_kind']) assert.equal(FORMS.event.fields.find((f) => f.id === id).required, true);
+  assert.match(doc, /tier \(big, mid or small\) and a kind from the lists; both are required/);
+});
 
 function template(name) {
   const m = doc.match(new RegExp(`<!-- template:${name} -->\\n\`\`\`yaml\\n([\\s\\S]*?)\`\`\``));
