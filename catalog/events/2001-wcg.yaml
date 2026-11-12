@@ -2,7 +2,7 @@
 id: 2001-wcg
 name: World Cyber Games 2001 (StarCraft)
 league: WCG
-sponsor: null
+sponsor: Samsung
 year: 2001
 broadcaster: null
 organizer: World Cyber Games
@@ -13,4 +13,4 @@ tags: [seoul, offline]
 completeness: stub
 sources:
   - url: https://liquipedia.net/starcraft/World_Cyber_Games/2001
-    note: Liquipedia. Seoul, 2001-12-05 to 2001-12-09, 52 players; individual final BoxeR 2-0 ElkY.
+    note: Liquipedia. Seoul, 2001-12-05 to 2001-12-09, 52 players, sponsor Samsung (infobox); individual final BoxeR 2-0 ElkY (incl. a 1-game advantage).

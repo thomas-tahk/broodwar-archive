@@ -2,7 +2,7 @@
 id: msl
 name: MBCGame StarCraft League
 aliases: [MSL, KPGA Tour]
-organizer: null
+organizer: MBCGame
 broadcaster: MBCGame
 sources:
   - url: https://liquipedia.net/starcraft/MBCGame_StarCraft_League
