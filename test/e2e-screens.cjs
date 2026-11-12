@@ -29,7 +29,7 @@ async function overflow(page, label, width) {
     const bands = await page.locator('.years a.band').count();
     console.log(name, 'league links', leagues, 'timeline bands', bands);
     if (!(leagues > 0 && bands > 0)) process.exitCode = 1;
-    await page.click('.years a.band');
+    await page.click('.years a.band[href*="2001-sky-osl"]');
     await page.waitForURL('**/events/**');
     await page.screenshot({ path: `${out}/event-${name}.png`, fullPage: true });
     await overflow(page, 'event', name);
@@ -88,6 +88,19 @@ async function overflow(page, label, width) {
         await overflow(page, link, name);
       }
     }
+
+    // What's missing panel on a stub/partial event (issue #16).
+    await page.goto(`${base}events/2002-kpga-1st-tour/`);
+    const panel = page.locator('section.missing');
+    const help = panel.locator('a', { hasText: 'Help fill this' });
+    const panelOk = (await panel.isVisible()) && (await panel.textContent()).includes("What's missing");
+    const helpUrl = new URL((await help.getAttribute('href')) ?? 'http://none/');
+    console.log(name, 'missing panel visible', panelOk, 'help link', helpUrl.searchParams.get('template'), helpUrl.searchParams.get('record'));
+    if (!(panelOk && helpUrl.searchParams.get('template') === 'submit-fix.yml' && helpUrl.searchParams.get('record') === 'event:2002-kpga-1st-tour')) process.exitCode = 1;
+    const box = await help.boundingBox();
+    if (!box || box.height < 44) process.exitCode = 1;
+    await overflow(page, 'event missing panel', name);
+    await page.screenshot({ path: `${out}/event-missing-${name}.png`, fullPage: true });
 
     console.log(name, 'console errors', errors);
     if (errors.length) process.exitCode = 1;

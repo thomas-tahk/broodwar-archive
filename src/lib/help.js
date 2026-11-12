@@ -2,10 +2,12 @@
 import { copyCount } from './catalog.js';
 
 const TIER_RANK = { big: 0, mid: 1, small: 2 };
-/** The ONE place that names the issue forms: template file, the form field id to prefill, and which record value goes in it. */
+/** The ONE place that names the issue forms: template file and the form fields to prefill from a record ("event" or "event/match"). */
+const split = (recordId) => { const [event, match] = recordId.split('/'); return { event, match }; };
 export const FORMS = {
-  copy: { template: 'submit-copy.yml', field: 'match_id', value: 'recordId' },
-  info: { template: 'submit-fix.yml', field: 'record', value: 'recordId' },
+  copy: { template: 'submit-copy.yml', fields: (recordId, game) => { const { event, match } = split(recordId); return { event_id: event, match_id: match, ...(game ? { game_number: String(game) } : {}) }; } },
+  info: { template: 'submit-fix.yml', fields: (recordId) => ({ record: `${recordId.includes('/') ? 'match' : 'event'}:${recordId}` }) },
+  addmatch: { template: 'submit-match.yml', fields: (recordId) => ({ event_id: split(recordId).event }) },
 };
 export const GAP_TYPES = [
   { key: 'event', title: 'Events with missing results or details', form: 'info' },
@@ -17,11 +19,31 @@ export const GAP_TYPES = [
 const unfinished = (r) => r.completeness !== 'complete';
 const missingFields = (m) => [!m.date && 'date', !m.winner && 'winner', !m.score && 'score'].filter(Boolean);
 
-/** GitHub issue-form URL: title prefilled with the record id, plus the form's required field. */
-export function formUrl(repoUrl, form, { recordId, pageUrl }) {
+/** Issue-form URL: title prefilled with the record id, plus the form's fields. `game` (optional) prefills the copy form's game number. */
+export function formUrl(repoUrl, form, { recordId, game }) {
   const f = FORMS[form];
-  const q = new URLSearchParams({ template: f.template, title: `[${recordId}] `, [f.field]: { recordId, pageUrl }[f.value] });
+  const q = new URLSearchParams({ template: f.template, title: `[${recordId}] `, ...f.fields(recordId, game) });
   return `${repoUrl}/issues/new?${q}`;
+}
+
+/** Plain-words list of what a record page is missing. Each item: { text, form, game?, label }. Empty when nothing is. */
+export function missingItems(rec, eventMatches = []) {
+  const items = [];
+  if (unfinished(rec)) {
+    const why = { stub: 'Only a stub so far: results and details are mostly unfilled.', partial: 'Partly filled in: some results or details are still missing.' };
+    items.push({ text: why[rec.completeness] ?? 'Results or details are incomplete.', form: 'info', label: 'Help fill this' });
+  }
+  if (rec.event) {
+    const miss = missingFields(rec);
+    if (miss.length && !unfinished(rec)) items.push({ text: `Missing ${miss.join(', ')}.`, form: 'info', label: 'Help fill this' });
+    for (const g of rec.games.filter((x) => !x.lost && !(x.copies ?? []).length)) {
+      items.push({ text: `Game ${g.set} has no known copy.`, form: 'copy', game: g.set, label: `Add a copy of game ${g.set}` });
+    }
+    return items;
+  }
+  const missing = rec.expected_games != null ? rec.expected_games - eventMatches.reduce((n, m) => n + m.games.length, 0) : 0;
+  if (missing > 0) items.push({ text: `${missing} expected ${missing === 1 ? 'game is' : 'games are'} not catalogued yet.`, form: 'addmatch', label: 'Add a missing match' });
+  return items;
 }
 
 /** One row per gap, sorted big tier first, then year (oldest first), then record id. */

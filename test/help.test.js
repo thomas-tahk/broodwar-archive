@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { helpRows, formUrl } from '../src/lib/help.js';
+import { helpRows, formUrl, missingItems } from '../src/lib/help.js';
 
 const ev = (id, tier, year, completeness = 'partial') => ({ id, tier, year, completeness, name: id });
 const game = (copies = 0, lost = false) => ({ set: 1, lost, copies: Array.from({ length: copies }, () => ({ url: 'x' })) });
@@ -36,13 +36,37 @@ test('all-lost matches are not in the no-copy list; others are', () => {
   assert.deepEqual(helpRows(events, matches).map((r) => [r.type, r.recordId]), [['nocopy', 'e/mixed'], ['nocopy', 'e/none']]);
 });
 
-test('formUrl: copy form prefills match_id, fix form prefills record', () => {
-  const args = { recordId: 'e/m', pageUrl: 'https://x.test/matches/e/m/' };
-  const copy = new URL(formUrl('https://gh.test/r', 'copy', args));
+test('formUrl: each form prefills exactly its own fields', () => {
+  const copy = new URL(formUrl('https://gh.test/r', 'copy', { recordId: 'e/m', game: 2 }));
   assert.equal(copy.searchParams.get('template'), 'submit-copy.yml');
-  assert.equal(copy.searchParams.get('match_id'), 'e/m');
-  const info = new URL(formUrl('https://gh.test/r', 'info', args));
+  assert.deepEqual([copy.searchParams.get('event_id'), copy.searchParams.get('match_id'), copy.searchParams.get('game_number')], ['e', 'm', '2']);
+  const info = new URL(formUrl('https://gh.test/r', 'info', { recordId: 'e/m' }));
   assert.equal(info.searchParams.get('template'), 'submit-fix.yml');
-  assert.equal(info.searchParams.get('record'), 'e/m');
+  assert.equal(info.searchParams.get('record'), 'match:e/m');
   assert.equal(info.searchParams.get('title'), '[e/m] ');
+  assert.equal(new URL(formUrl('https://gh.test/r', 'info', { recordId: 'e' })).searchParams.get('record'), 'event:e');
+  const add = new URL(formUrl('https://gh.test/r', 'addmatch', { recordId: 'e' }));
+  assert.deepEqual([add.searchParams.get('template'), add.searchParams.get('event_id')], ['submit-match.yml', 'e']);
+});
+
+test('missingItems: complete event none; stub event with expected games; match without copy', () => {
+  assert.deepEqual(missingItems(ev('e', 'big', 2000, 'complete')), []);
+  const stub = { ...ev('e', 'big', 2000, 'stub'), expected_games: 5 };
+  assert.deepEqual(missingItems(stub, [match('e', 'm')]).map((i) => i.form), ['info', 'addmatch']);
+  const m = match('e', 'm', { games: [game(1), { ...game(0), set: 2 }, { ...game(0, true), set: 3 }] });
+  assert.deepEqual(missingItems(m).map((i) => [i.form, i.game]), [['copy', 2]]);
+});
+
+test('complete match missing date/winner/score offers the fix form', () => {
+  const m = match('e', 'm', { date: null, winner: null, score: null });
+  assert.deepEqual(missingItems(m).map((i) => [i.form, i.text]), [['info', 'Missing date, winner, score.']]);
+});
+
+test('a match whose every game is lost has no copy gap', () => {
+  assert.deepEqual(missingItems(match('e', 'm', { games: [game(0, true), game(0, true)] })), []);
+});
+
+test('a complete event with fewer games than expected still surfaces the gap', () => {
+  const e = { ...ev('e', 'big', 2000, 'complete'), expected_games: 3 };
+  assert.deepEqual(missingItems(e, [match('e', 'm')]).map((i) => i.form), ['addmatch']);
 });

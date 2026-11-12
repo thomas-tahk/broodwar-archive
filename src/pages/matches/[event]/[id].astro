@@ -2,6 +2,7 @@
 import Base from '../../../layouts/Base.astro';
 import GradeBadge from '../../../components/GradeBadge.astro';
 import MatchHero from '../../../components/MatchHero.astro';
+import MissingPanel from '../../../components/MissingPanel.astro';
 import QualityLegend from '../../../components/QualityLegend.astro';
 import Race from '../../../components/Race.astro';
 import ItemList from '../../../components/ItemList.astro';
@@ -32,6 +33,8 @@ const refSources = [
   <p class="crumbs"><a href={href(`events/${match.event}/`)}>&larr; {event?.name ?? match.event}</a></p>
   <MatchHero match={match} />
   <p class="meta">Date: {match.date ?? 'Unknown'} · Format: {match.format ?? 'Unknown'} · Result: {match.winner ? `${playerOf(match.winner).name ?? 'Unknown'} won${match.score ? ` (${match.score})` : ''}` : 'Unknown'}</p>
+
+  <MissingPanel record={match} />
 
   <h2>Games ({match.games.length})</h2>
   <div class="gs js-only grid" role="group" aria-label="Choose a game">

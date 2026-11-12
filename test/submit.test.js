@@ -27,7 +27,7 @@ const SAMPLES = {
   },
   copy: {
     event_id: 'fixture-league', match_id: 'ro8-a-1', game_number: '1', copy_link: 'https://example.com/v/new',
-    copy_kind: 'fan-upload', title: 'a title', resolution: '480p', fps: '30', segment_start: '00:10:00', segment_end: '00:30:00',
+    copy_kind: 'fan-upload', copy_title: 'a title', resolution: '480p', fps: '30', segment_start: '00:10:00', segment_end: '00:30:00',
   },
   item: {
     item_id: 'new-article', item_kind: 'article', title: 'A new article', date: '2001-02-03', language: 'en',
@@ -253,4 +253,18 @@ test('old templates are gone, replaced by the submit forms', () => {
 test('fix: sources cannot be edited; item About is required', () => {
   rejects('fix', { field: 'sources' }, /"sources" cannot be changed/);
   rejects('item', { about: null }, /"About" is required/);
+});
+
+test('values prefilled by the What is missing panel parse: typed fix record, split copy ids', () => {
+  const fix = submit('fix', { record: 'match:fixture-league/ro8-a-1', field: 'format', new_value: 'Bo5' });
+  assert.ok(fix.out.file.endsWith('matches/fixture-league/ro8-a-1.yaml'));
+  const copy = submit('copy', { event_id: 'fixture-league', match_id: 'ro8-a-2', game_number: '1' });
+  assert.ok(copy.out.file.endsWith('matches/fixture-league/ro8-a-2.yaml'));
+});
+
+test('copy form field ids never collide with GitHub prefill params (title, labels, template)', () => {
+  for (const [kind, form] of Object.entries(FORMS)) {
+    if (kind === 'item') continue; // item form is never prefilled from the site
+    for (const f of form.fields) assert.ok(!['title', 'labels', 'template', 'assignees', 'projects', 'milestone'].includes(f.id), `${kind}.${f.id}`);
+  }
 });
