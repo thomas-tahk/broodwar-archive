@@ -1,4 +1,7 @@
-import { events, items, series, featured, resolveRef, href } from './catalog.js';
+import { execFileSync } from 'node:child_process';
+import path from 'node:path';
+import { events, items, series, featured, resolveRef, href, nameOf } from './catalog.js';
+import { itemYear, sortLatest, sortYears, featuredFrom } from './homeLogic.js';
 
 /** Series that have at least one tier-big event, by name. */
 export const leagueMenu = () =>
@@ -13,23 +16,18 @@ export function refHref(type, record) {
   return dir ? href(`${dir}/${record.id}/`) : null;
 }
 
-/** Name to show for any resolved record. */
-export const labelOf = (type, r) => r.name ?? r.title ?? (type === 'match' ? r.fullId : r.id);
-
-/** Featured picks that resolve to a record, in file order; dangling refs are skipped. */
-export function featuredCards() {
-  return featured.flatMap(({ ref, blurb }) => {
-    const hit = resolveRef(ref);
-    const link = hit && refHref(hit.type, hit.record);
-    return link ? [{ type: hit.type, label: labelOf(hit.type, hit.record), blurb: blurb ?? null, href: link }] : [];
-  });
+/** Name to show for any resolved record; matches read "<p1> vs <p2> · <event name>". */
+export function labelOf(type, r) {
+  if (type !== 'match') return r.name ?? r.title ?? r.id;
+  const eventName = events.find((e) => e.id === r.event)?.name ?? r.event;
+  return `${nameOf(r.players?.[0])} vs ${nameOf(r.players?.[1])} · ${eventName}`;
 }
 
-const yearOfItem = (item) => {
-  if (item.date) return Number(item.date.slice(0, 4));
-  const from = (item.links?.from ?? []).map((r) => resolveRef(r)).find((h) => h?.type === 'event' && h.record.year);
-  return from ? from.record.year : null;
-};
+export const featuredCards = () =>
+  featuredFrom(featured, resolveRef, ({ type, record }) => {
+    const link = refHref(type, record);
+    return link && { label: labelOf(type, record), href: link };
+  });
 
 /** [{ year (number|null), bands: [big events], chips: [...] }], years descending, unknown last. */
 export function timeline() {
@@ -40,10 +38,28 @@ export function timeline() {
     const y = slot(e.year ?? null);
     (e.tier === 'big' ? y.bands : y.chips).push(entry);
   }
-  for (const i of items) slot(yearOfItem(i)).chips.push({ label: i.title, href: href(`items/${i.id}/`), kind: i.kind });
-  return [...years.values()].sort((a, b) => (a.year === null) - (b.year === null) || (b.year ?? 0) - (a.year ?? 0));
+  for (const i of items) slot(itemYear(i, resolveRef)).chips.push({ label: i.title, href: href(`items/${i.id}/`), kind: i.kind });
+  return sortYears([...years.values()]);
 }
 
-/** Newest first. Guess: file order (loader order, later = newer), items only, max 6. */
+/** { itemId: ISO date the item file was added in git }, one git call. Empty when git history is unavailable. */
+export function itemAddedDates() {
+  const dir = path.relative(process.cwd(), path.resolve(process.cwd(), process.env.CATALOG_DIR || 'catalog'));
+  try {
+    const log = execFileSync('git', ['log', '--diff-filter=A', '--name-only', '--format=@%cI', '--', path.join(dir, 'items')],
+      { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
+    const dates = {};
+    let when = null;
+    for (const line of log.split('\n')) {
+      if (line.startsWith('@')) when = line.slice(1);
+      else if (line.endsWith('.yaml')) dates[path.basename(line, '.yaml')] = when; // later (older) commits overwrite
+    }
+    return dates;
+  } catch {
+    return {};
+  }
+}
+
+/** Newest-added first, items only, max 6. */
 export const latestAdditions = () =>
-  [...items].reverse().slice(0, 6).map((i) => ({ label: i.title, kind: i.kind, href: href(`items/${i.id}/`) }));
+  sortLatest(items, itemAddedDates()).slice(0, 6).map((i) => ({ label: i.title, kind: i.kind, href: href(`items/${i.id}/`) }));

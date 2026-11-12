@@ -153,6 +153,30 @@ test('score that is not N-N is shown raw; build fails on bad catalog', () => {
   assert.throws(() => build(dir));
 });
 
+test('featured match card reads "<p1> vs <p2> · <event name>"', () => {
+  const dir = copyFixture();
+  fs.writeFileSync(path.join(dir, 'featured.yaml'), 'featured:\n  - ref: match:fixture-league/final\n');
+  build(dir);
+  has(read(''), 'Alpha vs Charlie · Fixture League 2000');
+});
+
+test('sparse home: featured hidden, undated item under "Year unknown" last, help panel shown', () => {
+  const dir = copyFixture();
+  fs.writeFileSync(path.join(dir, 'featured.yaml'), 'featured: []\n');
+  fs.writeFileSync(path.join(dir, 'items/undated.yaml'), [
+    'id: undated', 'kind: article', 'title: Undated piece', 'date: null', 'language: null',
+    'urls: [https://example.com/undated]', 'links:', '  about: [player:alpha]',
+    'sources: [{url: "https://example.com/undated"}]', ''].join('\n'));
+  build(dir);
+  const html = read('');
+  assert.ok(!html.includes('id="featured-h"'), 'featured section hidden');
+  has(html, 'Year unknown');
+  assert.ok(html.indexOf('<h3>2000</h3>') < html.indexOf('Year unknown'), 'unknown year last');
+  has(html, `href="${BASE}items/undated/"`);
+  has(html, 'Help build the archive');
+  has(html, `href="${BASE}help-wanted/"`);
+});
+
 test('build succeeds with an explicit empty catalog dir', () => {
   build(tmp('bw-empty-'));
   has(read(''), 'No events');

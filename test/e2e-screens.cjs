@@ -5,7 +5,7 @@ const { chromium } = require('playwright');
 const fs = require('node:fs');
 
 const base = (process.env.SITE_URL || 'http://localhost:4321/broodwar-archive/').replace(/\/?$/, '/');
-const out = process.env.OUT || 'docs/milestones/m1-screens';
+const out = process.env.OUT || 'docs/milestones/m2-screens';
 
 async function overflow(page, label, width) {
   const { sw, iw } = await page.evaluate(() => ({ sw: document.documentElement.scrollWidth, iw: innerWidth }));
@@ -25,6 +25,14 @@ async function overflow(page, label, width) {
     await page.goto(base);
     await page.screenshot({ path: `${out}/home-${name}.png`, fullPage: true });
     await overflow(page, 'home', name);
+    const leagues = await page.locator('nav[aria-label="Leagues"] a[href*="/series/"]').count();
+    const bands = await page.locator('.years a.band').count();
+    console.log(name, 'league links', leagues, 'timeline bands', bands);
+    if (!(leagues > 0 && bands > 0)) process.exitCode = 1;
+    await page.click('.years a.band');
+    await page.waitForURL('**/events/**');
+    await page.screenshot({ path: `${out}/event-${name}.png`, fullPage: true });
+    await overflow(page, 'event', name);
     await page.click('.tabs button:has-text("Ro16")');
     console.log(name, 'Ro16 rows visible', await page.locator('.season .panel:not([hidden]) .row').count());
 
