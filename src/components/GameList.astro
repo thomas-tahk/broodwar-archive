@@ -1,0 +1,42 @@
+---
+// Games grouped by event. `focus` = player id (shows opponent + result for them) or null (map page: shows both players).
+import GradeBadge from './GradeBadge.astro';
+import { maps, nameOf, hasPlayer, ymd, stageOf, href } from '../lib/catalog.js';
+import { bestGrade } from '../../tools/catalog/grades.js';
+
+const { groups, focus = null } = Astro.props;
+const linkable = (id) => Boolean(id) && hasPlayer(id);
+function result(g) {
+  if (!g.winner) return 'Result unknown';
+  return g.winner === focus ? 'Win' : 'Loss';
+}
+const mapName = (g) => (g.map ? maps.get(g.map)?.name ?? g.map : 'Map unknown');
+---
+{groups.map(({ event, rows }) => (
+  <section class="evgroup" aria-label={event.name}>
+    <h3><a href={href(`events/${event.id}/`)}>{event.name}</a></h3>
+    <ul class="rows">
+      {rows.map(({ match, game }) => {
+        const opp = focus ? match.players.find((p) => p !== focus) : null;
+        return (
+          <li class="grow">
+            <span class="when">{ymd(match.date)} · {stageOf(match)}</span>
+            <span class="gwho">
+              {focus
+                ? <>vs {linkable(opp) ? <a href={href(`players/${opp}/`)}>{nameOf(opp)}</a> : nameOf(opp)} · {game.map && maps.has(game.map) ? <a href={href(`maps/${game.map}/`)}>{mapName(game)}</a> : mapName(game)}</>
+                : <>{match.players.map((id, i) => <>{i === 1 && ' vs '}{linkable(id) ? <a href={href(`players/${id}/`)}>{nameOf(id)}</a> : nameOf(id)}</>)}</>}
+              {' · '}Game {game.set}
+            </span>
+            <span class="gend">
+              {focus
+                ? <b class={game.winner === focus ? 'win' : undefined}>{result(game)}</b>
+                : <span>{game.winner ? `${nameOf(game.winner)} won` : 'Result unknown'}</span>}
+              <GradeBadge grade={bestGrade(game)} none={(game.copies ?? []).length === 0} />
+              <a href={href(`matches/${match.event}/${match.id}/`)}>Open match</a>
+            </span>
+          </li>
+        );
+      })}
+    </ul>
+  </section>
+))}

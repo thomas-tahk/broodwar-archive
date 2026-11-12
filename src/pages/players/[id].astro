@@ -1,0 +1,27 @@
+---
+import Base from '../../layouts/Base.astro';
+import GameList from '../../components/GameList.astro';
+import ItemList from '../../components/ItemList.astro';
+import Race from '../../components/Race.astro';
+import Sources from '../../components/Sources.astro';
+import { allPlayers, gamesOfPlayer, href } from '../../lib/catalog.js';
+
+export function getStaticPaths() {
+  return allPlayers.map((player) => ({ params: { id: player.id }, props: { player } }));
+}
+const { player } = Astro.props;
+const groups = gamesOfPlayer(player.id);
+const total = groups.reduce((n, g) => n + g.rows.length, 0);
+---
+<Base title={player.name ?? player.id} nav="players">
+  <p class="crumbs"><a href={href('players/')}>&larr; All players</a></p>
+  <p class="kicker">Player</p>
+  <h1>{player.name ?? player.id}</h1>
+  <p class="meta">{player.hangul ?? 'Hangul unknown'} · Usual race: <Race race={player.race ?? null} /></p>
+  <h2>Games ({total})</h2>
+  {total === 0
+    ? <p class="state">No games recorded for this player yet.</p>
+    : <GameList groups={groups} focus={player.id} />}
+  <ItemList ref={`player:${player.id}`} />
+  <Sources sources={player.sources} fieldSources={player.field_sources} />
+</Base>

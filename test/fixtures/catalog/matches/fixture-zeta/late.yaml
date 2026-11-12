@@ -1,0 +1,20 @@
+# Test fixture — fictional. Same year as fixture-cup, later date.
+id: late
+event: fixture-zeta
+stage: Final
+group: null
+date: 2001-09-01
+format: Bo1
+players: [alpha, charlie]
+winner: alpha
+score: "1-0"
+games:
+  - set: 1
+    map: map-one
+    races: [T, Z]
+    winner: alpha
+    lost: false
+    copies: []
+sources:
+  - url: https://example.com/fixture-zeta/bracket
+completeness: complete

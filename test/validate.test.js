@@ -11,7 +11,7 @@ const run = (...args) =>
 test('valid fixture catalog passes', () => {
   const r = run('test/fixtures/catalog');
   assert.equal(r.status, 0, r.stdout + r.stderr);
-  assert.match(r.stdout, /5 events?, 3 matches, 3 players, 2 maps, 1 series, 1 items/);
+  assert.match(r.stdout, /8 events?, 7 matches, 4 players, 3 maps, 1 series, 1 items/);
 });
 
 test('real catalog/ passes', () => {
@@ -77,7 +77,7 @@ test('CATALOG_DIR is used when no argument is given', () => {
     encoding: 'utf8', env: { ...process.env, CATALOG_DIR: 'test/fixtures/catalog' },
   });
   assert.equal(r.status, 0, r.stdout + r.stderr);
-  assert.match(r.stdout, /3 matches/);
+  assert.match(r.stdout, /7 matches/);
 });
 
 test('item refs to matches resolve as <event>/<match>', () => {

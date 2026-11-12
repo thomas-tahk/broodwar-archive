@@ -95,7 +95,7 @@ test('URL params round-trip', () => {
 test('buildRecords from the fixture catalog: games and the item', () => {
   const { records, labels } = buildRecords(loadCatalog('test/fixtures/catalog'));
   const games = records.filter((r) => r.kind === 'game');
-  assert.equal(games.length, 5);
+  assert.equal(games.length, 9);
   const item = records.find((r) => r.kind === 'interview');
   assert.equal(item.url, 'https://example.com/fixture-interview');
   assert.deepEqual(item.players, ['alpha']);
@@ -103,9 +103,9 @@ test('buildRecords from the fixture catalog: games and the item', () => {
   assert.equal(labels.league['fixture-series'], 'Fixture Series');
   assert.equal(games.find((g) => g.id === 'game:fixture-league/final#2').grade, 'X');
   assert.equal(games.find((g) => g.matchup === 'TZ').year, 2000);
-  assert.equal(games.filter((g) => g.matchup === null).length, 1);
+  assert.equal(games.filter((g) => g.matchup === null).length, 2);
   const s = createSearch(records);
-  assert.equal(s('', { player: ['alpha'], kind: ['game'] }).results.length, 4);
+  assert.equal(s('', { player: ['alpha'], kind: ['game'] }).results.length, 8);
 });
 
 const mini = (over = {}) => ({

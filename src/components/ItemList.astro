@@ -1,0 +1,17 @@
+---
+// Items (interviews, articles...) linked to a record. Kept separate: the item pages issue will extend it.
+import { itemsLinkingTo, host } from '../lib/catalog.js';
+
+const { ref } = Astro.props;
+const found = itemsLinkingTo(ref);
+---
+<h2>Items ({found.length})</h2>
+{found.length === 0 ? (
+  <p class="state">No items linked yet. Know an interview or article about this? See the contributing guide in the footer.</p>
+) : (
+  <ul class="items">
+    {found.map((i) => (
+      <li><a href={i.urls[0]} rel="noopener noreferrer">{i.title}</a> <span class="mute">{i.kind} · {host(i.urls[0])}</span></li>
+    ))}
+  </ul>
+)}

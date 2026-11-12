@@ -1,0 +1,20 @@
+# Test fixture — fictional. Undated, opponent unknown (null), result unknown.
+id: tbd
+event: fixture-zeta
+stage: Round of 16
+group: null
+date: null
+format: Bo1
+players: [alpha, null]
+winner: null
+score: null
+games:
+  - set: 1
+    map: null
+    races: [null, null]
+    winner: null
+    lost: false
+    copies: []
+sources:
+  - url: https://example.com/fixture-zeta/bracket
+completeness: complete

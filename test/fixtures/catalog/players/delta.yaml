@@ -1,0 +1,6 @@
+# Test fixture — fictional. In the catalog but in no match, no item (sparse page).
+id: delta
+name: Delta
+hangul: null
+race: null
+sources: [{url: https://example.com/players/delta}]

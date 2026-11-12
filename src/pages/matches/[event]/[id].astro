@@ -5,7 +5,7 @@ import MatchHero from '../../../components/MatchHero.astro';
 import QualityLegend from '../../../components/QualityLegend.astro';
 import Race from '../../../components/Race.astro';
 import Sources from '../../../components/Sources.astro';
-import { allMatches, events, maps, playerOf, host, href, embedOf, siteName, lengthOf, COPY_KINDS } from '../../../lib/catalog.js';
+import { allMatches, events, maps, playerOf, hasPlayer, host, href, embedOf, siteName, lengthOf, COPY_KINDS } from '../../../lib/catalog.js';
 import { bestGrade } from '../../../../tools/catalog/grades.js';
 
 export function getStaticPaths() {
@@ -50,7 +50,7 @@ const refSources = [
       <section class="game" id={`game-${g.set}`} data-game={g.set} aria-label={`Game ${g.set}`}>
         <header>
           <h3>Game {g.set}</h3>
-          <span class="mono">Map: {mapName(g)}{mapVersion(g) && ` (${mapVersion(g)})`}</span>
+          <span class="mono">Map: {g.map && maps.has(g.map) ? <a href={href(`maps/${g.map}/`)}>{mapName(g)}</a> : mapName(g)}{mapVersion(g) && ` (${mapVersion(g)})`}</span>
           <span class="mono">Winner: {winnerName(g)}</span>
           <span class="mono">{sides.map((_, i) => <Race race={raceOf(g, i)} />)}</span>
           <GradeBadge grade={bestGrade(g)} none={copies.length === 0} />

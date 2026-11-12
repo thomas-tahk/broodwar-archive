@@ -142,6 +142,57 @@ test('fixture catalog renders everything it knows', async (t) => {
     }
   });
 
+  await t.test('player page lists games from every event, newest event first, with result and best grade', () => {
+    const html = read('players/alpha');
+    const groups = [...html.matchAll(/<section class="evgroup" aria-label="([^"]+)"/g)].map((m) => m[1]);
+    // Same-year events order by latest match date (zeta 2001-09 > cup 2001-03), not by id.
+    // An undated event from a later year (2002) still comes first: year wins over date.
+    assert.deepEqual(groups, ['Fixture Future 2002', 'Fixture Zeta 2001','Fixture Cup 2001', 'Fixture League 2000']);
+    has(html, `href="${BASE}matches/fixture-cup/semi/"`);
+    has(html, `href="${BASE}matches/fixture-league/final/"`);
+    has(html, `href="${BASE}matches/fixture-league/ro8-a-1/"`);
+    has(html, 'Games (8)');
+    const rows = html.split('<li class="grow">').slice(1);
+    const rowOf = (href) => rows.find((r) => r.includes(`href="${BASE}${href}/"`));
+    assert.match(rowOf('matches/fixture-cup/semi'), /<b>Loss<\/b>[\s\S]*data-grade="C"/);
+    assert.match(rowOf('matches/fixture-league/ro8-a-1'), /<b class="win">Win<\/b>[\s\S]*data-grade="A"/);
+    assert.match(html, /<b>Loss<\/b>\s*<span class="grade" data-grade="X">Footage lost/);
+    assert.ok(!html.includes('Won') && !html.includes('Lost'));
+    // Undated row sorts last inside its event; unknown opponent is plain text, not a link.
+    const zeta = html.split('<section class="evgroup"')[2];
+    assert.ok(zeta.indexOf('2001.09.01') < zeta.indexOf('Date unknown'), 'undated last');
+    const tbd = rowOf('matches/fixture-zeta/tbd');
+    has(tbd, 'vs Unknown');
+    has(tbd, 'Result unknown');
+    assert.ok(!/vs <a/.test(tbd), 'unknown opponent not linked');
+    has(tbd, 'Map unknown');
+    has(html, 'Fixture interview');
+    has(html, 'https://example.com/players/alpha');
+  });
+
+  await t.test('map page lists its games and items; sparse pages say so', () => {
+    const two = read('maps/map-two');
+    has(two, `href="${BASE}matches/fixture-cup/semi/"`);
+    has(two, `href="${BASE}matches/fixture-league/final/"`);
+    has(two, `href="${BASE}players/alpha/"`);
+    has(two, 'Games (2)');
+    has(two, 'No items linked yet');
+    has(read('maps/map-one'), 'Fixture interview');
+    has(read('maps/map-three'), 'No games recorded on this map yet.');
+    has(read('players/delta'), 'No games recorded for this player yet.');
+  });
+
+  await t.test('index pages list everyone; match page links player and map', () => {
+    const pl = read('players');
+    for (const p of cat.players) has(pl, `href="${BASE}players/${p.id}/"`);
+    const mp = read('maps');
+    for (const m of cat.maps) has(mp, `href="${BASE}maps/${m.id}/"`);
+    const html = read('matches/fixture-league/final');
+    has(html, `href="${BASE}players/alpha/"`);
+    has(html, `href="${BASE}maps/map-one/"`);
+    has(read('matches/fixture-league/ro8-a-2'), 'Map: Unknown');
+  });
+
   await t.test('lost game shows X and lost text', () => {
     const html = read('matches/fixture-league/final');
     has(html, 'Footage known lost.');
@@ -259,9 +310,9 @@ test('help-wanted page lists every gap with a record link and a prefilled form l
   }));
 
   await t.test('counts at top are pinned', () => {
-    const counts = { event: 5, match: 1, nocopy: 1, nofields: 1 }; // + home and series fixture events
+    const counts = { event: 8, match: 1, nocopy: 4, nofields: 3 }; // + home and series fixture events
     for (const [k, n] of Object.entries(counts)) has(html, `data-gap="${k}" data-count="${n}"`);
-    assert.equal(rows.length, 8);
+    assert.equal(rows.length, 16);
   });
 
   await t.test('each row links to its own record and prefills the form', () => {
