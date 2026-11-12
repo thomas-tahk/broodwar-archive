@@ -147,22 +147,22 @@ test('real catalog: Find page, race matrix and embedded player', async (t) => {
   const games = real.matches.flatMap((m) => m.games);
   build('catalog');
 
-  await t.test('Find page lists every game and is linked from the header', () => {
+  await t.test('Find page shell is linked from the header and points at the prebuilt list', () => {
     const html = read('find');
-    assert.equal((html.match(/<li class="frow"/g) ?? []).length, games.length);
-    assert.equal(games.length, 64);
-    has(html, `href="${BASE}find/"`);
+    has(html, `data-json="${BASE}find/records.json"`);
+    has(html, 'id="q"');
     has(read(''), `href="${BASE}find/"`);
   });
 
-  await t.test('matrix has 6 distinct matchups summing to games with known races', () => {
-    const html = read('find');
-    const cells = [...html.matchAll(/<button type="button" data-mu="([A-Z]{2})"[^>]*aria-label="[^"]*, (\d+) games"/g)];
-    assert.equal(cells.length, 9);
-    const byKey = new Map(cells.map((c) => [c[1], Number(c[2])]));
-    assert.equal(byKey.size, 6);
+  await t.test('records.json lists every game, matchups sum to games with known races', () => {
+    const { records, labels } = JSON.parse(fs.readFileSync(`${outDir}/find/records.json`, 'utf8'));
+    const gameRecs = records.filter((r) => r.kind === 'game');
+    assert.equal(gameRecs.length, games.length);
+    assert.equal(games.length, 64);
     const known = games.filter((g) => g.races?.every((r) => ['T', 'P', 'Z'].includes(r))).length;
-    assert.equal([...byKey.values()].reduce((a, b) => a + b, 0), known);
+    assert.equal(gameRecs.filter((r) => r.matchup).length, known);
+    assert.equal(new Set(gameRecs.map((r) => r.matchup).filter(Boolean)).size, 6);
+    assert.equal(labels.league.osl, 'OnGameNet StarLeague');
   });
 
   await t.test('match page embeds a youtube-nocookie player', () => {

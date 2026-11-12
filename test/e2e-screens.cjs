@@ -39,15 +39,34 @@ async function overflow(page, label, width) {
     console.log(name, 'copy 2 src', await page.getAttribute('section.game:not([hidden]) iframe', 'src'));
 
     await page.goto(`${base}find/`);
-    const total = await page.locator('.frow:not([hidden])').count();
-    await page.click('.mx button[data-mu="PT"]');
-    const filtered = await page.locator('.frow:not([hidden])').count();
-    console.log(name, 'find rows', total, '-> PvT', filtered, await page.textContent('#count'));
-    if (!(filtered > 0 && filtered < total)) process.exitCode = 1;
+    await page.waitForSelector('#ui:not([hidden]) .frow');
+    const total = await page.locator('.frow').count();
+    await page.click('#f-league button[data-value="osl"]');
+    await page.click('#f-year button[data-value="2001"]');
+    const shownLeague = Number(await page.getAttribute('#f-league button[data-value="osl"]', 'data-count'));
+    const shownYear = Number(await page.getAttribute('#f-year button[data-value="2001"]', 'data-count'));
+    const countText = await page.textContent('#count');
+    const rows = (await page.locator('.frow').count()) + (await page.isVisible('#more') ? 1 : 0);
+    console.log(name, 'find total', total, '-> OSL+2001 rows', rows, 'chip counts', shownLeague, shownYear, countText, page.url());
+    if (!(rows > 0 && countText.startsWith(`${shownLeague} `) && shownLeague === shownYear && rows === shownLeague)) process.exitCode = 1;
     await page.screenshot({ path: `${out}/find-${name}.png`, fullPage: true });
     await overflow(page, 'find', name);
-    await page.click('.mx button[data-mu="PT"]');
-    if ((await page.locator('.frow:not([hidden])').count()) !== total) process.exitCode = 1;
+    await page.focus('#q');
+    await page.screenshot({ path: `${out}/find-focus-${name}.png` });
+    await page.goto(page.url());
+    await page.waitForSelector('#ui:not([hidden]) .frow');
+    console.log(name, 'shared link reload', await page.textContent('#count'));
+    await page.click('#clear');
+    for (const sel of ['#f-map button:not([disabled])', '.mx button[data-value="PT"]']) {
+      const chip = page.locator(sel).first();
+      const chipCount = Number(await chip.getAttribute('data-count'));
+      await chip.click();
+      const n = (await page.locator('.frow').count()) + ((await page.isVisible('#more')) ? 1 : 0);
+      console.log(name, 'narrowing', sel, 'chip', chipCount, 'results', await page.textContent('#count'));
+      if (!(chipCount < total && (await page.textContent('#count')).startsWith(`${chipCount} `) && n > 0)) process.exitCode = 1;
+      await page.click('#clear');
+    }
+    if ((await page.locator('.frow').count()) !== total) process.exitCode = 1;
 
     console.log(name, 'console errors', errors);
     if (errors.length) process.exitCode = 1;
