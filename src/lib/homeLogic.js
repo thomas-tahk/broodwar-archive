@@ -1,19 +1,6 @@
 // Pure home-page logic: no catalog or filesystem access, so tests can call it directly.
 
-/** Year an item belongs to: its own date, else a `from` event's year, else a `from` match's date or event year; null if none. */
-export function itemYear(item, resolve) {
-  if (item.date) return Number(item.date.slice(0, 4));
-  for (const ref of item.links?.from ?? []) {
-    const hit = resolve(ref);
-    if (hit?.type === 'event' && hit.record.year) return hit.record.year;
-    if (hit?.type === 'match') {
-      if (hit.record.date) return Number(hit.record.date.slice(0, 4));
-      const ev = resolve(`event:${hit.record.event}`);
-      if (ev?.record.year) return ev.record.year;
-    }
-  }
-  return null;
-}
+export { itemYear } from '../../tools/catalog/itemYear.js';
 
 /**
  * Newest first by the date the item file was added (ISO strings in `addedAt`, keyed by item id).

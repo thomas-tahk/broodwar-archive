@@ -25,6 +25,11 @@ test('item year: own date, from-event, from-match date, from-match event, none',
   assert.equal(itemYear({ id: 'x', links: { about: ['player:a'] } }, resolve), null);
 });
 
+test('item year: an undated item only about an event still gets that event year (shared with search)', () => {
+  assert.equal(itemYear({ id: 'x', links: { about: ['event:e1'] } }, resolve), 2001);
+  assert.equal(itemYear({ id: 'x', links: { features: ['match:e1/m1'] } }, resolve), 2003);
+});
+
 test('latest: newest added first; undated items count as newest in reverse file order', () => {
   const items = [{ id: 'a' }, { id: 'b' }, { id: 'c' }, { id: 'd' }];
   const addedAt = { a: '2026-01-01T00:00:00+00:00', b: '2026-03-01T00:00:00+00:00', c: '2026-02-01T00:00:00+00:00' };
