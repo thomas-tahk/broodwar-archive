@@ -150,7 +150,7 @@ test('real catalog: Find page, race matrix and embedded player', async (t) => {
   await t.test('Find page lists every game and is linked from the header', () => {
     const html = read('find');
     assert.equal((html.match(/<li class="frow"/g) ?? []).length, games.length);
-    assert.equal(games.length, 58);
+    assert.equal(games.length, 65);
     has(html, `href="${BASE}find/"`);
     has(read(''), `href="${BASE}find/"`);
   });

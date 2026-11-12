@@ -1,1 +1,9 @@
-featured: []
+featured:
+  - ref: match:2001-sky-osl/final
+    blurb: GARIMTO beat BoxeR 3-2 in a five-set final; the first time BoxeR lost an OSL final.
+  - ref: match:2001-coca-cola-osl/final
+    blurb: BoxeR wins back-to-back OSL titles, 3-2 over YellOw.
+  - ref: match:2001-wcg/final
+    blurb: BoxeR beats ElkY 2-0 in the WCG 2001 Grand Final in Seoul.
+  - ref: item:boxer-yellow-rivalry-interview
+    blurb: A long English translation of an Inven interview on the BoxeR-YellOw rivalry.

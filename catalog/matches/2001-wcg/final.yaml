@@ -1,0 +1,17 @@
+# Individual Grand Final only. Date, format, maps unknown in the source: null.
+id: final
+event: 2001-wcg
+stage: Grand Final
+group: null
+date: null
+completeness: partial
+format: null
+players: [boxer, elky]
+winner: boxer
+score: "2-0"
+games:
+  - {set: 1, map: null, races: [T, T], winner: boxer, lost: false, copies: []}
+  - {set: 2, map: null, races: [T, T], winner: boxer, lost: false, copies: []}
+sources:
+  - url: https://liquipedia.net/starcraft/World_Cyber_Games/2001
+    note: Bracket - Grand Final BoxeR 2-0 ElkY, both Terran (RaceDist Final = 2 Terran). No per-game maps listed.

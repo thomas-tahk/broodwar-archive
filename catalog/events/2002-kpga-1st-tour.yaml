@@ -1,0 +1,16 @@
+# Stub: no matches yet. Series msl is a lineage grouping (KPGA Tour predecessor of the MSL), see series/msl.yaml.
+id: 2002-kpga-1st-tour
+name: 2002 KPGA 1st Tour
+league: KPGA Tour
+sponsor: null
+year: 2002
+broadcaster: null
+organizer: KPGA
+series: msl
+tier: mid
+kind: individual-league
+tags: [korea, offline]
+completeness: stub
+sources:
+  - url: https://liquipedia.net/starcraft/2002_KPGA_1st_Tour
+    note: Liquipedia. 2002-02-14 to 2002-04-14, 16 players, single elimination, organizer KPGA; BoxeR beat YellOw 3-1 in the final; Liquipedia tier 2.
