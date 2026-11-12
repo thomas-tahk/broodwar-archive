@@ -1,0 +1,15 @@
+id: savior-vs-boxer-dream-match
+kind: showmatch-vod
+title: "SAviOr vs SlayerS_BoxeR, Dream Match, Game 1 (YouTube parts 1-2, uploader Etymologies)"
+date: 2007-05-05
+language: null
+urls:
+  - https://www.youtube.com/watch?v=VgfcBSNh3Bg
+  - https://www.youtube.com/watch?v=wKigs9Ph6BA
+links:
+  about: [player:boxer]
+sources:
+  - url: https://www.youtube.com/watch?v=VgfcBSNh3Bg
+    note: YouTube oEmbed title "SAviOr vs SlayerS_`BoxeR` @ Dream Match Game 1 Part 1/2".
+  - url: https://tl.net/forum/articles/66254-superfight-oct-06-may-07
+    note: Team Liquid SuperFight (Oct 06 - May 07) article, section "Dream Match - May 2007" (19:00 KST - May 5th 2007), lists these videos. No event record exists for it, so only linked to the player.

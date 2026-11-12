@@ -1,0 +1,20 @@
+# Only the final. Per-game races left null: the source gives each player's usual race, not per-game picks.
+id: final
+event: 2001-coca-cola-osl
+stage: Final
+group: null
+date: 2001-09-08
+completeness: partial
+format: Bo5
+players: [yellow, boxer]
+winner: boxer
+score: "2-3"
+games:
+  - {set: 1, map: neo-hall-of-valhalla, races: [null, null], winner: boxer, lost: false, copies: []}
+  - {set: 2, map: neo-jungle-story, races: [null, null], winner: yellow, lost: false, copies: []}
+  - {set: 3, map: neo-legacy-of-char, races: [null, null], winner: yellow, lost: false, copies: []}
+  - {set: 4, map: ragnarok, races: [null, null], winner: boxer, lost: false, copies: []}
+  - {set: 5, map: neo-hall-of-valhalla, races: [null, null], winner: boxer, lost: false, copies: []}
+sources:
+  - url: https://liquipedia.net/starcraft/2001_Coca-Cola_OSL
+    note: Bracket - final, Bo5, YellOw 2-3 BoxeR, 2001-09-08, five maps with winners. TLPD game pages (games 5634-5638) are linked there but were not opened.

@@ -1,0 +1,16 @@
+# Stub: season before 2001 SKY OSL (Liquipedia "previous"). Only the final is recorded; contributors can add the rest.
+id: 2001-coca-cola-osl
+name: 2001 Coca-Cola OSL
+league: OSL
+sponsor: Coca-Cola
+year: 2001
+broadcaster: OnGameNet
+organizer: null
+series: osl
+tier: big
+kind: individual-league
+tags: []
+completeness: stub
+sources:
+  - url: https://liquipedia.net/starcraft/2001_Coca-Cola_OSL
+    note: Liquipedia event page. Dates 2001-06-15 to 2001-09-08, 16 players, BoxeR beat YellOw 3-2 in the final.
