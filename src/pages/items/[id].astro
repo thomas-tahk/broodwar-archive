@@ -1,0 +1,35 @@
+---
+import Base from '../../layouts/Base.astro';
+import Sources from '../../components/Sources.astro';
+import { items, resolveRef, labelOf, refHref, siteName, href, ymd } from '../../lib/catalog.js';
+
+export function getStaticPaths() {
+  return items.map((item) => ({ params: { id: item.id }, props: { item } }));
+}
+const { item } = Astro.props;
+const GROUPS = [['about', 'About'], ['from', 'From'], ['features', 'Features']];
+const describe = (ref) => {
+  const found = resolveRef(ref);
+  return { label: found ? labelOf(found.type, found.record) : ref, to: found ? refHref(found.type, found.record) : null };
+};
+const groups = GROUPS.map(([key, label]) => ({ label, refs: (item.links?.[key] ?? []).map(describe) })).filter((g) => g.refs.length > 0);
+---
+<Base title={item.title} nav="">
+  <p class="crumbs"><a href={href('')}>&larr; Home</a></p>
+  <p class="kicker">Item // {item.kind}</p>
+  <h1>{item.title}</h1>
+  <p class="meta">{item.kind} · {ymd(item.date)}{item.language && <> · Language: {item.language}</>}</p>
+  {groups.map((g) => (
+    <>
+      <h2>{g.label}</h2>
+      <ul class="items">
+        {g.refs.map((r) => <li>{r.to ? <a href={r.to}>{r.label}</a> : r.label}</li>)}
+      </ul>
+    </>
+  ))}
+  <h2>Open the original ({item.urls.length})</h2>
+  <ul class="items" id="original">
+    {item.urls.map((u, i) => <li><a href={u} target="_blank" rel="noopener noreferrer">Open on {siteName(u)}{item.urls.length > 1 && ` (${i + 1})`} &#8599;</a></li>)}
+  </ul>
+  <Sources sources={item.sources} fieldSources={item.field_sources} />
+</Base>

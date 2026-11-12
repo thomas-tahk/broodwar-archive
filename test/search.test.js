@@ -97,7 +97,7 @@ test('buildRecords from the fixture catalog: games and the item', () => {
   const games = records.filter((r) => r.kind === 'game');
   assert.equal(games.length, 9);
   const item = records.find((r) => r.kind === 'interview');
-  assert.equal(item.url, 'https://example.com/fixture-interview');
+  assert.equal(item.url, 'items/fixture-interview/', 'Find item rows point to the item page, not the external url');
   assert.deepEqual(item.players, ['alpha']);
   assert.equal(item.league, 'fixture-series');
   assert.equal(labels.league['fixture-series'], 'Fixture Series');

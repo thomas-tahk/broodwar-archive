@@ -91,10 +91,10 @@ import { href } from '../../lib/catalog.js';
     }
 
     function itemRow(r) {
-      return el('li', { className: 'frow' }, el('a', { className: 'row', href: r.url, rel: 'noopener noreferrer' },
+      return el('li', { className: 'frow' }, el('a', { className: 'row', href: root.dataset.base + r.url },
         el('span', { className: 'when', textContent: `${cap(r.kind)} · ${r.date ? r.date.replaceAll('-', '.') : 'Date unknown'}` }),
         el('span', { className: 'sb', textContent: r.title }),
-        el('span', { className: 'info', textContent: [r.eventName, r.mapName].filter(Boolean).join(' · ') || 'Opens the original page' })));
+        el('span', { className: 'info', textContent: [r.eventName, r.mapName].filter(Boolean).join(' · ') || 'Item page with the original link' })));
     }
 
     function chip(facet, value, label, count, small, cell) {

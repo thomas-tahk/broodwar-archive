@@ -11,7 +11,7 @@ const run = (...args) =>
 test('valid fixture catalog passes', () => {
   const r = run('test/fixtures/catalog');
   assert.equal(r.status, 0, r.stdout + r.stderr);
-  assert.match(r.stdout, /8 events?, 7 matches, 4 players, 3 maps, 1 series, 1 items/);
+  assert.match(r.stdout, /8 events?, 7 matches, 4 players, 3 maps, 1 series, 2 items/);
 });
 
 test('real catalog/ passes', () => {

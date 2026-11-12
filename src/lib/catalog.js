@@ -148,3 +148,17 @@ export function gamesGroupedByEvent(pick) {
 }
 export const gamesOfPlayer = (id) => gamesGroupedByEvent((m) => m.players.includes(id));
 export const gamesOnMap = (id) => gamesGroupedByEvent((_, g) => g.map === id);
+
+/** Where a ref lives on the site. */
+export function refHref(type, record) {
+  if (type === 'match') return href(`matches/${record.event}/${record.id}/`);
+  const dir = { series: 'series', event: 'events', item: 'items', player: 'players', map: 'maps' }[type];
+  return dir ? href(`${dir}/${record.id}/`) : null;
+}
+
+/** Name to show for any resolved record; matches read "<p1> vs <p2> · <event name>". */
+export function labelOf(type, r) {
+  if (type !== 'match') return r.name ?? r.title ?? r.id;
+  const eventName = events.find((e) => e.id === r.event)?.name ?? r.event;
+  return `${nameOf(r.players?.[0])} vs ${nameOf(r.players?.[1])} · ${eventName}`;
+}

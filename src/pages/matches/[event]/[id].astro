@@ -4,6 +4,7 @@ import GradeBadge from '../../../components/GradeBadge.astro';
 import MatchHero from '../../../components/MatchHero.astro';
 import QualityLegend from '../../../components/QualityLegend.astro';
 import Race from '../../../components/Race.astro';
+import ItemList from '../../../components/ItemList.astro';
 import Sources from '../../../components/Sources.astro';
 import { allMatches, events, maps, playerOf, hasPlayer, host, href, embedOf, siteName, lengthOf, COPY_KINDS } from '../../../lib/catalog.js';
 import { bestGrade } from '../../../../tools/catalog/grades.js';
@@ -96,6 +97,7 @@ const refSources = [
     );
   })}
   <QualityLegend />
+  <ItemList ref={`match:${match.event}/${match.id}`} />
   <Sources sources={match.sources} fieldSources={match.field_sources} />
   {refSources.map((r) => <Sources heading={r.label} sources={r.sources} fieldSources={r.fieldSources} />)}
 <script is:inline>
