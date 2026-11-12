@@ -151,13 +151,15 @@ h2{font-size:1.8rem;color:var(--fg);margin:1.8rem 0 .6rem}
 .filters fieldset{border:0;padding:0;margin:0;min-width:0}
 .filters legend{padding:0;margin-bottom:.2rem}
 .filters .ghost{margin-top:0}
+.events .frow{display:flex;flex-direction:column}
+.events .serieslink{display:flex;align-items:center;min-height:44px;padding:0 .8rem;background:var(--panel);border-left:6px solid var(--accent2);color:var(--accent);font-weight:600}
 .tags{display:flex;flex-wrap:wrap;gap:.3rem;margin:.2rem 0}
 .tag{font:700 .85rem Barlow,sans-serif;text-transform:uppercase;letter-spacing:.04em;padding:.05rem .5rem;border:2px solid var(--mute);color:var(--fg)}
 .tag[data-tier=big]{border-color:var(--accent2);color:var(--accent2)}.tag[data-tier=mid]{border-color:var(--accent);color:var(--accent)}
 .tag[data-completeness=complete]{border-color:var(--gA);color:var(--gA)}.tag[data-completeness=partial]{border-color:var(--gC);color:var(--gC)}
 .tag[data-completeness=stub]{border-style:dashed}
-@media(min-width:760px){.filters{grid-template-columns:auto repeat(3,minmax(0,14rem)) auto}}
 @media(min-width:760px){
+  .filters{grid-template-columns:auto repeat(3,minmax(0,14rem)) auto}
   .row{grid-template-columns:13rem 1fr 15rem;align-items:center;gap:1rem}
   .row .info{justify-content:flex-end}
   .sb{font-size:1.65rem}

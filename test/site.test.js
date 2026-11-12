@@ -58,7 +58,8 @@ test('fixture catalog renders everything it knows', async (t) => {
       has(html, e.name);
     }
     assert.ok(!html.includes('fixture-oneoff'), 'one-off event must not be on the series page');
-    assert.ok(html.indexOf('>2001<') < html.indexOf('>2000<'), 'newest year first');
+    const [i2001, i2000] = [html.indexOf('>2001<'), html.indexOf('>2000<')];
+    assert.ok(i2001 >= 0 && i2000 >= 0 && i2001 < i2000, 'both years present, newest first');
     has(html, 'Big tier');
     has(html, 'Stub');
     has(html, '0 matches recorded');
@@ -165,6 +166,13 @@ test('score that is not N-N is shown raw; build fails on bad catalog', () => {
 test('build succeeds with an explicit empty catalog dir', () => {
   build(tmp('bw-empty-'));
   has(read(''), 'No events');
+});
+
+test('empty catalog: /events/ shows the empty state and no filter form', () => {
+  build(tmp('bw-empty-'));
+  const html = read('events');
+  has(html, 'No events in the archive yet');
+  assert.ok(!html.includes('id="f-kind"'), 'no filters when there are no events');
 });
 
 test('real catalog: Find page, race matrix and embedded player', async (t) => {

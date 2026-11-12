@@ -3,7 +3,8 @@ import Base from '../../layouts/Base.astro';
 import EventTags from '../../components/EventTags.astro';
 import { events, series, matchesOf, href, TIER_LABELS, KIND_LABELS, REPO_URL } from '../../lib/catalog.js';
 
-const kinds = [...new Set(events.map((e) => e.kind))];
+const present = new Set(events.map((e) => e.kind));
+const kinds = [...Object.keys(KIND_LABELS).filter((k) => present.has(k)), ...[...present].filter((k) => !(k in KIND_LABELS))];
 const years = [...new Set(events.map((e) => e.year).filter((y) => y != null))];
 const used = new Set(events.map((e) => e.series).filter(Boolean));
 const seriesOptions = [...series.values()].filter((s) => used.has(s.id)).sort((a, b) => a.name.localeCompare(b.name));
@@ -14,6 +15,8 @@ const count = (n) => `${n} ${n === 1 ? 'match' : 'matches'} recorded`;
   <h1>All events</h1>
   <p class="meta">Every event in the archive, including ones with no matches recorded yet.</p>
 
+  {events.length > 0 && <>
+  <noscript><p class="state">Filters need JavaScript. Every event is listed below.</p></noscript>
   <form class="filters js-only grid" id="ev-filters" aria-label="Filter events" onsubmit="return false">
     <fieldset id="f-tier"><legend>Tier</legend>
       <div class="chips">
@@ -26,6 +29,7 @@ const count = (n) => `${n} ${n === 1 ? 'match' : 'matches'} recorded`;
     <label>Series <select class="fsel" id="f-series"><option value="">Any series</option>{seriesOptions.map((s) => <option value={s.id}>{s.name}</option>)}</select></label>
     <button type="button" class="ghost" id="f-reset">Clear filters</button>
   </form>
+  </>}
   <p class="gap-summary" id="ev-count" aria-live="polite">{events.length} {events.length === 1 ? 'event' : 'events'}</p>
 
   {events.length === 0 && <p class="state">No events in the archive yet. <a href={`${REPO_URL}/blob/main/CONTRIBUTING.md`}>Add the first one</a>.</p>}
@@ -34,21 +38,26 @@ const count = (n) => `${n} ${n === 1 ? 'match' : 'matches'} recorded`;
       <li class="frow" data-tier={e.tier} data-kind={e.kind} data-year={e.year ?? ''} data-series={e.series ?? ''}>
         <a href={href(`events/${e.id}/`)}>
           <strong>{e.name}</strong>
-          <span class="mute">{e.year ?? 'Year unknown'}{e.series && <> · {series.get(e.series)?.name ?? e.series}</>}</span>
+          <span class="mute">{e.year ?? 'Year unknown'}</span>
           <EventTags event={e} />
           <span class="mute">{count(matchesOf(e.id).length)}</span>
         </a>
+        {series.get(e.series) && <a class="serieslink" href={href(`series/${e.series}/`)}>Series: {series.get(e.series).name}</a>}
       </li>
     ))}
   </ul>
   <p class="state" id="ev-none" hidden>No events match these filters. <button type="button" class="ghost" id="ev-none-reset">Clear filters</button></p>
 
-  <script is:inline>
+  {events.length > 0 && <script is:inline>
     (() => {
       const rows = [...document.querySelectorAll('#ev-list .frow')];
       const sel = { tier: '', kind: '', year: '', series: '' };
       const $ = (id) => document.getElementById(id);
       const tierBtns = document.querySelectorAll('#f-tier button');
+      const syncFromControls = () => {
+        sel.tier = document.querySelector('#f-tier button[aria-pressed="true"]')?.dataset.tier ?? '';
+        for (const k of ['kind', 'year', 'series']) sel[k] = $('f-' + k)?.value ?? '';
+      };
       const apply = () => {
         let n = 0;
         for (const r of rows) {
@@ -64,6 +73,9 @@ const count = (n) => `${n} ${n === 1 ? 'match' : 'matches'} recorded`;
       const reset = () => { setTier(''); for (const k of ['kind', 'year', 'series']) { sel[k] = ''; $('f-' + k).value = ''; } apply(); };
       $('f-reset').addEventListener('click', reset);
       $('ev-none-reset').addEventListener('click', reset);
+      const resync = () => { syncFromControls(); apply(); };
+      resync();
+      window.addEventListener('pageshow', resync); // browsers restore control values after scripts run (Back)
     })();
-  </script>
+  </script>}
 </Base>

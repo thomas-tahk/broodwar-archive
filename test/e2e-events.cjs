@@ -39,17 +39,28 @@ async function noOverflow(page, label) {
     await page.focus('#f-kind');
     await page.screenshot({ path: `${out}/events-focus-${name}.png` });
     await page.selectOption('#f-year', '2000'); // tier=big is still on and the big event is 2001
-    console.log(name, 'empty filter shows none-message:', await page.isVisible('#ev-none'));
+    if (!(await page.isVisible('#ev-none'))) fail('no-matches message not visible');
     await page.click('#ev-none-reset');
     if ((await rows.count()) !== total) fail('reset did not restore');
 
     await page.click('#f-tier button[data-tier="big"]');
-    await rows.first().locator('a').click();
+    await rows.first().locator('a').first().click();
     await page.waitForURL('**/events/fixture-big-2001/');
     console.log(name, 'opened', await page.textContent('h1'));
 
+    await page.goBack();
+    await page.click('#f-reset');
+    await page.selectOption('#f-kind', 'cup');
+    await page.click('a[href$="events/fixture-league/"]');
+    await page.goBack();
+    const shown = await rows.count();
+    const kindNow = await page.inputValue('#f-kind');
+    console.log(name, 'after Back: kind', kindNow, 'rows', shown);
+    if (kindNow === 'cup' && shown !== 1) fail('restored select disagrees with list');
     await page.goto(`${base}series/fixture-series/`);
-    console.log(name, 'series events', await page.locator('.events a').count());
+    const seriesCount = await page.locator('.events a').count();
+    console.log(name, 'series events', seriesCount);
+    if (seriesCount !== 2) fail(`series page lists ${seriesCount}, want 2`);
     await page.screenshot({ path: `${out}/series-${name}.png`, fullPage: true });
     await noOverflow(page, `series ${name}`);
 
