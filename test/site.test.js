@@ -170,3 +170,40 @@ test('real catalog: Find page, race matrix and embedded player', async (t) => {
     has(read('matches/2001-sky-osl/final'), 'Open on YouTube');
   });
 });
+
+test('help-wanted page lists every gap with a record link and a prefilled form link', async (t) => {
+  const dir = copyFixture();
+  const edit = (f, from, to) => { const p = `${dir}/${f}`; fs.writeFileSync(p, fs.readFileSync(p, 'utf8').replace(from, to)); };
+  edit('events/fixture-league.yaml', 'completeness: complete', 'completeness: partial');
+  edit('matches/fixture-league/ro8-a-1.yaml', 'completeness: complete', 'completeness: stub');
+  build(dir);
+  const html = read('help-wanted');
+  const unesc = (s) => s.replace(/&#38;|&amp;/g, '&');
+  const rows = (html.match(/<li class="helprow"[\s\S]*?<\/li>/g) ?? []).map((r) => ({
+    record: r.match(/data-record="([^"]+)"/)[1],
+    href: r.match(/class="row" href="([^"]+)"/)[1],
+    form: new URL(unesc(r.match(/class="helpbtn" href="([^"]+)"/)[1])),
+  }));
+
+  await t.test('counts at top are pinned', () => {
+    const counts = { event: 1, match: 1, nocopy: 1, nofields: 1 };
+    for (const [k, n] of Object.entries(counts)) has(html, `data-gap="${k}" data-count="${n}"`);
+    assert.equal(rows.length, 4);
+  });
+
+  await t.test('each row links to its own record and prefills the form', () => {
+    const byKey = (rec, tmpl) => rows.find((r) => r.record === rec && r.form.searchParams.get('template') === tmpl);
+    assert.equal(byKey('fixture-league', 'wrong-info.yml').href, `${BASE}events/fixture-league/`);
+    assert.equal(byKey('fixture-league/ro8-a-1', 'wrong-info.yml').href, `${BASE}matches/fixture-league/ro8-a-1/`);
+    const own = rows.filter((r) => r.record === 'fixture-league/ro8-a-2');
+    assert.equal(own.length, 2); // no-copy row + missing-fields row
+    for (const r of own) assert.equal(r.href, `${BASE}matches/fixture-league/ro8-a-2/`);
+    const copy = byKey('fixture-league/ro8-a-2', 'new-copy.yml');
+    assert.equal(copy.form.searchParams.get('match'), 'fixture-league/ro8-a-2');
+    assert.equal(copy.form.searchParams.get('title'), '[fixture-league/ro8-a-2] ');
+    const info = byKey('fixture-league/ro8-a-2', 'wrong-info.yml');
+    assert.equal(info.form.searchParams.get('where'), 'https://thomas-tahk.github.io/broodwar-archive/matches/fixture-league/ro8-a-2/');
+    assert.equal(info.form.searchParams.get('title'), '[fixture-league/ro8-a-2] ');
+    for (const r of rows) assert.equal(r.form.origin + r.form.pathname, 'https://github.com/thomas-tahk/broodwar-archive/issues/new');
+  });
+});
