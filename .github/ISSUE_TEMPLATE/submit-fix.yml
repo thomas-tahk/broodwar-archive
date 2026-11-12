@@ -13,7 +13,7 @@ body:
     id: field
     attributes:
       label: "Field"
-      description: "Field to change. Examples: name, year, winner, games.0.map (games are counted from 0)"
+      description: "Field to change. Examples: name, year, winner, games.1.map (games are counted from 1, like the game number)"
     validations:
       required: true
   - type: input

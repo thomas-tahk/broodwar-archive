@@ -29,7 +29,7 @@ const recordHref = (r) => href(r.isMatch ? `matches/${r.event}/${r.id}/` : `even
               <span class="sb">{labelOf(r)}</span>
               <span class="info">{r.detail}</span>
             </a>
-            <a class="helpbtn" href={formUrl(REPO_URL, s.form, { recordId: r.recordId })} rel="noopener noreferrer">{s.form === 'copy' ? 'Add a copy' : 'Report the fix'} <span class="vh">for {r.recordId}</span></a>
+            <a class="helpbtn" href={formUrl(REPO_URL, s.form, { recordId: r.recordId })} rel="noopener noreferrer">{s.form === 'copy' ? 'Add a copy' : 'Help fill this'} <span class="vh">for {r.recordId}</span></a>
           </li>
         ))}
       </ul>

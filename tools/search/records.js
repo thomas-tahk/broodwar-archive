@@ -1,4 +1,5 @@
 import { bestGrade } from '../catalog/grades.js';
+import { itemYear } from '../catalog/itemYear.js';
 
 const RACES = ['T', 'P', 'Z'];
 const slug = (s) => s.toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -74,7 +75,7 @@ function itemRecord(item, ctx) {
     aka: players.map((id) => ctx.players.get(id)?.hangul).filter(Boolean).concat(event ? leagueAka(event, ctx.series) : []),
     event: event?.id ?? null,
     eventName: event?.name ?? null,
-    year: item.date ? Number(item.date.slice(0, 4)) : event?.year ?? null,
+    year: itemYear(item, ctx.resolve),
     tier: event?.tier ?? null,
     league: event ? leagueOf(event, ctx.series).key : null,
     matchup: null,
@@ -84,9 +85,18 @@ function itemRecord(item, ctx) {
   };
 }
 
+/** Minimal ref resolver (event:/match:) over a catalog, for itemYear. */
+function resolveIn(ctx, catalog, ref) {
+  const [type, ...rest] = ref.split(':');
+  const id = rest.join(':');
+  const record = type === 'event' ? ctx.events.get(id) : type === 'match' ? catalog.matches.find((m) => `${m.event}/${m.id}` === id) : null;
+  return record ? { type, record } : null;
+}
+
 /** The prebuilt search data: flat record list (games first by date, then items) plus id -> display-name labels. */
 export function buildRecords(catalog) {
   const ctx = { events: byId(catalog.events), players: byId(catalog.players), maps: byId(catalog.maps), series: byId(catalog.series ?? []) };
+  ctx.resolve = (ref) => resolveIn(ctx, catalog, ref);
   const games = catalog.matches.flatMap((m) => m.games.map((g) => gameRecord(m, g, ctx)));
   const items = (catalog.items ?? []).map((i) => itemRecord(i, ctx));
   const records = [...games.sort(byDateThenId), ...items.sort(byDateThenId)];

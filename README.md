@@ -12,8 +12,10 @@ Want to add or fix something? You don't need to code. See [CONTRIBUTING.md](CONT
 
 ## Layout
 
-- `catalog/` - the data: YAML for events, matches, players, maps; schemas in `catalog/schema/`
+- `catalog/` - the data: YAML for events, series, matches, players, maps and items; schemas in `catalog/schema/`
 - `tools/catalog/` - the validator that checks every catalog file
+- `tools/submit/` - the issue-form definitions and the bot that turns accepted submissions into pull requests (`npm run submit:templates` regenerates the templates)
+- `tools/search/` - builds the search index for the Find page
 - `src/`, `astro.config.mjs` - the website, built from the catalog
 - `docs/` - catalog format (`docs/catalog-format.md`), design spec, plans
 - `.github/` - issue forms and CI workflows (`.github/workflows/`)
@@ -26,4 +28,4 @@ npm run validate
 npm run dev
 ```
 
-Other scripts: `npm test`, `npm run build`, `npm run preview`. Optional: `node test/e2e-screens.cjs` takes screenshots (needs Playwright installed globally).
+Other scripts: `npm test`, `npm run build`, `npm run preview`. Optional: `node test/e2e-screens.cjs` takes screenshots (Playwright is a devDependency, installed by `npm install`; you may need `npx playwright install chromium` once). Screenshots go to a temp folder unless `OUT` is set.

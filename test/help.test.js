@@ -1,6 +1,16 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { helpRows, formUrl, missingItems } from '../src/lib/help.js';
+import { helpRows, formUrl, missingItems, FORMS } from '../src/lib/help.js';
+import { FORMS as SUBMIT_FORMS } from '../tools/submit/forms.js';
+
+test('every help form uses a real template and prefills only real field ids of it', () => {
+  for (const [name, f] of Object.entries(FORMS)) {
+    const form = Object.values(SUBMIT_FORMS).find((s) => s.file === f.template);
+    assert.ok(form, `${name}: template ${f.template} exists in tools/submit/forms.js`);
+    const ids = form.fields.map((x) => x.id);
+    for (const key of Object.keys(f.fields('e/m', 1))) assert.ok(ids.includes(key), `${name}: "${key}" is a field of ${f.template}`);
+  }
+});
 
 const ev = (id, tier, year, completeness = 'partial') => ({ id, tier, year, completeness, name: id });
 const game = (copies = 0, lost = false) => ({ set: 1, lost, copies: Array.from({ length: copies }, () => ({ url: 'x' })) });
@@ -69,4 +79,11 @@ test('a match whose every game is lost has no copy gap', () => {
 test('a complete event with fewer games than expected still surfaces the gap', () => {
   const e = { ...ev('e', 'big', 2000, 'complete'), expected_games: 3 };
   assert.deepEqual(missingItems(e, [match('e', 'm')]).map((i) => i.form), ['addmatch']);
+});
+
+test('a stub or partial event offers "add a missing match" even with no expected_games, once', () => {
+  assert.deepEqual(missingItems(ev('e', 'big', 2000, 'stub')).map((i) => i.form), ['info', 'addmatch']);
+  assert.deepEqual(missingItems(ev('e', 'big', 2000, 'partial'), [match('e', 'm')]).map((i) => i.form), ['info', 'addmatch']);
+  const both = { ...ev('e', 'big', 2000, 'partial'), expected_games: 5 };
+  assert.equal(missingItems(both).filter((i) => i.form === 'addmatch').length, 1);
 });

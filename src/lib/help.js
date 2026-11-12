@@ -2,7 +2,8 @@
 import { copyCount } from './catalog.js';
 
 const TIER_RANK = { big: 0, mid: 1, small: 2 };
-/** The ONE place that names the issue forms: template file and the form fields to prefill from a record ("event" or "event/match"). */
+/** The site's one place that maps a help action to an issue template and the fields to prefill from a record ("event" or "event/match").
+ *  Template names and field ids are copied from tools/submit/forms.js (kept out of the site bundle); test/help.test.js fails if they drift. */
 const split = (recordId) => { const [event, match] = recordId.split('/'); return { event, match }; };
 export const FORMS = {
   copy: { template: 'submit-copy.yml', fields: (recordId, game) => { const { event, match } = split(recordId); return { event_id: event, match_id: match, ...(game ? { game_number: String(game) } : {}) }; } },
@@ -43,6 +44,7 @@ export function missingItems(rec, eventMatches = []) {
   }
   const missing = rec.expected_games != null ? rec.expected_games - eventMatches.reduce((n, m) => n + m.games.length, 0) : 0;
   if (missing > 0) items.push({ text: `${missing} expected ${missing === 1 ? 'game is' : 'games are'} not catalogued yet.`, form: 'addmatch', label: 'Add a missing match' });
+  else if (unfinished(rec)) items.push({ text: 'Some matches may not be catalogued yet.', form: 'addmatch', label: 'Add a missing match' });
   return items;
 }
 

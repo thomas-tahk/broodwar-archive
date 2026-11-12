@@ -4,7 +4,7 @@ const { chromium } = require('playwright');
 const fs = require('node:fs');
 
 const base = (process.env.SITE_URL || 'http://localhost:4321/broodwar-archive/').replace(/\/?$/, '/');
-const out = process.env.OUT || 'docs/milestones/m2-screens';
+const out = process.env.OUT || require('node:path').join(require('node:os').tmpdir(), 'bw-screens'); // OUT=docs/milestones/m2-screens to refresh the committed shots
 
 async function openItemFromAPlayer(page) {
   await page.goto(`${base}players/`);
