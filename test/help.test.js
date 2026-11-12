@@ -70,3 +70,10 @@ test('a complete event with fewer games than expected still surfaces the gap', (
   const e = { ...ev('e', 'big', 2000, 'complete'), expected_games: 3 };
   assert.deepEqual(missingItems(e, [match('e', 'm')]).map((i) => i.form), ['addmatch']);
 });
+
+test('a stub or partial event offers "add a missing match" even with no expected_games, once', () => {
+  assert.deepEqual(missingItems(ev('e', 'big', 2000, 'stub')).map((i) => i.form), ['info', 'addmatch']);
+  assert.deepEqual(missingItems(ev('e', 'big', 2000, 'partial'), [match('e', 'm')]).map((i) => i.form), ['info', 'addmatch']);
+  const both = { ...ev('e', 'big', 2000, 'partial'), expected_games: 5 };
+  assert.equal(missingItems(both).filter((i) => i.form === 'addmatch').length, 1);
+});
