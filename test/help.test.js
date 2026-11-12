@@ -1,0 +1,48 @@
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { helpRows, formUrl } from '../src/lib/help.js';
+
+const ev = (id, tier, year, completeness = 'partial') => ({ id, tier, year, completeness, name: id });
+const game = (copies = 0, lost = false) => ({ set: 1, lost, copies: Array.from({ length: copies }, () => ({ url: 'x' })) });
+const match = (event, id, over = {}) => ({
+  id, event, fullId: `${event}/${id}`, completeness: 'complete', date: '2000-01-01', winner: 'a', score: '1-0', games: [game(1)], ...over,
+});
+
+test('helpRows sorts big before mid before small, then year, then id', () => {
+  const events = [ev('small-99', 'small', 1999), ev('big-02', 'big', 2002), ev('mid-01', 'mid', 2001), ev('big-01', 'big', 2001)];
+  const rows = helpRows(events, []);
+  assert.deepEqual(rows.map((r) => r.recordId), ['big-01', 'big-02', 'mid-01', 'small-99']);
+});
+
+test('match rows inherit the event tier and year for sorting', () => {
+  const events = [ev('mid-e', 'mid', 1999, 'complete'), ev('big-e', 'big', 2005, 'complete')];
+  const matches = [match('mid-e', 'm1', { games: [game(0)] }), match('big-e', 'm2', { games: [game(0)] })];
+  assert.deepEqual(helpRows(events, matches).map((r) => r.recordId), ['big-e/m2', 'mid-e/m1']);
+});
+
+test('a match is not listed twice for unfinished and missing fields', () => {
+  const rows = helpRows([ev('e', 'big', 2000, 'complete')], [match('e', 'm', { completeness: 'stub', date: null })]);
+  assert.deepEqual(rows.map((r) => r.type), ['match']);
+});
+
+test('missing fields on a complete match get their own row', () => {
+  const rows = helpRows([ev('e', 'big', 2000, 'complete')], [match('e', 'm', { winner: null, score: null })]);
+  assert.deepEqual(rows.map((r) => [r.type, r.detail]), [['nofields', 'missing winner, score']]);
+});
+
+test('all-lost matches are not in the no-copy list; others are', () => {
+  const events = [ev('e', 'big', 2000, 'complete')];
+  const matches = [match('e', 'lost', { games: [game(0, true), game(0, true)] }), match('e', 'none', { games: [game(0)] }), match('e', 'mixed', { games: [game(0, true), game(0)] })];
+  assert.deepEqual(helpRows(events, matches).map((r) => [r.type, r.recordId]), [['nocopy', 'e/mixed'], ['nocopy', 'e/none']]);
+});
+
+test('formUrl: copy form prefills match, info form prefills where', () => {
+  const args = { recordId: 'e/m', pageUrl: 'https://x.test/matches/e/m/' };
+  const copy = new URL(formUrl('https://gh.test/r', 'copy', args));
+  assert.equal(copy.searchParams.get('template'), 'new-copy.yml');
+  assert.equal(copy.searchParams.get('match'), 'e/m');
+  const info = new URL(formUrl('https://gh.test/r', 'info', args));
+  assert.equal(info.searchParams.get('template'), 'wrong-info.yml');
+  assert.equal(info.searchParams.get('where'), 'https://x.test/matches/e/m/');
+  assert.equal(info.searchParams.get('title'), '[e/m] ');
+});

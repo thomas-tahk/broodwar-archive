@@ -178,30 +178,32 @@ test('help-wanted page lists every gap with a record link and a prefilled form l
   edit('matches/fixture-league/ro8-a-1.yaml', 'completeness: complete', 'completeness: stub');
   build(dir);
   const html = read('help-wanted');
-  const c = loadCatalog(dir);
-  const total = (m) => m.games.reduce((n, g) => n + (g.copies ?? []).length, 0);
-  const expected = {
-    event: c.events.filter((e) => e.completeness !== 'complete').length,
-    match: c.matches.filter((m) => m.completeness !== 'complete').length,
-    nocopy: c.matches.filter((m) => total(m) === 0).length,
-    nodate: c.matches.filter((m) => !m.date || !m.winner || !m.score).length,
-  };
+  const unesc = (s) => s.replace(/&#38;|&amp;/g, '&');
+  const rows = (html.match(/<li class="helprow"[\s\S]*?<\/li>/g) ?? []).map((r) => ({
+    record: r.match(/data-record="([^"]+)"/)[1],
+    href: r.match(/class="row" href="([^"]+)"/)[1],
+    form: new URL(unesc(r.match(/class="helpbtn" href="([^"]+)"/)[1])),
+  }));
 
-  await t.test('counts at top equal the catalog gaps', () => {
-    assert.equal(expected.event, 1);
-    assert.equal(expected.match, 1);
-    assert.equal(expected.nodate, 1);
-    for (const [k, n] of Object.entries(expected)) has(html, `data-gap="${k}" data-count="${n}"`);
+  await t.test('counts at top are pinned', () => {
+    const counts = { event: 1, match: 1, nocopy: 1, nofields: 1 };
+    for (const [k, n] of Object.entries(counts)) has(html, `data-gap="${k}" data-count="${n}"`);
+    assert.equal(rows.length, 4);
   });
 
-  await t.test('each row has a record link and a form link', () => {
-    const rows = html.match(/<li class="helprow"[\s\S]*?<\/li>/g) ?? [];
-    assert.equal(rows.length, Object.values(expected).reduce((a, b) => a + b, 0));
-    for (const r of rows) {
-      assert.match(r, new RegExp(`class="row" href="${BASE}(events|matches)/`));
-      assert.match(r, /class="helpbtn" href="https:\/\/github\.com\/thomas-tahk\/broodwar-archive\/issues\/new\?template=(new-copy|wrong-info)\.yml&(amp;|#38;)title=%5B[^"]+%5D%20"/);
-    }
-    has(html, 'title=%5Bfixture-league%2Fro8-a-2%5D%20');
+  await t.test('each row links to its own record and prefills the form', () => {
+    const byKey = (rec, tmpl) => rows.find((r) => r.record === rec && r.form.searchParams.get('template') === tmpl);
+    assert.equal(byKey('fixture-league', 'wrong-info.yml').href, `${BASE}events/fixture-league/`);
+    assert.equal(byKey('fixture-league/ro8-a-1', 'wrong-info.yml').href, `${BASE}matches/fixture-league/ro8-a-1/`);
+    const own = rows.filter((r) => r.record === 'fixture-league/ro8-a-2');
+    assert.equal(own.length, 2); // no-copy row + missing-fields row
+    for (const r of own) assert.equal(r.href, `${BASE}matches/fixture-league/ro8-a-2/`);
+    const copy = byKey('fixture-league/ro8-a-2', 'new-copy.yml');
+    assert.equal(copy.form.searchParams.get('match'), 'fixture-league/ro8-a-2');
+    assert.equal(copy.form.searchParams.get('title'), '[fixture-league/ro8-a-2] ');
+    const info = byKey('fixture-league/ro8-a-2', 'wrong-info.yml');
+    assert.equal(info.form.searchParams.get('where'), 'https://thomas-tahk.github.io/broodwar-archive/matches/fixture-league/ro8-a-2/');
+    assert.equal(info.form.searchParams.get('title'), '[fixture-league/ro8-a-2] ');
+    for (const r of rows) assert.equal(r.form.origin + r.form.pathname, 'https://github.com/thomas-tahk/broodwar-archive/issues/new');
   });
-
 });
