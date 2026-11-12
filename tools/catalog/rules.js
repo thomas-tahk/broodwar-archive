@@ -100,7 +100,7 @@ function linkError(entry, field, ref, known) {
   if (typeof ref !== 'string') return [];
   const [type, ...rest] = ref.split(':');
   const id = rest.join(':');
-  if (!REF_HOME[type] || known[type]?.has(id)) return [];
+  if (!REF_HOME[type] || !/^[a-z0-9-]+(\/[a-z0-9-]+)?$/.test(id) || known[type]?.has(id)) return [];
   return [err(entry, field, `${type} "${id}" does not exist. Add ${REF_HOME[type].replace('<id>', id)} or fix the spelling`)];
 }
 

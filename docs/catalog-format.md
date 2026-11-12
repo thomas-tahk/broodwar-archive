@@ -26,16 +26,16 @@ IDs are lowercase `a-z 0-9 -`. A match's full id is `<event-id>/<match-id>`. Fil
 ```yaml
 id: 2001-sky-osl
 name: 2001 SKY OnGameNet StarLeague
-league: OSL            # or null
+league: OSL            # display name of the league, or null. `series` (below) links to a series file
 sponsor: SKY           # or null
 year: 2001
 broadcaster: OnGameNet # or null
 organizer: null
 expected_games: 66     # optional; or null if unknown. How many games the event had, per a source
 series: osl            # id of a series file, or null for a one-off event
-tier: big              # big | mid | small, see "Tier rule" below
+tier: big              # never null: big | mid | small, see "Tier rule" below
 kind: individual-league # individual-league | team-league | international | cup | invitational | showmatch
-tags: []               # list of lowercase ids, free-form (e.g. [korea, offline])
+tags: []               # optional (absent = []); list of lowercase ids, free-form (e.g. [korea, offline])
 completeness: complete # stub | partial | complete, see "Completeness" below
 sources:
   - url: https://...
@@ -137,7 +137,7 @@ Every event has a `tier`:
 
 ## Completeness
 
-`completeness` on every event and match says how much of the record is filled in: `stub` (exists, little else), `partial` (some results or copies missing), `complete` (everything the sources give is recorded). Pages use it to show what is missing.
+`completeness` on every event and match covers results and metadata only: `stub` (record exists, most results and metadata unknown), `partial` (some results or metadata missing), `complete` (everything the sources give is recorded). Missing copies are not part of it; they are tracked by the copy-gap status (see Grades). `tier`, `kind` and `completeness` are required and cannot be null.
 
 ## Player
 

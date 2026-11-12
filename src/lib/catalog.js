@@ -23,11 +23,8 @@ export const items = catalog.items;
 /** Ordered featured picks: [{ ref: "event:2001-sky-osl", blurb? }]. */
 export const featured = catalog.featured;
 
-/** Seasons (events) of one series, newest first. */
+/** Seasons (events) of one series, by year, newest first. */
 export const eventsOfSeries = (seriesId) => events.filter((e) => e.series === seriesId);
-
-/** Ref string "type:id" for a record; matches use their fullId. */
-export const refOf = (type, record) => `${type}:${type === 'match' ? record.fullId : record.id}`;
 
 /** Items whose links (about / from / features) include the ref, e.g. itemsLinkingTo("player:boxer"). */
 export function itemsLinkingTo(ref) {

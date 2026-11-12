@@ -23,7 +23,7 @@ function patternMessage(pattern) {
   return `is not in the expected format (${pattern})`;
 }
 
-const NEVER_NULL = ['url', 'sources', 'id', 'name', 'start', 'end', 'completeness', 'tier', 'kind', 'tags', 'urls', 'links'];
+const NEVER_NULL = ['url', 'sources', 'id', 'name', 'start', 'end', 'completeness', 'tier', 'kind', 'urls', 'links'];
 
 function missingMessage(field) {
   const hint = NEVER_NULL.includes(field) ? '' : ' (write null if the value is unknown)';

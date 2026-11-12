@@ -38,6 +38,11 @@ const cases = {
   'bad-date': [['ro8-a-2.yaml', 'date', /not a real calendar date/]],
   'field-sources-bad': [['ro8-a-1.yaml', 'field_sources', /"dat" is not a field of a match/]],
   'map-version-number': [['map-one.yaml', 'version', /Put it in quotes, e\.g\. "1\.1"/]],
+  'bad-kind': [['fixture-league.yaml', 'kind', /must be one of: individual-league/]],
+  'bad-tags': [['fixture-league.yaml', 'tags[0]', /may only use lowercase letters/]],
+  'item-no-urls': [['fixture-interview.yaml', 'urls', /needs at least 1 entries/]],
+  'bad-item-kind': [['fixture-interview.yaml', 'kind', /may only use lowercase letters/]],
+  'bad-ref-format': [['fixture-interview.yaml', 'links.about[0]', /must look like/]],
   'bad-tier': [['fixture-league.yaml', 'tier', /must be one of: big, mid, small/]],
   'unknown-series': [['fixture-league.yaml', 'series', /series "no-such-series" does not exist/]],
   'item-no-links': [['fixture-interview.yaml', 'links', /must link to at least one/]],
@@ -75,7 +80,7 @@ test('CATALOG_DIR is used when no argument is given', () => {
   assert.match(r.stdout, /3 matches/);
 });
 
-test('item and featured refs to matches resolve as <event>/<match>', () => {
+test('item refs to matches resolve as <event>/<match>', () => {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'bw-matchref-'));
   try {
     fs.cpSync('test/fixtures/catalog', dir, { recursive: true });
@@ -89,4 +94,39 @@ test('item and featured refs to matches resolve as <event>/<match>', () => {
   } finally {
     fs.rmSync(dir, { recursive: true, force: true });
   }
+});
+
+function withFixtureCopy(edit) {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'bw-copy-'));
+  try {
+    fs.cpSync('test/fixtures/catalog', dir, { recursive: true });
+    edit(dir);
+    return run(dir);
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+}
+const rewrite = (file, from, to) => fs.writeFileSync(file, fs.readFileSync(file, 'utf8').replace(from, to));
+
+test('featured refs to matches resolve as <event>/<match>', () => {
+  const add = (ref) => (dir) => fs.appendFileSync(`${dir}/featured.yaml`, `  - ref: ${ref}\n`);
+  assert.equal(withFixtureCopy(add('match:fixture-league/final')).status, 0);
+  const r = withFixtureCopy(add('match:fixture-league/nope'));
+  assert.equal(r.status, 1);
+  assert.match(r.stderr, /featured\[3\]\.ref: match "fixture-league\/nope" does not exist/);
+});
+
+test('a one-off event with series: null passes', () => {
+  const r = withFixtureCopy((dir) => rewrite(`${dir}/events/fixture-league.yaml`, 'series: fixture-series', 'series: null'));
+  assert.equal(r.status, 0, r.stdout + r.stderr);
+});
+
+test('event without tags passes (tags optional)', () => {
+  const r = withFixtureCopy((dir) => rewrite(`${dir}/events/fixture-league.yaml`, 'tags: []\n', ''));
+  assert.equal(r.status, 0, r.stdout + r.stderr);
+});
+
+test('a malformed ref gives one error, not two', () => {
+  const r = withFixtureCopy((dir) => rewrite(`${dir}/items/fixture-interview.yaml`, 'player:alpha', 'player:Alpha'));
+  assert.equal(r.stderr.split('\n').filter((l) => l.includes('links.about[0]')).length, 1, r.stderr);
 });

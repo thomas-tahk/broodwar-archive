@@ -2,92 +2,23 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "event.schema.json",
   "type": "object",
-  "required": [
-    "id",
-    "name",
-    "league",
-    "sponsor",
-    "year",
-    "broadcaster",
-    "organizer",
-    "sources",
-    "series",
-    "tier",
-    "kind",
-    "tags",
-    "completeness"
-  ],
+  "required": ["id", "name", "league", "sponsor", "year", "broadcaster", "organizer", "series", "tier", "kind", "completeness", "sources"],
   "additionalProperties": false,
   "properties": {
-    "id": {
-      "$ref": "common.schema.json#/definitions/id"
-    },
-    "name": {
-      "type": "string",
-      "minLength": 1
-    },
-    "league": {
-      "$ref": "common.schema.json#/definitions/nullableString"
-    },
-    "sponsor": {
-      "$ref": "common.schema.json#/definitions/nullableString"
-    },
-    "year": {
-      "type": "integer",
-      "minimum": 1990,
-      "maximum": 2100
-    },
-    "broadcaster": {
-      "$ref": "common.schema.json#/definitions/nullableString"
-    },
-    "organizer": {
-      "$ref": "common.schema.json#/definitions/nullableString"
-    },
-    "expected_games": {
-      "type": [
-        "integer",
-        "null"
-      ],
-      "minimum": 0
-    },
-    "sources": {
-      "$ref": "common.schema.json#/definitions/sources"
-    },
-    "field_sources": {
-      "$ref": "common.schema.json#/definitions/fieldSources"
-    },
-    "series": {
-      "$ref": "common.schema.json#/definitions/nullableId"
-    },
-    "tier": {
-      "enum": [
-        "big",
-        "mid",
-        "small"
-      ]
-    },
-    "kind": {
-      "enum": [
-        "individual-league",
-        "team-league",
-        "international",
-        "cup",
-        "invitational",
-        "showmatch"
-      ]
-    },
-    "tags": {
-      "type": "array",
-      "items": {
-        "$ref": "common.schema.json#/definitions/id"
-      }
-    },
-    "completeness": {
-      "enum": [
-        "stub",
-        "partial",
-        "complete"
-      ]
-    }
+    "id": { "$ref": "common.schema.json#/definitions/id" },
+    "name": { "type": "string", "minLength": 1 },
+    "league": { "$ref": "common.schema.json#/definitions/nullableString" },
+    "sponsor": { "$ref": "common.schema.json#/definitions/nullableString" },
+    "year": { "type": "integer", "minimum": 1990, "maximum": 2100 },
+    "broadcaster": { "$ref": "common.schema.json#/definitions/nullableString" },
+    "organizer": { "$ref": "common.schema.json#/definitions/nullableString" },
+    "expected_games": { "type": ["integer", "null"], "minimum": 0 },
+    "series": { "$ref": "common.schema.json#/definitions/nullableId" },
+    "tier": { "enum": ["big", "mid", "small"] },
+    "kind": { "enum": ["individual-league", "team-league", "international", "cup", "invitational", "showmatch"] },
+    "tags": { "type": "array", "items": { "$ref": "common.schema.json#/definitions/id" } },
+    "completeness": { "enum": ["stub", "partial", "complete"] },
+    "sources": { "$ref": "common.schema.json#/definitions/sources" },
+    "field_sources": { "$ref": "common.schema.json#/definitions/fieldSources" }
   }
 }
