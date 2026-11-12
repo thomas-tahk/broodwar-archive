@@ -42,3 +42,17 @@ test('ro8-a-1 gap status follows its best grade', () => {
     assert.equal(isGap(g), !['A', 'B', 'C'].includes(bestGrade(g)));
   }
 });
+
+test('v2 loaders: series, items, featured and link lookups', async () => {
+  process.env.CATALOG_DIR = 'test/fixtures/catalog';
+  const lib = await import('../src/lib/catalog.js');
+  assert.equal(lib.series.get('fixture-series').name, 'Fixture Series');
+  assert.deepEqual(lib.eventsOfSeries('fixture-series').map((e) => e.id), ['fixture-league']);
+  assert.deepEqual(lib.itemsLinkingTo('player:alpha').map((i) => i.id), ['fixture-interview']);
+  assert.deepEqual(lib.itemsLinkingTo('map:map-one').map((i) => i.id), ['fixture-interview']);
+  assert.deepEqual(lib.itemsLinkingTo('player:bravo'), []);
+  assert.deepEqual(lib.featured.map((f) => f.ref), ['event:fixture-league', 'series:fixture-series', 'item:fixture-interview']);
+  assert.equal(lib.resolveRef('item:fixture-interview').type, 'item');
+  assert.equal(lib.resolveRef('match:fixture-league/final').record.id, 'final');
+  assert.equal(lib.resolveRef('player:nobody'), null);
+});

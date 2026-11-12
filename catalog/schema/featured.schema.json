@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "featured.schema.json",
+  "type": "object",
+  "required": ["featured"],
+  "additionalProperties": false,
+  "properties": {
+    "featured": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["ref"],
+        "additionalProperties": false,
+        "properties": {
+          "ref": { "$ref": "common.schema.json#/definitions/anyRef" },
+          "blurb": { "type": ["string", "null"] }
+        }
+      }
+    }
+  }
+}

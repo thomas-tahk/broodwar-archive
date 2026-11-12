@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "match.schema.json",
   "type": "object",
-  "required": ["id", "event", "stage", "group", "date", "format", "players", "winner", "score", "games", "sources"],
+  "required": ["id", "event", "stage", "group", "date", "format", "players", "winner", "score", "games", "completeness", "sources"],
   "additionalProperties": false,
   "properties": {
     "id": { "$ref": "common.schema.json#/definitions/id" },
@@ -19,6 +19,7 @@
     },
     "winner": { "$ref": "common.schema.json#/definitions/nullableId" },
     "score": { "$ref": "common.schema.json#/definitions/nullableString" },
+    "completeness": { "enum": ["stub", "partial", "complete"] },
     "games": { "type": "array", "items": { "$ref": "#/definitions/game" } },
     "sources": { "$ref": "common.schema.json#/definitions/sources" },
     "field_sources": { "$ref": "common.schema.json#/definitions/fieldSources" }
