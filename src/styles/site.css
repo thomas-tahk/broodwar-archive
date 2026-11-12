@@ -151,3 +151,7 @@ h2{font-size:1.8rem;color:var(--fg);margin:1.8rem 0 .6rem}
   .sb{font-size:1.65rem}
   h1{font-size:3rem}
 }
+.qbox{width:100%;max-width:34rem;box-sizing:border-box;font-size:1rem;color:var(--fg)}
+.qbox:focus-visible{outline-offset:2px}
+.grp:has(+ .qbox){margin-bottom:.5rem}
+label.grp{display:block}

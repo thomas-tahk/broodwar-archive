@@ -1,122 +1,210 @@
 ---
-// Find a game: race-vs-race table, map chips, player select. Every game is rendered at build time;
-// a small inline script hides rows that don't match (data-* attributes carry the filter keys).
+// Find: text box + filters over the prebuilt record list (records.json). All logic lives in
+// src/lib/search.js; this page only draws the shell and the script below wires it to the DOM.
 import Base from '../../layouts/Base.astro';
-import GradeBadge from '../../components/GradeBadge.astro';
 import QualityLegend from '../../components/QualityLegend.astro';
-import Race from '../../components/Race.astro';
-import { allMatches, maps, playerOf, stageOf, ymd, href } from '../../lib/catalog.js';
-import { bestGrade } from '../../../tools/catalog/grades.js';
-
-const RACES = ['T', 'P', 'Z'];
-const NAMES = { T: 'Terran', P: 'Protoss', Z: 'Zerg' };
-const ordered = [...allMatches].sort((a, b) => (a.date ?? '9999').localeCompare(b.date ?? '9999') || a.id.localeCompare(b.id));
-const games = ordered.flatMap((m) => m.games.map((g) => {
-  const [x, y] = g.races ?? [];
-  const known = RACES.includes(x) && RACES.includes(y);
-  return { m, g, mu: known ? [x, y].sort().join('') : '' };
-}));
-const countMu = (k) => games.filter((r) => r.mu === k).length;
-const unknownRaces = games.filter((r) => !r.mu).length;
-const mapIds = [...new Set(games.map((r) => r.g.map).filter(Boolean))];
-const mapName = (id) => maps.get(id)?.name ?? id;
-const mapCount = (id) => games.filter((r) => r.g.map === id).length;
-const playerIds = [...new Set(games.flatMap((r) => r.m.players))];
-const nameOf = (id) => playerOf(id).name ?? 'Unknown';
-playerIds.sort((a, b) => nameOf(a).localeCompare(nameOf(b)));
-const pairKey = (r, c) => [r, c].sort().join('');
+import { href } from '../../lib/catalog.js';
 ---
-<Base title="Find a game" nav="find">
+<Base title="Find" nav="find">
   <p class="kicker">Brood War broadcast archive</p>
-  <h1>Find a game</h1>
-  <noscript><p class="state">Filters need JavaScript. Every game is listed below.</p></noscript>
+  <h1>Find</h1>
+  <noscript><p class="state">Search needs JavaScript. Browse by season from the home page instead.</p></noscript>
 
-  {games.length === 0 ? (
-    <p class="state">No games in the catalog yet.</p>
-  ) : (
-    <>
-      <div class="js-only" id="filters">
-        <div class="grp">Race vs race</div>
-        <div class="mx" role="group" aria-label="Race vs race">
-          <div></div>
-          {RACES.map((c) => <div>{c} · {NAMES[c]}</div>)}
-          {RACES.map((r) => (
-            <>
-              <div class="rh">{r} · {NAMES[r]}</div>
-              {RACES.map((c) => (
-                <button type="button" data-mu={pairKey(r, c)} aria-pressed="false" aria-label={`${NAMES[r]} vs ${NAMES[c]}, ${countMu(pairKey(r, c))} games`}>
-                  <span aria-hidden="true"><b>{countMu(pairKey(r, c))}</b>{r}v{c}</span>
-                </button>
-              ))}
-            </>
-          ))}
-        </div>
-        <p class="meta">Tap a square to filter; tap again to clear. Mirror squares (like TvP and PvT) are the same matchup. {unknownRaces > 0 && `${unknownRaces} games have unknown races and never match.`}</p>
+  <div id="find" class="js-only" data-json={href('find/records.json')} data-base={href('')}>
+    <p id="loading" class="state" role="status">Loading the catalog…</p>
+    <div id="failed" class="state" role="alert" hidden>
+      <p>The catalog list could not be loaded, so nothing can be searched right now. This is not an empty result.</p>
+      <button type="button" class="ghost" id="retry">Try again</button>
+    </div>
+    <div id="empty" class="state" hidden>The catalog has no games or items yet.</div>
 
-        <div class="grp">Map</div>
-        <div class="chips" role="group" aria-label="Map">
-          {mapIds.map((id) => <button type="button" data-map={id} aria-pressed="false">{mapName(id)} {mapCount(id)}</button>)}
-        </div>
+    <div id="ui" hidden>
+      <label class="grp" for="q">Search</label>
+      <input class="fsel qbox" id="q" type="search" autocomplete="off" placeholder="Player, event, map or title" />
 
-        <div class="grp"><label for="pl">Player</label></div>
-        <select class="fsel" id="pl">
-          <option value="">Any player</option>
-          {playerIds.map((id) => <option value={id}>{nameOf(id)}</option>)}
-        </select>
-        <div><button type="button" class="ghost" id="clear">Clear filters</button></div>
-      </div>
+      <div class="grp">Race vs race</div>
+      <div class="mx" id="f-matchup" role="group" aria-label="Race vs race"></div>
+      <p class="meta">Tap a square to filter; tap again to clear. Mirror squares (like TvP and PvT) are the same matchup. Games with unknown races never match.</p>
+
+      <div class="grp">Type</div>
+      <div class="chips" id="f-kind" role="group" aria-label="Type"></div>
+      <div class="grp">Year</div>
+      <div class="chips" id="f-year" role="group" aria-label="Year"></div>
+      <div class="grp">League</div>
+      <div class="chips" id="f-league" role="group" aria-label="League or series"></div>
+      <div class="grp">Event size</div>
+      <div class="chips" id="f-tier" role="group" aria-label="Event size"></div>
+      <div class="grp">Map</div>
+      <div class="chips" id="f-map" role="group" aria-label="Map"></div>
+      <div class="grp">Best copy</div>
+      <div class="chips" id="f-grade" role="group" aria-label="Best copy quality"></div>
+      <div class="grp"><label for="f-player">Player</label></div>
+      <select class="fsel" id="f-player"></select>
+      <div><button type="button" class="ghost" id="clear">Clear filters</button></div>
 
       <h2>Results</h2>
-      <p id="count" role="status" class="meta">{games.length} games</p>
-      <p id="none" class="state" hidden>No games match. Clear a filter.</p>
-      <ul class="rows" id="results">
-        {games.map(({ m, g, mu }) => {
-          const [a, b] = m.players.map(playerOf);
-          const copies = (g.copies ?? []).length;
-          return (
-            <li class="frow" data-mu={mu} data-map={g.map ?? ''} data-players={m.players.join(' ')}>
-              <a class="row" href={href(`matches/${m.event}/${m.id}/#game-${g.set}`)}>
-                <span class="when">{ymd(m.date)}<br />{stageOf(m)} · G{g.set}</span>
-                <span class="sb">
-                  <span class={g.winner && g.winner === a.id ? 'win' : ''}><Race race={g.races?.[0] ?? null} /> {a.name ?? 'Unknown'}</span>
-                  <b>vs</b>
-                  <span class={g.winner && g.winner === b.id ? 'win' : ''}>{b.name ?? 'Unknown'} <Race race={g.races?.[1] ?? null} /></span>
-                </span>
-                <span class="info">{g.map ? mapName(g.map) : 'Map unknown'} <GradeBadge grade={bestGrade(g)} none={copies === 0} /> <span class={`vid ${copies ? '' : 'none'}`}>{copies ? `▶ ${copies} video${copies === 1 ? '' : 's'}` : 'No video known'}</span></span>
-              </a>
-            </li>
-          );
-        })}
-      </ul>
+      <p id="count" role="status" class="meta"></p>
+      <p id="none" class="state" hidden>Nothing matches. Clear a filter or shorten the search.</p>
+      <ul class="rows" id="results"></ul>
+      <button type="button" class="ghost" id="more" hidden>Show more</button>
       <QualityLegend />
-    </>
-  )}
-<script is:inline>
-  (function () {
-    var filters = document.getElementById('filters');
-    if (!filters) return;
-    var rows = document.querySelectorAll('.frow');
-    var state = { mu: '', map: '', pl: '' };
-    var mxBtns = filters.querySelectorAll('.mx button');
-    var mapBtns = filters.querySelectorAll('[data-map]');
-    var sel = document.getElementById('pl');
-    function draw() {
-      var shown = 0;
-      rows.forEach(function (r) {
-        var ok = (!state.mu || r.dataset.mu === state.mu) && (!state.map || r.dataset.map === state.map) &&
-          (!state.pl || r.dataset.players.split(' ').indexOf(state.pl) >= 0);
-        r.hidden = !ok;
-        if (ok) shown++;
-      });
-      mxBtns.forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.mu === state.mu); });
-      mapBtns.forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.map === state.map); });
-      document.getElementById('count').textContent = shown + (shown === 1 ? ' game' : ' games') + (shown === rows.length ? '' : ' of ' + rows.length);
-      document.getElementById('none').hidden = shown !== 0;
+    </div>
+  </div>
+
+  <script>
+    import { createSearch, fromParams, toParams } from '../../lib/search.js';
+
+    const root = document.getElementById('find');
+    const $ = (id) => document.getElementById(id);
+    const PAGE = 100;
+    const RACE = { T: 'Terran', P: 'Protoss', Z: 'Zerg', R: 'Random' };
+    const GRADE_WORD = { A: 'Original', B: 'Re-encode', C: 'Degraded', D: 'Damaged', X: 'Lost' };
+    const TIER = { big: 'Major', mid: 'Mid-size', small: 'Small' };
+    const GRADE_FACET = { A: 'Original', B: 'Re-encode', C: 'Degraded', D: 'Damaged', X: 'Lost', none: 'No copy / not graded' };
+    const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+    let search, labels, selection = {}, shown = PAGE, last;
+
+    function el(tag, props = {}, ...kids) {
+      const n = Object.assign(document.createElement(tag), props);
+      kids.forEach((k) => n.append(k));
+      return n;
     }
-    mxBtns.forEach(function (b) { b.addEventListener('click', function () { state.mu = state.mu === b.dataset.mu ? '' : b.dataset.mu; draw(); }); });
-    mapBtns.forEach(function (b) { b.addEventListener('click', function () { state.map = state.map === b.dataset.map ? '' : b.dataset.map; draw(); }); });
-    sel.addEventListener('change', function () { state.pl = sel.value; draw(); });
-    document.getElementById('clear').addEventListener('click', function () { state = { mu: '', map: '', pl: '' }; sel.value = ''; draw(); });
-  })();
-</script>
+    const race = (r) => el('span', { className: `rc r-${r ?? 'none'}` }, el('span', { textContent: r ?? '?', ariaHidden: 'true' }), el('span', { className: 'sr', textContent: RACE[r] ?? 'Race unknown' }));
+    const gradeBadge = (g, copies) => {
+      const b = el('span', { className: 'grade', textContent: GRADE_WORD[g] ?? (copies ? 'Not graded' : 'No copy') });
+      b.dataset.grade = GRADE_WORD[g] ? g : 'none';
+      return b;
+    };
+
+    function gameRow(r) {
+      const [a, b] = r.names.length === 2 ? r.names : ['Unknown', 'Unknown'];
+      const win = r.winner;
+      const side = (name, rc, idx, left) => {
+        const won = win && win === r.players[idx];
+        return el('span', { className: won ? 'win' : '' }, ...(left ? [race(rc), ' ', name] : [name, ' ', race(rc)]));
+      };
+      return el('li', { className: 'frow' }, el('a', { className: 'row', href: root.dataset.base + r.url },
+        el('span', { className: 'when' }, (r.date ? r.date.replaceAll('-', '.') : 'Date unknown'), el('br'), `${r.stage ?? 'Stage unknown'} · G${r.set}`),
+        el('span', { className: 'sb' }, side(a, r.races[0], 0, true), el('b', { textContent: 'vs' }), side(b, r.races[1], 1, false)),
+        el('span', { className: 'info' }, `${r.mapName ?? 'Map unknown'} `, gradeBadge(r.grade, r.copies), ' ',
+          el('span', { className: `vid ${r.copies ? '' : 'none'}`, textContent: r.copies ? `▶ ${r.copies} video${r.copies === 1 ? '' : 's'}` : 'No video known' }))));
+    }
+
+    function itemRow(r) {
+      return el('li', { className: 'frow' }, el('a', { className: 'row', href: r.url, rel: 'noopener noreferrer' },
+        el('span', { className: 'when', textContent: `${cap(r.kind)} · ${r.date ? r.date.replaceAll('-', '.') : 'Date unknown'}` }),
+        el('span', { className: 'sb', textContent: r.title }),
+        el('span', { className: 'info', textContent: [r.eventName, r.mapName].filter(Boolean).join(' · ') || 'Opens the original page' })));
+    }
+
+    function chip(facet, value, label, count, small) {
+      const on = (selection[facet] ?? []).includes(String(value));
+      const b = el('button', { type: 'button', ariaPressed: String(on), textContent: small ? '' : `${label} ${count}` });
+      b.dataset.facet = facet; b.dataset.value = value; b.dataset.count = count;
+      if (small) b.append(el('span', { ariaHidden: 'true' }, el('b', { textContent: count }), small), el('span', { className: 'sr', textContent: `${label}, ${count} results` }));
+      if (!on && count === 0) b.disabled = true;
+      return b;
+    }
+    const byLabel = (pairs) => pairs.sort((x, y) => String(x[1]).localeCompare(String(y[1]), undefined, { numeric: true }));
+
+    function fillChips(facet, counts, labelOf) {
+      const pairs = byLabel(Object.keys(counts[facet]).map((v) => [v, labelOf(v)]));
+      $(`f-${facet}`).replaceChildren(...pairs.map(([v, l]) => chip(facet, v, l, counts[facet][v])));
+    }
+
+    function fillMatrix(counts) {
+      const R = ['T', 'P', 'Z'];
+      const cells = [el('div')];
+      R.forEach((c) => cells.push(el('div', { textContent: `${c} · ${RACE[c]}` })));
+      R.forEach((r) => {
+        cells.push(el('div', { className: 'rh', textContent: `${r} · ${RACE[r]}` }));
+        R.forEach((c) => {
+          const key = [r, c].sort().join('');
+          cells.push(chip('matchup', key, `${RACE[r]} vs ${RACE[c]}`, counts.matchup[key] ?? 0, `${r}v${c}`));
+        });
+      });
+      $('f-matchup').replaceChildren(...cells);
+    }
+
+    function fillPlayers(counts) {
+      const sel = $('f-player');
+      const current = (selection.player ?? [])[0] ?? '';
+      const opts = byLabel(Object.keys(counts.player).map((id) => [id, labels.player[id] ?? id]));
+      sel.replaceChildren(el('option', { value: '', textContent: 'Any player' }),
+        ...opts.map(([id, name]) => el('option', { value: id, textContent: `${name} (${counts.player[id]})`, selected: id === current })));
+    }
+
+    // Redrawing replaces the buttons; put keyboard focus back on the same control.
+    const focusKey = () => { const a = document.activeElement; return a?.dataset?.facet ? `[data-facet="${a.dataset.facet}"][data-value="${a.dataset.value}"]` : a?.id ? `#${a.id}` : null; };
+
+    function draw() {
+      const key = focusKey();
+      render();
+      if (key) document.querySelector(key)?.focus();
+    }
+
+    function render() {
+      const q = $('q').value;
+      const { results, counts } = (last = search(q, selection));
+      $('count').textContent = `${results.length} ${results.length === 1 ? 'result' : 'results'}`;
+      fillMatrix(counts);
+      fillChips('kind', counts, (k) => (k === 'game' ? 'Games' : cap(k)));
+      fillChips('year', counts, (y) => y);
+      fillChips('league', counts, (l) => labels.league[l] ?? l);
+      fillChips('tier', counts, (t) => TIER[t] ?? t);
+      fillChips('map', counts, (m) => labels.map[m] ?? m);
+      fillChips('grade', counts, (g) => GRADE_FACET[g] ?? g);
+      fillPlayers(counts);
+      $('none').hidden = results.length !== 0;
+      $('results').replaceChildren(...results.slice(0, shown).map((r) => (r.kind === 'game' ? gameRow(r) : itemRow(r))));
+      $('more').hidden = results.length <= shown;
+      $('more').textContent = `Show more (${results.length - shown} left)`;
+      const qs = toParams(q, selection).toString();
+      history.replaceState(null, '', location.pathname + (qs ? `?${qs}` : ''));
+    }
+
+    function toggle(facet, value) {
+      const list = selection[facet] ?? [];
+      selection[facet] = list.includes(value) ? list.filter((v) => v !== value) : [...list, value];
+      shown = PAGE;
+      draw();
+    }
+
+    function wire() {
+      $('ui').addEventListener('click', (e) => {
+        const b = e.target.closest('button[data-facet]');
+        if (b) toggle(b.dataset.facet, b.dataset.value);
+      });
+      $('f-player').addEventListener('change', (e) => { selection.player = e.target.value ? [e.target.value] : []; shown = PAGE; draw(); });
+      $('q').addEventListener('input', () => { shown = PAGE; draw(); });
+      $('clear').addEventListener('click', () => { selection = {}; $('q').value = ''; shown = PAGE; draw(); });
+      $('more').addEventListener('click', () => { shown += PAGE; draw(); });
+    }
+
+    let wired = false;
+    async function load() {
+      $('failed').hidden = true;
+      $('loading').hidden = false;
+      try {
+        const res = await fetch(root.dataset.json);
+        if (!res.ok) throw new Error(String(res.status));
+        const data = await res.json();
+        labels = data.labels;
+        $('loading').hidden = true;
+        if (data.records.length === 0) { $('empty').hidden = false; return; }
+        search = createSearch(data.records);
+        const start = fromParams(new URLSearchParams(location.search));
+        selection = start.selection;
+        $('q').value = start.query;
+        $('ui').hidden = false;
+        if (!wired) { wire(); wired = true; }
+        draw();
+      } catch {
+        $('loading').hidden = true;
+        $('failed').hidden = false;
+      }
+    }
+    $('retry').addEventListener('click', load);
+    load();
+  </script>
 </Base>
