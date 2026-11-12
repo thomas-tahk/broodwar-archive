@@ -1,0 +1,44 @@
+---
+import Base from '../../layouts/Base.astro';
+import Sources from '../../components/Sources.astro';
+import { items, resolveRef, nameOf, events, host, href, ymd } from '../../lib/catalog.js';
+
+export function getStaticPaths() {
+  return items.map((item) => ({ params: { id: item.id }, props: { item } }));
+}
+const { item } = Astro.props;
+const GROUPS = [['about', 'About'], ['from', 'From'], ['features', 'Features']];
+// A ref becomes a link to its page; a ref that does not resolve stays plain text.
+function describe(ref) {
+  const found = resolveRef(ref);
+  if (!found) return { label: ref, to: null };
+  const { type, record } = found;
+  if (type === 'player') return { label: record.name ?? record.id, to: `players/${record.id}/` };
+  if (type === 'match') {
+    const event = events.find((e) => e.id === record.event);
+    return { label: `${nameOf(record.players[0])} vs ${nameOf(record.players[1])} · ${event?.name ?? record.event}`, to: `matches/${record.event}/${record.id}/` };
+  }
+  if (type === 'item') return { label: record.title, to: `items/${record.id}/` };
+  return { label: record.name ?? record.id, to: `${type === 'series' ? 'series' : `${type}s`}/${record.id}/` };
+}
+const groups = GROUPS.map(([key, label]) => ({ label, refs: (item.links?.[key] ?? []).map(describe) })).filter((g) => g.refs.length > 0);
+---
+<Base title={item.title} nav="">
+  <p class="crumbs"><a href={href('')}>&larr; Home</a></p>
+  <p class="kicker">Item // {item.kind}</p>
+  <h1>{item.title}</h1>
+  <p class="meta">{item.kind} · {ymd(item.date)}{item.language && <> · Language: {item.language}</>}</p>
+  {groups.map((g) => (
+    <>
+      <h2>{g.label}</h2>
+      <ul class="items">
+        {g.refs.map((r) => <li>{r.to ? <a href={href(r.to)}>{r.label}</a> : r.label}</li>)}
+      </ul>
+    </>
+  ))}
+  <h2>Open the original ({item.urls.length})</h2>
+  <ul class="items">
+    {item.urls.map((u) => <li><a href={u} target="_blank" rel="noopener noreferrer">Open on {host(u)} &#8599;</a></li>)}
+  </ul>
+  <Sources sources={item.sources} fieldSources={item.field_sources} />
+</Base>

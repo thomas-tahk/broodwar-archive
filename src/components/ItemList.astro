@@ -1,6 +1,6 @@
 ---
-// Items (interviews, articles...) linked to a record. Kept separate: the item pages issue will extend it.
-import { itemsLinkingTo, host } from '../lib/catalog.js';
+// Items (interviews, articles...) linked to a record; each row opens the item page, which has the external links.
+import { itemsLinkingTo, href, ymd } from '../lib/catalog.js';
 
 const { ref } = Astro.props;
 const found = itemsLinkingTo(ref);
@@ -11,7 +11,7 @@ const found = itemsLinkingTo(ref);
 ) : (
   <ul class="items">
     {found.map((i) => (
-      <li><a href={i.urls[0]} rel="noopener noreferrer">{i.title}</a> <span class="mute">{i.kind} · {host(i.urls[0])}</span></li>
+      <li><a href={href(`items/${i.id}/`)}>{i.title}</a> <span class="mute">{i.kind} · {ymd(i.date)}</span></li>
     ))}
   </ul>
 )}

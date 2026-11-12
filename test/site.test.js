@@ -171,6 +171,30 @@ test('fixture catalog renders everything it knows', async (t) => {
     has(html, 'https://example.com/players/alpha');
   });
 
+  await t.test('item page shows kind, date, linked records and every external url', () => {
+    const interview = read('items/fixture-interview');
+    has(interview, 'Fixture interview');
+    has(interview, 'interview · Date unknown');
+    has(interview, `href="${BASE}players/alpha/"`);
+    has(interview, `href="${BASE}events/fixture-league/"`);
+    has(interview, `href="${BASE}maps/map-one/"`);
+    has(interview, 'href="https://example.com/fixture-interview" target="_blank" rel="noopener noreferrer"');
+    const note = read('items/fixture-match-note');
+    has(note, 'article · 2000.06.02');
+    has(note, `href="${BASE}matches/fixture-cup/semi/"`);
+    has(note, 'href="https://example.com/fixture-match-note-mirror"');
+  });
+
+  await t.test('an item is listed, linking to its item page, on its player, event, map and match pages', () => {
+    const page = (p, id) => { const html = read(p); has(html, `href="${BASE}items/${id}/"`); return html; };
+    page('players/alpha', 'fixture-interview');
+    page('events/fixture-league', 'fixture-interview');
+    page('maps/map-one', 'fixture-interview');
+    page('matches/fixture-cup/semi', 'fixture-match-note');
+    assert.ok(!read('players/alpha').includes('href="https://example.com/fixture-interview"'), 'rows go to the item page, not out');
+    has(read('events/fixture-zeta'), 'No items linked yet');
+  });
+
   await t.test('map page lists its games and items; sparse pages say so', () => {
     const two = read('maps/map-two');
     has(two, `href="${BASE}matches/fixture-cup/semi/"`);

@@ -2,6 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import GapGrid from '../../components/GapGrid.astro';
 import Season from '../../components/Season.astro';
+import ItemList from '../../components/ItemList.astro';
 import Sources from '../../components/Sources.astro';
 import { events, series, matchesOf, href } from '../../lib/catalog.js';
 
@@ -22,5 +23,6 @@ const matches = matchesOf(event.id);
   </p>
   <Season event={event} matches={matches} />
   <GapGrid event={event} matches={matches} />
+  <ItemList ref={`event:${event.id}`} />
   <Sources sources={event.sources} fieldSources={event.field_sources} />
 </Base>
