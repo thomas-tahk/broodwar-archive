@@ -1,37 +1,67 @@
 ---
 import Base from '../layouts/Base.astro';
-import Season from '../components/Season.astro';
-import { events, matchesOf, copyCount, href } from '../lib/catalog.js';
+import { events, href, REPO_URL } from '../lib/catalog.js';
+import { leagueMenu, featuredCards, timeline, latestAdditions } from '../lib/home.js';
 
-const [featured, ...others] = events;
-const matches = featured ? matchesOf(featured.id) : [];
-const games = matches.reduce((n, m) => n + m.games.length, 0);
-const videos = matches.reduce((n, m) => n + copyCount(m), 0);
+const leagues = leagueMenu();
+const cards = featuredCards();
+const years = timeline();
+const latest = latestAdditions();
 ---
-<Base title="Season" nav="season">
-  {!featured ? (
-    <>
-      <h1>Brood War broadcast archive</h1>
-      <p class="state">No events in the catalog yet.</p>
-    </>
+<Base title="Home" nav="home">
+  <h1>The Brood War broadcast archive</h1>
+  {events.length === 0 ? (
+    <p class="state">No events in the catalog yet.</p>
   ) : (
     <>
-      <p class="kicker">Brood War broadcast archive</p>
-      <h1>{featured.name}</h1>
-      <p class="meta">
-        {featured.year ?? 'Unknown'} · {featured.broadcaster ?? 'Broadcaster unknown'} · {matches.length} matches · {games} games · {videos} videos
-      </p>
-      <Season event={featured} matches={matches} />
-      <p class="gap-help"><a href={href(`events/${featured.id}/`)}>Event details, gap view and sources</a></p>
-      {others.length > 0 && (
-        <>
-          <h2>More events</h2>
-          <ul class="events">
-            {others.map((e) => (
-              <li><a href={href(`events/${e.id}/`)}><strong>{e.name}</strong><span class="meta">{e.year ?? 'Unknown'} · {e.broadcaster ?? 'Broadcaster unknown'} · {matchesOf(e.id).length} matches</span></a></li>
+      {leagues.length > 0 && (
+        <nav class="leagues" aria-label="Leagues">
+          {leagues.map((s) => <a href={href(`series/${s.id}/`)}>{s.name}</a>)}
+        </nav>
+      )}
+      {cards.length > 0 && (
+        <section aria-labelledby="featured-h">
+          <h2 id="featured-h">Featured</h2>
+          <ul class="cards">
+            {cards.map((c) => (
+              <li><a href={c.href}><span class="tick cy"><span>{c.type}</span></span><strong>{c.label}</strong>{c.blurb && <span class="meta">{c.blurb}</span>}</a></li>
             ))}
           </ul>
-        </>
+        </section>
+      )}
+      <section aria-labelledby="years-h">
+        <h2 id="years-h">Browse by year</h2>
+        <ol class="years">
+          {years.map((y) => (
+            <li>
+              <h3>{y.year ?? 'Year unknown'}</h3>
+              {y.bands.map((b) => <a class="band" href={b.href}>{b.label}</a>)}
+              {y.chips.length > 0 && (
+                <ul class="chips">
+                  {y.chips.map((c) => <li><a href={c.href}>{c.label}<span class="mute"> · {c.kind}</span></a></li>)}
+                </ul>
+              )}
+            </li>
+          ))}
+        </ol>
+      </section>
+      {latest.length > 0 && (
+        <section aria-labelledby="latest-h">
+          <h2 id="latest-h">Latest additions</h2>
+          <ul class="chips">
+            {latest.map((c) => <li><a href={c.href}>{c.label}<span class="mute"> · {c.kind}</span></a></li>)}
+          </ul>
+        </section>
+      )}
+      {(cards.length === 0 || latest.length === 0) && (
+        <aside class="help-panel" aria-labelledby="help-h">
+          <h2 id="help-h">Help build the archive</h2>
+          <p>Most of this archive is still empty. Add a game, a video link or an article.</p>
+          <p class="help-links">
+            <a href={href('help-wanted/')}>See what is missing</a>
+            <a href={`${REPO_URL}/blob/main/CONTRIBUTING.md`} rel="noopener noreferrer">How to contribute</a>
+          </p>
+        </aside>
       )}
     </>
   )}

@@ -45,6 +45,22 @@ test('fixture catalog renders everything it knows', async (t) => {
     }
   });
 
+  await t.test('home is a front door: league menu, featured, timeline, latest', () => {
+    const html = read('');
+    has(html, `<a href="${BASE}series/fixture-series/">Fixture Series</a>`);
+    has(html, 'Featured');
+    has(html, 'Fixture blurb');
+    has(html, '<h3>2002</h3>');
+    has(html, '<h3>2000</h3>');
+    assert.ok(html.indexOf('<h3>2002</h3>') < html.indexOf('<h3>2000</h3>'), 'years descend');
+    has(html, `class="band" href="${BASE}events/fixture-big-2002/"`);
+    has(html, 'Latest additions');
+    const section = html.split('id="years-h"')[1].split('</section>')[0];
+    const entries = [...section.matchAll(/<a [^>]*>/g)].map((m) => m[0]);
+    assert.ok(entries.length >= 4);
+    for (const a of entries) assert.match(a, /href="[^"]+"/);
+  });
+
   await t.test('home links every event under base', () => {
     const html = read('');
     for (const e of cat.events) has(html, `href="${BASE}events/${e.id}/"`);
@@ -135,6 +151,30 @@ test('score that is not N-N is shown raw; build fails on bad catalog', () => {
 
   fs.writeFileSync(file, original.replace('https://example.com/video/fan-final', 'javascript:alert(1)'));
   assert.throws(() => build(dir));
+});
+
+test('featured match card reads "<p1> vs <p2> · <event name>"', () => {
+  const dir = copyFixture();
+  fs.writeFileSync(path.join(dir, 'featured.yaml'), 'featured:\n  - ref: match:fixture-league/final\n');
+  build(dir);
+  has(read(''), 'Alpha vs Charlie · Fixture League 2000');
+});
+
+test('sparse home: featured hidden, undated item under "Year unknown" last, help panel shown', () => {
+  const dir = copyFixture();
+  fs.writeFileSync(path.join(dir, 'featured.yaml'), 'featured: []\n');
+  fs.writeFileSync(path.join(dir, 'items/undated.yaml'), [
+    'id: undated', 'kind: article', 'title: Undated piece', 'date: null', 'language: null',
+    'urls: [https://example.com/undated]', 'links:', '  about: [player:alpha]',
+    'sources: [{url: "https://example.com/undated"}]', ''].join('\n'));
+  build(dir);
+  const html = read('');
+  assert.ok(!html.includes('id="featured-h"'), 'featured section hidden');
+  has(html, 'Year unknown');
+  assert.ok(html.indexOf('<h3>2000</h3>') < html.indexOf('Year unknown'), 'unknown year last');
+  has(html, `href="${BASE}items/undated/"`);
+  has(html, 'Help build the archive');
+  has(html, `href="${BASE}help-wanted/"`);
 });
 
 test('build succeeds with an explicit empty catalog dir', () => {
