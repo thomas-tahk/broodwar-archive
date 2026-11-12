@@ -151,3 +151,12 @@ h2{font-size:1.8rem;color:var(--fg);margin:1.8rem 0 .6rem}
   .sb{font-size:1.65rem}
   h1{font-size:3rem}
 }
+/* player / map pages */
+.evgroup h3{font:800 1.3rem "Barlow Condensed",sans-serif;text-transform:uppercase;margin:1.2rem 0 .2rem}
+.grow{display:grid;gap:.25rem;background:linear-gradient(90deg,var(--panel2),#0a1650);border-left:6px solid var(--accent2);margin:.4rem 0;padding:.5rem .7rem}
+.grow .when{font:700 1rem "Barlow Condensed",sans-serif;color:var(--mute);text-transform:uppercase}
+.grow .gend{display:flex;flex-wrap:wrap;gap:.3rem .8rem;align-items:center}
+.grow a,.items a{display:inline-flex;align-items:center;min-height:44px}
+.hero .plink{color:inherit;text-decoration:underline;text-underline-offset:.15em}
+.items{list-style:none;margin:0;padding:0}
+@media (min-width:700px){.grow{grid-template-columns:14rem 1fr auto;align-items:center}}

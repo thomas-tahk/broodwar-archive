@@ -1,7 +1,7 @@
 ---
 // Broadcast-style hero for one match: lower-third, both players, big score. Winner is shown openly.
 import Race from './Race.astro';
-import { maps, playerOf, sideRace, scoreText, stageOf, ymd, href } from '../lib/catalog.js';
+import { maps, playerOf, hasPlayer, sideRace, scoreText, stageOf, ymd, href } from '../lib/catalog.js';
 
 const { match, watch = false } = Astro.props;
 const sides = match.players.map(playerOf);
@@ -17,7 +17,7 @@ const mapLine = match.games.map((g) => {
       <>
         {i === 1 && <div class="sc" aria-label={`Score ${scoreText(match)}`}>{scoreText(match)}</div>}
         <div class={`pl ${match.winner && match.winner === p.id ? 'win' : ''}`}>
-          {p.name ?? 'Unknown'}{match.winner && match.winner === p.id && <span class="sr"> (winner)</span>}
+          {hasPlayer(p.id) ? <a class="plink" href={href(`players/${p.id}/`)}>{p.name ?? 'Unknown'}</a> : (p.name ?? 'Unknown')}{match.winner && match.winner === p.id && <span class="sr"> (winner)</span>}
           <small>{p.hangul ?? 'Hangul unknown'} · <Race race={sideRace(match, i)} /></small>
         </div>
       </>

@@ -29,7 +29,7 @@ test('CONTRIBUTING templates, applied as written, pass the validator', () => {
     put(dir, 'matches/fixture-league/match-id.yaml', template('match').replace('event-id', 'fixture-league'));
     const r = spawnSync('node', ['tools/catalog/validate.js', dir], { encoding: 'utf8' });
     assert.equal(r.status, 0, r.stdout + r.stderr);
-    assert.match(r.stdout, /4 matches, 5 players, 3 maps/);
+    assert.match(r.stdout, /5 matches, 6 players, 4 maps/);
   } finally {
     fs.rmSync(dir, { recursive: true, force: true });
   }

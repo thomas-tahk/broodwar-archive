@@ -1,0 +1,29 @@
+# Test fixture — fictional. alpha's second event; one game, copy graded C.
+id: semi
+event: fixture-cup
+stage: Semifinal
+group: null
+date: 2001-03-01
+format: Bo1
+players: [alpha, bravo]
+winner: bravo
+score: "0-1"
+games:
+  - set: 1
+    map: map-two
+    races: [T, P]
+    winner: bravo
+    lost: false
+    copies:
+      - url: https://example.com/video/semi-1
+        kind: fan-upload
+        title: null
+        uploader: somefan
+        resolution: 360p
+        fps: 30
+        grade: C
+        grade_note: soft but complete
+        segment: null
+sources:
+  - url: https://example.com/fixture-cup/bracket
+completeness: complete

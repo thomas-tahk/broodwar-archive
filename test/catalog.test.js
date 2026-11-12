@@ -7,11 +7,11 @@ const cat = loadCatalog('test/fixtures/catalog');
 const match = (id) => cat.matches.find((m) => m.fullId === id);
 
 test('loadCatalog returns plain arrays with fullId', () => {
-  assert.equal(cat.events.length, 1);
-  assert.equal(cat.players.length, 3);
-  assert.equal(cat.maps.length, 2);
+  assert.equal(cat.events.length, 2);
+  assert.equal(cat.players.length, 4);
+  assert.equal(cat.maps.length, 3);
   assert.deepEqual(cat.matches.map((m) => m.fullId).sort(),
-    ['fixture-league/final', 'fixture-league/ro8-a-1', 'fixture-league/ro8-a-2']);
+    ['fixture-cup/semi', 'fixture-league/final', 'fixture-league/ro8-a-1', 'fixture-league/ro8-a-2']);
 });
 
 test('final: D, X, ungraded copy -> null; all gaps', () => {
@@ -47,7 +47,7 @@ test('v2 loaders: series, items, featured and link lookups', async () => {
   process.env.CATALOG_DIR = 'test/fixtures/catalog';
   const lib = await import('../src/lib/catalog.js');
   assert.equal(lib.series.get('fixture-series').name, 'Fixture Series');
-  assert.deepEqual(lib.eventsOfSeries('fixture-series').map((e) => e.id), ['fixture-league']);
+  assert.deepEqual(lib.eventsOfSeries('fixture-series').map((e) => e.id), ['fixture-cup', 'fixture-league']);
   assert.deepEqual(lib.itemsLinkingTo('player:alpha').map((i) => i.id), ['fixture-interview']);
   assert.deepEqual(lib.itemsLinkingTo('map:map-one').map((i) => i.id), ['fixture-interview']);
   assert.deepEqual(lib.itemsLinkingTo('player:bravo'), []);

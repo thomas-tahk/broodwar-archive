@@ -100,6 +100,46 @@ test('fixture catalog renders everything it knows', async (t) => {
     }
   });
 
+  await t.test('player page lists games from every event, newest event first, with result and best grade', () => {
+    const html = read('players/alpha');
+    const cup = html.indexOf('Fixture Cup 2001');
+    const league = html.indexOf('Fixture League 2000');
+    assert.ok(cup > 0 && league > cup, 'both events, newest first');
+    has(html, `href="${BASE}matches/fixture-cup/semi/"`);
+    has(html, `href="${BASE}matches/fixture-league/final/"`);
+    has(html, `href="${BASE}matches/fixture-league/ro8-a-1/"`);
+    has(html, 'Games (5)');
+    has(html, 'Lost');
+    has(html, 'Won');
+    has(html, 'data-grade="C"');
+    has(html, 'data-grade="X"');
+    has(html, 'Fixture interview');
+    has(html, 'https://example.com/players/alpha');
+  });
+
+  await t.test('map page lists its games and items; sparse pages say so', () => {
+    const two = read('maps/map-two');
+    has(two, `href="${BASE}matches/fixture-cup/semi/"`);
+    has(two, `href="${BASE}matches/fixture-league/final/"`);
+    has(two, `href="${BASE}players/alpha/"`);
+    has(two, 'Games (2)');
+    has(two, 'No items linked yet');
+    has(read('maps/map-one'), 'Fixture interview');
+    has(read('maps/map-three'), 'No games recorded on this map yet.');
+    has(read('players/delta'), 'No games recorded for this player yet.');
+  });
+
+  await t.test('index pages list everyone; match page links player and map', () => {
+    const pl = read('players');
+    for (const p of cat.players) has(pl, `href="${BASE}players/${p.id}/"`);
+    const mp = read('maps');
+    for (const m of cat.maps) has(mp, `href="${BASE}maps/${m.id}/"`);
+    const html = read('matches/fixture-league/final');
+    has(html, `href="${BASE}players/alpha/"`);
+    has(html, `href="${BASE}maps/map-one/"`);
+    has(read('matches/fixture-league/ro8-a-2'), 'Map: Unknown');
+  });
+
   await t.test('lost game shows X and lost text', () => {
     const html = read('matches/fixture-league/final');
     has(html, 'Footage known lost.');

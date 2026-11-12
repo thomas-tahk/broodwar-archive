@@ -1,0 +1,5 @@
+# Test fixture — fictional. Played in no game (sparse page).
+id: map-three
+name: Map Three
+version: null
+sources: [{url: https://example.com/maps/map-three}]

@@ -1,0 +1,20 @@
+---
+import Base from '../../layouts/Base.astro';
+import { allMaps, allMatches, href } from '../../lib/catalog.js';
+
+const count = (id) => allMatches.reduce((n, m) => n + m.games.filter((g) => g.map === id).length, 0);
+---
+<Base title="Maps" nav="maps">
+  <p class="kicker">Brood War broadcast archive</p>
+  <h1>Maps</h1>
+  {allMaps.length === 0 ? <p class="state">No maps in the catalog yet.</p> : (
+    <ul class="rows">
+      {allMaps.map((m) => (
+        <li><a class="row" href={href(`maps/${m.id}/`)}>
+          <span class="sb"><span>{m.name ?? m.id}</span></span>
+          <span class="info">{m.version ?? 'Version unknown'} · {count(m.id)} game{count(m.id) === 1 ? '' : 's'}</span>
+        </a></li>
+      ))}
+    </ul>
+  )}
+</Base>

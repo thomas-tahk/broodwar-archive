@@ -1,0 +1,26 @@
+---
+import Base from '../../layouts/Base.astro';
+import GameList from '../../components/GameList.astro';
+import ItemList from '../../components/ItemList.astro';
+import Sources from '../../components/Sources.astro';
+import { allMaps, gamesOnMap, href } from '../../lib/catalog.js';
+
+export function getStaticPaths() {
+  return allMaps.map((map) => ({ params: { id: map.id }, props: { map } }));
+}
+const { map } = Astro.props;
+const groups = gamesOnMap(map.id);
+const total = groups.reduce((n, g) => n + g.rows.length, 0);
+---
+<Base title={map.name ?? map.id} nav="maps">
+  <p class="crumbs"><a href={href('maps/')}>&larr; All maps</a></p>
+  <p class="kicker">Map</p>
+  <h1>{map.name ?? map.id}</h1>
+  <p class="meta">Version: {map.version ?? 'Unknown'}</p>
+  <h2>Games ({total})</h2>
+  {total === 0
+    ? <p class="state">No games recorded on this map yet.</p>
+    : <GameList groups={groups} />}
+  <ItemList ref={`map:${map.id}`} />
+  <Sources sources={map.sources} fieldSources={map.field_sources} />
+</Base>
