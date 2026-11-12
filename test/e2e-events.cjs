@@ -24,7 +24,7 @@ async function noOverflow(page, label) {
     page.on('pageerror', (e) => errors.push(String(e)));
 
     await page.goto(`${base}events/`);
-    const rows = page.locator('.frow:not([hidden])');
+    const rows = page.locator('.frow:visible');
     const total = await rows.count();
     await page.screenshot({ path: `${out}/events-${name}.png`, fullPage: true });
     await noOverflow(page, `events ${name}`);
@@ -56,7 +56,7 @@ async function noOverflow(page, label) {
     const shown = await rows.count();
     const kindNow = await page.inputValue('#f-kind');
     console.log(name, 'after Back: kind', kindNow, 'rows', shown);
-    if (kindNow === 'cup' && shown !== 1) fail('restored select disagrees with list');
+    if (shown !== (kindNow === 'cup' ? 1 : total)) fail('restored select disagrees with list');
     await page.goto(`${base}series/fixture-series/`);
     const seriesCount = await page.locator('.events a').count();
     console.log(name, 'series events', seriesCount);
