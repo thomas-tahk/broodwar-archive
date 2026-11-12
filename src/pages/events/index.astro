@@ -1,0 +1,69 @@
+---
+import Base from '../../layouts/Base.astro';
+import EventTags from '../../components/EventTags.astro';
+import { events, series, matchesOf, href, TIER_LABELS, KIND_LABELS, REPO_URL } from '../../lib/catalog.js';
+
+const kinds = [...new Set(events.map((e) => e.kind))];
+const years = [...new Set(events.map((e) => e.year).filter((y) => y != null))];
+const used = new Set(events.map((e) => e.series).filter(Boolean));
+const seriesOptions = [...series.values()].filter((s) => used.has(s.id)).sort((a, b) => a.name.localeCompare(b.name));
+const count = (n) => `${n} ${n === 1 ? 'match' : 'matches'} recorded`;
+---
+<Base title="All events" nav="events">
+  <p class="kicker">Archive</p>
+  <h1>All events</h1>
+  <p class="meta">Every event in the archive, including ones with no matches recorded yet.</p>
+
+  <form class="filters js-only grid" id="ev-filters" aria-label="Filter events" onsubmit="return false">
+    <fieldset id="f-tier"><legend>Tier</legend>
+      <div class="chips">
+        <button type="button" data-tier="" aria-pressed="true">Any</button>
+        {Object.entries(TIER_LABELS).map(([k, label]) => <button type="button" data-tier={k} aria-pressed="false">{label}</button>)}
+      </div>
+    </fieldset>
+    <label>Kind <select class="fsel" id="f-kind"><option value="">Any kind</option>{kinds.map((k) => <option value={k}>{KIND_LABELS[k] ?? k}</option>)}</select></label>
+    <label>Year <select class="fsel" id="f-year"><option value="">Any year</option>{years.map((y) => <option value={y}>{y}</option>)}</select></label>
+    <label>Series <select class="fsel" id="f-series"><option value="">Any series</option>{seriesOptions.map((s) => <option value={s.id}>{s.name}</option>)}</select></label>
+    <button type="button" class="ghost" id="f-reset">Clear filters</button>
+  </form>
+  <p class="gap-summary" id="ev-count" aria-live="polite">{events.length} {events.length === 1 ? 'event' : 'events'}</p>
+
+  {events.length === 0 && <p class="state">No events in the archive yet. <a href={`${REPO_URL}/blob/main/CONTRIBUTING.md`}>Add the first one</a>.</p>}
+  <ul class="events" id="ev-list">
+    {events.map((e) => (
+      <li class="frow" data-tier={e.tier} data-kind={e.kind} data-year={e.year ?? ''} data-series={e.series ?? ''}>
+        <a href={href(`events/${e.id}/`)}>
+          <strong>{e.name}</strong>
+          <span class="mute">{e.year ?? 'Year unknown'}{e.series && <> · {series.get(e.series)?.name ?? e.series}</>}</span>
+          <EventTags event={e} />
+          <span class="mute">{count(matchesOf(e.id).length)}</span>
+        </a>
+      </li>
+    ))}
+  </ul>
+  <p class="state" id="ev-none" hidden>No events match these filters. <button type="button" class="ghost" id="ev-none-reset">Clear filters</button></p>
+
+  <script is:inline>
+    (() => {
+      const rows = [...document.querySelectorAll('#ev-list .frow')];
+      const sel = { tier: '', kind: '', year: '', series: '' };
+      const $ = (id) => document.getElementById(id);
+      const tierBtns = document.querySelectorAll('#f-tier button');
+      const apply = () => {
+        let n = 0;
+        for (const r of rows) {
+          const ok = Object.entries(sel).every(([k, v]) => !v || r.dataset[k] === v);
+          r.hidden = !ok; if (ok) n++;
+        }
+        $('ev-count').textContent = `${n} ${n === 1 ? 'event' : 'events'}${n === rows.length ? '' : ` of ${rows.length}`}`;
+        $('ev-none').hidden = n > 0 || rows.length === 0;
+      };
+      const setTier = (v) => { sel.tier = v; tierBtns.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.tier === v))); };
+      tierBtns.forEach((b) => b.addEventListener('click', () => { setTier(b.dataset.tier); apply(); }));
+      for (const k of ['kind', 'year', 'series']) $('f-' + k).addEventListener('change', (e) => { sel[k] = e.target.value; apply(); });
+      const reset = () => { setTier(''); for (const k of ['kind', 'year', 'series']) { sel[k] = ''; $('f-' + k).value = ''; } apply(); };
+      $('f-reset').addEventListener('click', reset);
+      $('ev-none-reset').addEventListener('click', reset);
+    })();
+  </script>
+</Base>

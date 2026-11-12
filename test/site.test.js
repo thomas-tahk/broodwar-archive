@@ -50,6 +50,31 @@ test('fixture catalog renders everything it knows', async (t) => {
     for (const e of cat.events) has(html, `href="${BASE}events/${e.id}/"`);
   });
 
+  await t.test('series page groups seasons by year, newest first, with tier and completeness', () => {
+    const html = read('series/fixture-series');
+    has(html, 'Fixture Series');
+    for (const e of cat.events.filter((x) => x.series === 'fixture-series')) {
+      has(html, `href="${BASE}events/${e.id}/"`);
+      has(html, e.name);
+    }
+    assert.ok(!html.includes('fixture-oneoff'), 'one-off event must not be on the series page');
+    assert.ok(html.indexOf('>2001<') < html.indexOf('>2000<'), 'newest year first');
+    has(html, 'Big tier');
+    has(html, 'Stub');
+    has(html, '0 matches recorded');
+  });
+
+  await t.test('events page lists every event (stubs too) with filter controls and completeness', () => {
+    const html = read('events');
+    for (const e of cat.events) {
+      has(html, `href="${BASE}events/${e.id}/"`);
+      has(html, `data-tier="${e.tier}" data-kind="${e.kind}" data-year="${e.year}"`);
+    }
+    for (const id of ['f-kind', 'f-year', 'f-series', 'f-reset']) has(html, `id="${id}"`);
+    has(html, 'data-tier="big" aria-pressed="false"');
+    for (const w of ['Stub', 'Partial', 'Complete']) has(html, `>${w}<`);
+  });
+
   await t.test('event page links every match, shows per-game best grade and sources', () => {
     for (const e of cat.events) {
       const html = read(`events/${e.id}`);

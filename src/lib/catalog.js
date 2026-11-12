@@ -9,6 +9,10 @@ const players = byId(catalog.players);
 export const maps = byId(catalog.maps);
 export const events = [...catalog.events].sort((a, b) => (b.year ?? 0) - (a.year ?? 0) || a.id.localeCompare(b.id));
 
+export const TIER_LABELS = { big: 'Big', mid: 'Mid', small: 'Small' };
+export const COMPLETENESS_LABELS = { stub: 'Stub', partial: 'Partial', complete: 'Complete' };
+export const KIND_LABELS = { 'individual-league': 'Individual league', 'team-league': 'Team league', international: 'International', cup: 'Cup', invitational: 'Invitational', showmatch: 'Showmatch' };
+
 /** Matches of one event, dated first (ascending), undated last. */
 export function matchesOf(eventId) {
   return catalog.matches

@@ -1,0 +1,9 @@
+---
+import { TIER_LABELS, COMPLETENESS_LABELS, KIND_LABELS } from '../lib/catalog.js';
+const { event } = Astro.props;
+---
+<span class="tags">
+  <span class="tag" data-tier={event.tier}>{TIER_LABELS[event.tier]} tier</span>
+  <span class="tag kind">{KIND_LABELS[event.kind] ?? event.kind}</span>
+  <span class="tag" data-completeness={event.completeness}>{COMPLETENESS_LABELS[event.completeness]}</span>
+</span>
