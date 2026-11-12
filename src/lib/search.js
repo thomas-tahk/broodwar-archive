@@ -28,7 +28,7 @@ const passes = (record, selection, facet) => {
  */
 export function createSearch(records) {
   const facets = Object.keys(FACETS);
-  const haystacks = records.map((r) => normalize([r.title, ...(r.names ?? []), r.eventName, r.mapName].filter(Boolean).join(' ')));
+  const haystacks = records.map((r) => normalize([r.title, ...(r.names ?? []).filter(Boolean), ...(r.aka ?? []), r.eventName, r.mapName].filter(Boolean).join(' ')));
   const zero = Object.fromEntries(facets.map((f) => [f, {}]));
   for (const r of records) for (const f of facets) for (const v of valuesOf(r, f)) zero[f][v] = 0;
 

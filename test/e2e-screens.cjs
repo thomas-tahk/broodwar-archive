@@ -57,6 +57,15 @@ async function overflow(page, label, width) {
     await page.waitForSelector('#ui:not([hidden]) .frow');
     console.log(name, 'shared link reload', await page.textContent('#count'));
     await page.click('#clear');
+    for (const sel of ['#f-map button:not([disabled])', '.mx button[data-value="PT"]']) {
+      const chip = page.locator(sel).first();
+      const chipCount = Number(await chip.getAttribute('data-count'));
+      await chip.click();
+      const n = (await page.locator('.frow').count()) + ((await page.isVisible('#more')) ? 1 : 0);
+      console.log(name, 'narrowing', sel, 'chip', chipCount, 'results', await page.textContent('#count'));
+      if (!(chipCount < total && (await page.textContent('#count')).startsWith(`${chipCount} `) && n > 0)) process.exitCode = 1;
+      await page.click('#clear');
+    }
     if ((await page.locator('.frow').count()) !== total) process.exitCode = 1;
 
     console.log(name, 'console errors', errors);

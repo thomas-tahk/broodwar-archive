@@ -107,3 +107,42 @@ test('buildRecords from the fixture catalog: games and the item', () => {
   const s = createSearch(records);
   assert.equal(s('', { player: ['alpha'], kind: ['game'] }).results.length, 4);
 });
+
+const mini = (over = {}) => ({
+  events: [{ id: 'ev', name: 'ev', league: '스타리그', year: 2003, tier: 'mid', series: null }],
+  players: [{ id: 'alpha', name: 'Alpha', hangul: '알파' }],
+  maps: [], series: [],
+  matches: [{ id: 'm', event: 'ev', stage: null, group: null, date: null, players: [null, 'alpha'], games: [{ set: 1, map: null, races: [null, null], winner: 'alpha', copies: [] }] }],
+  items: [],
+  ...over,
+});
+
+test('null player keeps positions: names/players stay aligned, facets skip the null', () => {
+  const { records } = buildRecords(mini());
+  const g = records[0];
+  assert.deepEqual(g.players, [null, 'alpha']);
+  assert.deepEqual(g.names, [null, 'Alpha']);
+  assert.equal(g.title, 'Unknown vs Alpha');
+  const s = createSearch(records);
+  assert.equal(s('alpha').results.length, 1);
+  assert.deepEqual(Object.keys(s('').counts.player), ['alpha']);
+});
+
+test('player hangul and league names are searchable', () => {
+  const s = createSearch(buildRecords(mini()).records);
+  assert.equal(s('알파').results.length, 1);
+  assert.equal(s('스타리그').results.length, 1);
+});
+
+test('non-Latin league without a series falls back to the event id, with a label', () => {
+  const { records, labels } = buildRecords(mini());
+  assert.equal(records[0].league, 'ev');
+  assert.equal(labels.league.ev, '스타리그');
+});
+
+test('item linked only through a match ref inherits event, league, tier, year', () => {
+  const item = { id: 'it', kind: 'article', title: 'Recap', date: null, urls: ['https://example.com/x'], links: { about: ['match:ev/m'] } };
+  const { records } = buildRecords(mini({ items: [item] }));
+  const r = records.find((x) => x.kind === 'article');
+  assert.deepEqual([r.event, r.league, r.tier, r.year], ['ev', 'ev', 'mid', 2003]);
+});

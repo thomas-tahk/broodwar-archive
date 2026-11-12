@@ -4,6 +4,11 @@ const RACES = ['T', 'P', 'Z'];
 const slug = (s) => s.toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 const byDateThenId = (a, b) => (a.date ?? '9999').localeCompare(b.date ?? '9999') || a.id.localeCompare(b.id);
 const refId = (refs, type) => (refs ?? []).find((r) => r.startsWith(`${type}:`))?.slice(type.length + 1) ?? null;
+/** Event id of an item: an event: ref, else the event part of any match:<event>/<match> ref. */
+const eventRefOf = (links) => {
+  const refs = [...(links?.from ?? []), ...(links?.about ?? []), ...(links?.features ?? [])];
+  return refId(refs, 'event') ?? refId(refs, 'match')?.split('/')[0] ?? null;
+};
 const byId = (list) => new Map(list.map((x) => [x.id, x]));
 
 /** Matchup key like "PT" (sorted), or null when either race is unknown/random. */
@@ -14,8 +19,14 @@ export const matchupOf = (races) => {
 
 function leagueOf(event, seriesById) {
   if (event.series) return { key: event.series, name: seriesById.get(event.series)?.name ?? event.series };
-  return event.league ? { key: slug(event.league), name: event.league } : { key: null, name: null };
+  if (!event.league) return { key: null, name: null };
+  return { key: slug(event.league) || event.id, name: event.league };
 }
+
+const leagueAka = (event, seriesById) => {
+  const s = seriesById.get(event.series);
+  return [s?.name, ...(s?.aliases ?? []), event.league].filter(Boolean);
+};
 
 function gameRecord(match, game, ctx) {
   const event = ctx.events.get(match.event);
@@ -28,8 +39,9 @@ function gameRecord(match, game, ctx) {
     date: match.date,
     stage: [match.stage, match.group && `Group ${match.group}`].filter(Boolean).join(' · ') || null,
     set: game.set,
-    players: match.players.filter(Boolean),
-    names: names.filter(Boolean),
+    players: match.players,
+    names,
+    aka: match.players.map((id) => ctx.players.get(id)?.hangul).filter(Boolean).concat(leagueAka(event, ctx.series)),
     races: game.races ?? [null, null],
     winner: game.winner ?? null,
     event: event.id,
@@ -46,7 +58,7 @@ function gameRecord(match, game, ctx) {
 }
 
 function itemRecord(item, ctx) {
-  const eventId = refId(item.links?.from, 'event') ?? refId(item.links?.about, 'event');
+  const eventId = eventRefOf(item.links);
   const event = eventId ? ctx.events.get(eventId) : null;
   const mapId = refId(item.links?.features, 'map') ?? refId(item.links?.about, 'map');
   const players = (item.links?.about ?? []).filter((r) => r.startsWith('player:')).map((r) => r.slice(7));
@@ -59,7 +71,8 @@ function itemRecord(item, ctx) {
     date: item.date,
     stage: null,
     players,
-    names: players.map((id) => ctx.players.get(id)?.name).filter(Boolean),
+    names: players.map((id) => ctx.players.get(id)?.name ?? null),
+    aka: players.map((id) => ctx.players.get(id)?.hangul).filter(Boolean).concat(event ? leagueAka(event, ctx.series) : []),
     event: event?.id ?? null,
     eventName: event?.name ?? null,
     year: item.date ? Number(item.date.slice(0, 4)) : event?.year ?? null,
@@ -80,7 +93,7 @@ export function buildRecords(catalog) {
   const records = [...games.sort(byDateThenId), ...items.sort(byDateThenId)];
   const labels = { player: {}, map: {}, league: {} };
   for (const r of records) {
-    r.players.forEach((id) => { labels.player[id] = ctx.players.get(id)?.name ?? id; });
+    r.players.filter(Boolean).forEach((id) => { labels.player[id] = ctx.players.get(id)?.name ?? id; });
     if (r.map) labels.map[r.map] = r.mapName;
     if (r.league) labels.league[r.league] = leagueOf(ctx.events.get(r.event), ctx.series).name;
   }

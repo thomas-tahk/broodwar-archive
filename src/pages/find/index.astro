@@ -77,7 +77,7 @@ import { href } from '../../lib/catalog.js';
     };
 
     function gameRow(r) {
-      const [a, b] = r.names.length === 2 ? r.names : ['Unknown', 'Unknown'];
+      const [a, b] = [r.names[0] ?? 'Unknown', r.names[1] ?? 'Unknown'];
       const win = r.winner;
       const side = (name, rc, idx, left) => {
         const won = win && win === r.players[idx];
@@ -97,10 +97,11 @@ import { href } from '../../lib/catalog.js';
         el('span', { className: 'info', textContent: [r.eventName, r.mapName].filter(Boolean).join(' · ') || 'Opens the original page' })));
     }
 
-    function chip(facet, value, label, count, small) {
+    function chip(facet, value, label, count, small, cell) {
       const on = (selection[facet] ?? []).includes(String(value));
       const b = el('button', { type: 'button', ariaPressed: String(on), textContent: small ? '' : `${label} ${count}` });
       b.dataset.facet = facet; b.dataset.value = value; b.dataset.count = count;
+      if (cell) b.dataset.cell = cell;
       if (small) b.append(el('span', { ariaHidden: 'true' }, el('b', { textContent: count }), small), el('span', { className: 'sr', textContent: `${label}, ${count} results` }));
       if (!on && count === 0) b.disabled = true;
       return b;
@@ -120,7 +121,7 @@ import { href } from '../../lib/catalog.js';
         cells.push(el('div', { className: 'rh', textContent: `${r} · ${RACE[r]}` }));
         R.forEach((c) => {
           const key = [r, c].sort().join('');
-          cells.push(chip('matchup', key, `${RACE[r]} vs ${RACE[c]}`, counts.matchup[key] ?? 0, `${r}v${c}`));
+          cells.push(chip('matchup', key, `${RACE[r]} vs ${RACE[c]}`, counts.matchup[key] ?? 0, `${r}v${c}`, `${r}${c}`));
         });
       });
       $('f-matchup').replaceChildren(...cells);
@@ -135,7 +136,10 @@ import { href } from '../../lib/catalog.js';
     }
 
     // Redrawing replaces the buttons; put keyboard focus back on the same control.
-    const focusKey = () => { const a = document.activeElement; return a?.dataset?.facet ? `[data-facet="${a.dataset.facet}"][data-value="${a.dataset.value}"]` : a?.id ? `#${a.id}` : null; };
+    const focusKey = () => {
+      const a = document.activeElement;
+      if (a?.dataset?.cell) return `[data-cell="${a.dataset.cell}"]`;
+      return a?.dataset?.facet ? `[data-facet="${a.dataset.facet}"][data-value="${a.dataset.value}"]` : a?.id ? `#${a.id}` : null; };
 
     function draw() {
       const key = focusKey();
@@ -176,7 +180,8 @@ import { href } from '../../lib/catalog.js';
         if (b) toggle(b.dataset.facet, b.dataset.value);
       });
       $('f-player').addEventListener('change', (e) => { selection.player = e.target.value ? [e.target.value] : []; shown = PAGE; draw(); });
-      $('q').addEventListener('input', () => { shown = PAGE; draw(); });
+      let timer;
+      $('q').addEventListener('input', () => { clearTimeout(timer); timer = setTimeout(() => { shown = PAGE; draw(); }, 100); });
       $('clear').addEventListener('click', () => { selection = {}; $('q').value = ''; shown = PAGE; draw(); });
       $('more').addEventListener('click', () => { shown += PAGE; draw(); });
     }
@@ -185,24 +190,28 @@ import { href } from '../../lib/catalog.js';
     async function load() {
       $('failed').hidden = true;
       $('loading').hidden = false;
+      let data;
       try {
         const res = await fetch(root.dataset.json);
         if (!res.ok) throw new Error(String(res.status));
-        const data = await res.json();
-        labels = data.labels;
-        $('loading').hidden = true;
-        if (data.records.length === 0) { $('empty').hidden = false; return; }
-        search = createSearch(data.records);
-        const start = fromParams(new URLSearchParams(location.search));
-        selection = start.selection;
-        $('q').value = start.query;
-        $('ui').hidden = false;
-        if (!wired) { wire(); wired = true; }
-        draw();
+        data = await res.json();
       } catch {
         $('loading').hidden = true;
         $('failed').hidden = false;
+        return;
       }
+      labels = data.labels;
+      $('loading').hidden = true;
+      if (data.records.length === 0) { $('empty').hidden = false; return; }
+      search = createSearch(data.records);
+      const start = fromParams(new URLSearchParams(location.search));
+      const known = search('', {}).counts;
+      // Drop URL values the catalog doesn't have (stale or hand-edited links) so they can't silently hide everything.
+      selection = Object.fromEntries(Object.entries(start.selection).map(([f, vs]) => [f, vs.filter((v) => v in known[f])]));
+      $('q').value = start.query;
+      $('ui').hidden = false;
+      if (!wired) { wire(); wired = true; }
+      draw();
     }
     $('retry').addEventListener('click', load);
     load();
