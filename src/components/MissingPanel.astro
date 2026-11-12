@@ -4,7 +4,7 @@ import { REPO_URL } from '../lib/catalog.js';
 import { missingItems, formUrl } from '../lib/help.js';
 
 const { record, matches = [] } = Astro.props;
-const recordId = record.event ? `${record.event}/${record.id}` : record.id;
+const recordId = record.fullId ?? record.id;
 const items = missingItems(record, matches).map((i) => ({ ...i, url: formUrl(REPO_URL, i.form, { recordId, game: i.game }) }));
 ---
 {items.length > 0 && (

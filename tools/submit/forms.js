@@ -54,7 +54,7 @@ export const FORMS = {
       input('game_number', 'Game number', 'Which game of the match. 1 for the first.', true),
       input('copy_link', 'Copy link', 'A link only. Please do not upload video.', true),
       choice('copy_kind', 'Kind of copy', 'Pick the closest.', ['fan-upload', 'ogn-official', 'ogn-ai-upscale', 'torrent', 'other']),
-      input('title', 'Title', 'Title of the upload. Blank if unknown.'),
+      input('copy_title', 'Title', 'Title of the upload. Blank if unknown.'),
       input('uploader', 'Uploader', 'Blank if unknown.'),
       input('resolution', 'Resolution', 'Example: 480p. Blank if unknown.'),
       input('fps', 'Frame rate', 'Example: 30. Blank if unknown.'),

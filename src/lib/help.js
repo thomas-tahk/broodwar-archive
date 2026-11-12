@@ -41,7 +41,7 @@ export function missingItems(rec, eventMatches = []) {
     }
     return items;
   }
-  const missing = unfinished(rec) && rec.expected_games != null ? rec.expected_games - eventMatches.reduce((n, m) => n + m.games.length, 0) : 0;
+  const missing = rec.expected_games != null ? rec.expected_games - eventMatches.reduce((n, m) => n + m.games.length, 0) : 0;
   if (missing > 0) items.push({ text: `${missing} expected ${missing === 1 ? 'game is' : 'games are'} not catalogued yet.`, form: 'addmatch', label: 'Add a missing match' });
   return items;
 }

@@ -114,7 +114,7 @@ function copyOf(v) {
   return {
     url: v.copy_link,
     kind: v.copy_kind,
-    title: v.title,
+    title: v.copy_title,
     uploader: v.uploader,
     resolution: v.resolution,
     fps,

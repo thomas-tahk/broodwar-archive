@@ -202,6 +202,6 @@ label.grp{display:block}
 .missing{margin:1rem 0;padding:.2rem 1rem 1rem;border:2px dashed var(--accent);background:var(--panel)}
 .missing ul{list-style:none;margin:0;padding:0;display:grid;gap:.6rem}
 .missing li{display:flex;flex-wrap:wrap;gap:.3rem 1rem;align-items:center}
-.missing .helpbtn{display:inline-flex;align-items:center;min-height:44px;padding:0 1rem;border:2px solid var(--accent);color:var(--fg);font-weight:700;text-decoration:none}
-.missing .helpbtn:hover{background:var(--accent);color:#000}
-.missing .helpbtn:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.helpbtn{display:inline-flex;align-items:center;min-height:44px;padding:0 1rem;border:2px solid var(--accent);color:var(--fg);font-weight:700;text-decoration:none}
+.helpbtn:hover{background:var(--accent);color:#000}
+.helpbtn:focus-visible{outline:3px solid var(--accent);outline-offset:3px}

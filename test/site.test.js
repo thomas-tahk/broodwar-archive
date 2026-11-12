@@ -349,8 +349,15 @@ test('"What\'s missing" panel: stub event and no-copy match get prefilled links;
     assert.equal(help.url.searchParams.get('title'), '[fixture-big-2002] ');
   });
 
-  await t.test('complete event shows no panel', () => {
+  await t.test('complete event whose games add up shows no panel; a contradiction still surfaces', () => {
+    const lg = read('events/fixture-league');
+    assert.deepEqual(links(lg).map((l) => l.url.searchParams.get('template')), ['submit-match.yml']); // marked complete, but 6 expected vs 5 catalogued
+    const dir = copyFixture();
+    const ev = `${dir}/events/fixture-league.yaml`;
+    fs.writeFileSync(ev, fs.readFileSync(ev, 'utf8').replace('expected_games: 6', 'expected_games: 5'));
+    build(dir);
     assert.ok(!read('events/fixture-league').includes('class="missing"'));
+    build(FIXTURE);
   });
 
   await t.test('match with a copy-less game links the copy form with separate ids and game number', () => {
@@ -360,6 +367,8 @@ test('"What\'s missing" panel: stub event and no-copy match get prefilled links;
     assert.equal(copy.url.searchParams.get('event_id'), 'fixture-league');
     assert.equal(copy.url.searchParams.get('match_id'), 'ro8-a-2');
     assert.ok(copy.url.searchParams.get('game_number'));
+    const fix = links(html).find((l) => l.url.searchParams.get('template') === 'submit-fix.yml');
+    assert.equal(fix?.url.searchParams.get('record'), 'match:fixture-league/ro8-a-2');
   });
 
   await t.test('complete match whose games all have copies shows no panel', () => {

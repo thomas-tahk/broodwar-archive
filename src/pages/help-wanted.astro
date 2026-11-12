@@ -41,9 +41,7 @@ const recordHref = (r) => href(r.isMatch ? `matches/${r.event}/${r.id}/` : `even
     .helpcounts b{display:block;font:700 1.8rem "Barlow Condensed",sans-serif;color:var(--accent)}
     .helprow{display:grid;gap:.3rem;margin:.4rem 0}
     .helprow .row{margin:0}
-    .helpbtn{display:inline-flex;align-items:center;min-height:44px;padding:0 1rem;border:2px solid var(--accent);color:var(--fg);font-weight:700;text-decoration:none;justify-self:start}
-    .helpbtn:hover{background:var(--accent);color:#000}
-    .helpbtn:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+    .helprow .helpbtn{justify-self:start}
     .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
   </style>
 </Base>

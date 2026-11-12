@@ -56,3 +56,17 @@ test('missingItems: complete event none; stub event with expected games; match w
   const m = match('e', 'm', { games: [game(1), { ...game(0), set: 2 }, { ...game(0, true), set: 3 }] });
   assert.deepEqual(missingItems(m).map((i) => [i.form, i.game]), [['copy', 2]]);
 });
+
+test('complete match missing date/winner/score offers the fix form', () => {
+  const m = match('e', 'm', { date: null, winner: null, score: null });
+  assert.deepEqual(missingItems(m).map((i) => [i.form, i.text]), [['info', 'Missing date, winner, score.']]);
+});
+
+test('a match whose every game is lost has no copy gap', () => {
+  assert.deepEqual(missingItems(match('e', 'm', { games: [game(0, true), game(0, true)] })), []);
+});
+
+test('a complete event with fewer games than expected still surfaces the gap', () => {
+  const e = { ...ev('e', 'big', 2000, 'complete'), expected_games: 3 };
+  assert.deepEqual(missingItems(e, [match('e', 'm')]).map((i) => i.form), ['addmatch']);
+});
