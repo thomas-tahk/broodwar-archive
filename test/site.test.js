@@ -318,16 +318,16 @@ test('help-wanted page lists every gap with a record link and a prefilled form l
 
   await t.test('each row links to its own record and prefills the form', () => {
     const byKey = (rec, tmpl) => rows.find((r) => r.record === rec && r.form.searchParams.get('template') === tmpl);
-    assert.equal(byKey('fixture-league', 'wrong-info.yml').href, `${BASE}events/fixture-league/`);
-    assert.equal(byKey('fixture-league/ro8-a-1', 'wrong-info.yml').href, `${BASE}matches/fixture-league/ro8-a-1/`);
+    assert.equal(byKey('fixture-league', 'submit-fix.yml').href, `${BASE}events/fixture-league/`);
+    assert.equal(byKey('fixture-league/ro8-a-1', 'submit-fix.yml').href, `${BASE}matches/fixture-league/ro8-a-1/`);
     const own = rows.filter((r) => r.record === 'fixture-league/ro8-a-2');
     assert.equal(own.length, 2); // no-copy row + missing-fields row
     for (const r of own) assert.equal(r.href, `${BASE}matches/fixture-league/ro8-a-2/`);
-    const copy = byKey('fixture-league/ro8-a-2', 'new-copy.yml');
-    assert.equal(copy.form.searchParams.get('match'), 'fixture-league/ro8-a-2');
+    const copy = byKey('fixture-league/ro8-a-2', 'submit-copy.yml');
+    assert.equal(copy.form.searchParams.get('match_id'), 'fixture-league/ro8-a-2');
     assert.equal(copy.form.searchParams.get('title'), '[fixture-league/ro8-a-2] ');
-    const info = byKey('fixture-league/ro8-a-2', 'wrong-info.yml');
-    assert.equal(info.form.searchParams.get('where'), 'https://thomas-tahk.github.io/broodwar-archive/matches/fixture-league/ro8-a-2/');
+    const info = byKey('fixture-league/ro8-a-2', 'submit-fix.yml');
+    assert.equal(info.form.searchParams.get('record'), 'fixture-league/ro8-a-2');
     assert.equal(info.form.searchParams.get('title'), '[fixture-league/ro8-a-2] ');
     for (const r of rows) assert.equal(r.form.origin + r.form.pathname, 'https://github.com/thomas-tahk/broodwar-archive/issues/new');
   });

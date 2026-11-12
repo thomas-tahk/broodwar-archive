@@ -4,8 +4,8 @@ import { copyCount } from './catalog.js';
 const TIER_RANK = { big: 0, mid: 1, small: 2 };
 /** The ONE place that names the issue forms: template file, the form field id to prefill, and which record value goes in it. */
 export const FORMS = {
-  copy: { template: 'new-copy.yml', field: 'match', value: 'recordId' },
-  info: { template: 'wrong-info.yml', field: 'where', value: 'pageUrl' },
+  copy: { template: 'submit-copy.yml', field: 'match_id', value: 'recordId' },
+  info: { template: 'submit-fix.yml', field: 'record', value: 'recordId' },
 };
 export const GAP_TYPES = [
   { key: 'event', title: 'Events with missing results or details', form: 'info' },
