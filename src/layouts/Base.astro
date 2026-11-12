@@ -2,7 +2,7 @@
 import { href, REPO_URL } from '../lib/catalog.js';
 import '../styles/site.css';
 const { title, nav = null } = Astro.props;
-const links = [['', 'Home', 'home'], ['find/', 'Find a game', 'find']];
+const links = [['', 'Home', 'home'], ['events/', 'Events', 'events'], ['players/', 'Players', 'players'], ['maps/', 'Maps', 'maps'], ['find/', 'Find a game', 'find'], ['help-wanted/', 'Help wanted', 'help']];
 ---
 <!doctype html>
 <html lang="en">
@@ -26,7 +26,7 @@ const links = [['', 'Home', 'home'], ['find/', 'Find a game', 'find']];
     <footer class="foot">
       <p>Link index. No video is hosted here: players are embedded from YouTube or archive.org, and every “Watch on” link opens the original.</p>
       <p class="foot-links">
-        <a href={`${REPO_URL}/blob/main/CONTRIBUTING.md`} rel="noopener noreferrer">Help fill the gaps</a>
+        <a href={href('help-wanted/')}>Help fill the gaps</a>
         <a href={REPO_URL} rel="noopener noreferrer">Source on GitHub</a>
       </p>
     </footer>

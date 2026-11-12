@@ -58,9 +58,9 @@ import { href } from '../../lib/catalog.js';
     const $ = (id) => document.getElementById(id);
     const PAGE = 100;
     const RACE = { T: 'Terran', P: 'Protoss', Z: 'Zerg', R: 'Random' };
-    const GRADE_WORD = { A: 'Original', B: 'Re-encode', C: 'Degraded', D: 'Damaged', X: 'Lost' };
+    const GRADE_WORD = { A: 'Original', B: 'Re-encode', C: 'Degraded', D: 'Damaged', X: 'Footage lost' };
     const TIER = { big: 'Major', mid: 'Mid-size', small: 'Small' };
-    const GRADE_FACET = { A: 'Original', B: 'Re-encode', C: 'Degraded', D: 'Damaged', X: 'Lost', none: 'No copy / not graded' };
+    const GRADE_FACET = { A: 'Original', B: 'Re-encode', C: 'Degraded', D: 'Damaged', X: 'Footage lost', none: 'No copy / not graded' };
     const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
     let search, labels, selection = {}, shown = PAGE, last;
 

@@ -38,7 +38,8 @@ test('fixture catalog renders everything it knows', async (t) => {
     const pages = ['', ...cat.events.map((e) => `events/${e.id}`), ...cat.matches.map((m) => `matches/${m.event}/${m.id}`)];
     for (const p of pages) {
       const html = read(p);
-      has(html, 'href="https://github.com/thomas-tahk/broodwar-archive/blob/main/CONTRIBUTING.md"');
+      has(html, `href="${BASE}help-wanted/"`);
+      for (const k of ["events", "players", "maps", "help-wanted"]) has(html, `href="${BASE}${k}/"`);
       has(html, 'Help fill the gaps');
       has(html, 'href="https://github.com/thomas-tahk/broodwar-archive"');
       has(html, 'Source on GitHub');

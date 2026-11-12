@@ -27,7 +27,7 @@ const refSources = [
   ...[...new Set(match.games.map((g) => g.map).filter(Boolean))].map((id) => ({ label: `Map ${maps.get(id)?.name ?? id}`, sources: maps.get(id)?.sources, fieldSources: maps.get(id)?.field_sources })),
 ].filter((r) => r.sources?.length);
 ---
-<Base title={`${a.name ?? 'Unknown'} vs ${b.name ?? 'Unknown'}`} nav="season">
+<Base title={`${a.name ?? 'Unknown'} vs ${b.name ?? 'Unknown'}`} nav="events">
   <p class="crumbs"><a href={href(`events/${match.event}/`)}>&larr; {event?.name ?? match.event}</a></p>
   <MatchHero match={match} />
   <p class="meta">Date: {match.date ?? 'Unknown'} · Format: {match.format ?? 'Unknown'} · Result: {match.winner ? `${playerOf(match.winner).name ?? 'Unknown'} won${match.score ? ` (${match.score})` : ''}` : 'Unknown'}</p>

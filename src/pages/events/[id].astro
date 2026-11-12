@@ -11,7 +11,7 @@ export function getStaticPaths() {
 const { event } = Astro.props;
 const matches = matchesOf(event.id);
 ---
-<Base title={event.name} nav="season">
+<Base title={event.name} nav="events">
   <p class="crumbs"><a href={href('')}>&larr; Home</a></p>
   <p class="kicker">Event // {event.league ?? 'League unknown'}</p>
   <h1>{event.name}</h1>

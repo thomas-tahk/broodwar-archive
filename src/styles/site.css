@@ -25,7 +25,8 @@ h2{font-size:1.8rem;color:var(--fg);margin:1.8rem 0 .6rem}
 .bar{display:flex;flex-wrap:wrap;gap:.2rem 1.2rem;align-items:center;padding:.3rem 1rem;background:#030a24;border-bottom:4px solid var(--accent2)}
 .brand{font:800 1.7rem "Barlow Condensed",sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--fg);text-decoration:none;min-height:44px;display:inline-flex;align-items:center}
 .brand span{color:var(--accent2);margin-left:.3em}
-.nav{display:flex;gap:.3rem}
+.nav{display:flex;flex-wrap:wrap;gap:0 .3rem}
+@media(max-width:600px){.nav a{padding:0 .55rem;font-size:1.05rem}}
 .nav a{display:inline-flex;align-items:center;min-height:44px;padding:0 1rem;color:var(--fg);text-decoration:none;font:700 1.15rem "Barlow Condensed",sans-serif;text-transform:uppercase;letter-spacing:.05em;border-bottom:4px solid transparent}
 .nav a:hover{border-color:var(--line)}
 .nav a[aria-current=page]{border-color:var(--accent);color:var(--accent)}
