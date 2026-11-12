@@ -66,6 +66,32 @@ test('fixture catalog renders everything it knows', async (t) => {
     for (const e of cat.events) has(html, `href="${BASE}events/${e.id}/"`);
   });
 
+  await t.test('series page groups seasons by year, newest first, with tier and completeness', () => {
+    const html = read('series/fixture-series');
+    has(html, 'Fixture Series');
+    for (const e of cat.events.filter((x) => x.series === 'fixture-series')) {
+      has(html, `href="${BASE}events/${e.id}/"`);
+      has(html, e.name);
+    }
+    assert.ok(!html.includes('fixture-oneoff'), 'one-off event must not be on the series page');
+    const [i2001, i2000] = [html.indexOf('>2001<'), html.indexOf('>2000<')];
+    assert.ok(i2001 >= 0 && i2000 >= 0 && i2001 < i2000, 'both years present, newest first');
+    has(html, 'Big tier');
+    has(html, 'Stub');
+    has(html, '0 matches recorded');
+  });
+
+  await t.test('events page lists every event (stubs too) with filter controls and completeness', () => {
+    const html = read('events');
+    for (const e of cat.events) {
+      has(html, `href="${BASE}events/${e.id}/"`);
+      has(html, `data-tier="${e.tier}" data-kind="${e.kind}" data-year="${e.year}"`);
+    }
+    for (const id of ['f-kind', 'f-year', 'f-series', 'f-reset']) has(html, `id="${id}"`);
+    has(html, 'data-tier="big" aria-pressed="false"');
+    for (const w of ['Stub', 'Partial', 'Complete']) has(html, `>${w}<`);
+  });
+
   await t.test('event page links every match, shows per-game best grade and sources', () => {
     for (const e of cat.events) {
       const html = read(`events/${e.id}`);
@@ -182,6 +208,13 @@ test('build succeeds with an explicit empty catalog dir', () => {
   has(read(''), 'No events');
 });
 
+test('empty catalog: /events/ shows the empty state and no filter form', () => {
+  build(tmp('bw-empty-'));
+  const html = read('events');
+  has(html, 'No events in the archive yet');
+  assert.ok(!html.includes('id="f-kind"'), 'no filters when there are no events');
+});
+
 test('real catalog: Find page, race matrix and embedded player', async (t) => {
   const real = loadCatalog('catalog');
   const games = real.matches.flatMap((m) => m.games);
@@ -226,9 +259,9 @@ test('help-wanted page lists every gap with a record link and a prefilled form l
   }));
 
   await t.test('counts at top are pinned', () => {
-    const counts = { event: 3, match: 1, nocopy: 1, nofields: 1 }; // +2 stub events from the home fixtures
+    const counts = { event: 5, match: 1, nocopy: 1, nofields: 1 }; // + home and series fixture events
     for (const [k, n] of Object.entries(counts)) has(html, `data-gap="${k}" data-count="${n}"`);
-    assert.equal(rows.length, 6);
+    assert.equal(rows.length, 8);
   });
 
   await t.test('each row links to its own record and prefills the form', () => {

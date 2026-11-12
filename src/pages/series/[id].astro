@@ -1,0 +1,38 @@
+---
+import Base from '../../layouts/Base.astro';
+import EventTags from '../../components/EventTags.astro';
+import { series, eventsOfSeries, matchesOf, href } from '../../lib/catalog.js';
+
+export function getStaticPaths() {
+  return [...series.values()].map((s) => ({ params: { id: s.id }, props: { series: s } }));
+}
+const { series: s } = Astro.props;
+const seasons = eventsOfSeries(s.id);
+const years = [...new Set(seasons.map((e) => e.year))];
+const groups = years.map((year) => ({ year, events: seasons.filter((e) => e.year === year) }));
+const count = (n) => `${n} ${n === 1 ? 'match' : 'matches'} recorded`;
+---
+<Base title={s.name} nav="events">
+  <p class="crumbs"><a href={href('events/')}>&larr; All events</a></p>
+  <p class="kicker">Series</p>
+  <h1>{s.name}</h1>
+  <p class="meta">
+    {s.aliases?.length > 0 && <>Also known as {s.aliases.join(', ')} · </>}Broadcaster: {s.broadcaster ?? 'Unknown'} · Organizer: {s.organizer ?? 'Unknown'} · {seasons.length} {seasons.length === 1 ? 'season' : 'seasons'}
+  </p>
+  <h2>Seasons</h2>
+  {groups.length === 0 && <p class="state">No seasons of this series are in the archive yet. <a href={href('events/')}>Browse all events</a>.</p>}
+  {groups.map((g) => (
+    <section>
+      <h3 class="grp">{g.year ?? 'Year unknown'}</h3>
+      <ul class="events">
+        {g.events.map((e) => (
+          <li><a href={href(`events/${e.id}/`)}>
+            <strong>{e.name}</strong>
+            <EventTags event={e} />
+            <span class="mute">{count(matchesOf(e.id).length)}</span>
+          </a></li>
+        ))}
+      </ul>
+    </section>
+  ))}
+</Base>
