@@ -8,6 +8,8 @@ Find, restore, and preserve televised Korean StarCraft: Brood War broadcasts (19
 
 North star: **restoration / preservation — the bits are the point.** The catalog and site exist to serve the restored media and to make gaps visible.
 
+**Owner direction 2026-11-11:** this project builds the **bones, not the content**: structure, pages, tooling and contribution paths so others can flesh out the archive. Cataloging here is limited to seed records that prove each feature works; filling the archive is the contributors' job. Plan milestones accordingly.
+
 ## 2. Scope
 
 | In | Out (for now) |
