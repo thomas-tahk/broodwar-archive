@@ -324,11 +324,45 @@ test('help-wanted page lists every gap with a record link and a prefilled form l
     assert.equal(own.length, 2); // no-copy row + missing-fields row
     for (const r of own) assert.equal(r.href, `${BASE}matches/fixture-league/ro8-a-2/`);
     const copy = byKey('fixture-league/ro8-a-2', 'submit-copy.yml');
-    assert.equal(copy.form.searchParams.get('match_id'), 'fixture-league/ro8-a-2');
+    assert.equal(copy.form.searchParams.get('event_id'), 'fixture-league');
+    assert.equal(copy.form.searchParams.get('match_id'), 'ro8-a-2');
     assert.equal(copy.form.searchParams.get('title'), '[fixture-league/ro8-a-2] ');
     const info = byKey('fixture-league/ro8-a-2', 'submit-fix.yml');
-    assert.equal(info.form.searchParams.get('record'), 'fixture-league/ro8-a-2');
+    assert.equal(info.form.searchParams.get('record'), 'match:fixture-league/ro8-a-2');
     assert.equal(info.form.searchParams.get('title'), '[fixture-league/ro8-a-2] ');
     for (const r of rows) assert.equal(r.form.origin + r.form.pathname, 'https://github.com/thomas-tahk/broodwar-archive/issues/new');
+  });
+});
+
+test('"What\'s missing" panel: stub event and no-copy match get prefilled links; complete event gets none', async (t) => {
+  build(FIXTURE);
+  const links = (html) => [...html.matchAll(/<a class="helpbtn" href="([^"]+)"[^>]*>([^<]+)<\/a>/g)]
+    .map((m) => ({ url: new URL(m[1].replace(/&amp;/g, '&')), label: m[2] }));
+
+  await t.test('stub event shows the panel with a typed record link', () => {
+    const html = read('events/fixture-big-2002');
+    has(html, "What's missing");
+    const [help] = links(html);
+    assert.equal(help.label, 'Help fill this');
+    assert.equal(help.url.searchParams.get('template'), 'submit-fix.yml');
+    assert.equal(help.url.searchParams.get('record'), 'event:fixture-big-2002');
+    assert.equal(help.url.searchParams.get('title'), '[fixture-big-2002] ');
+  });
+
+  await t.test('complete event shows no panel', () => {
+    assert.ok(!read('events/fixture-league').includes('class="missing"'));
+  });
+
+  await t.test('match with a copy-less game links the copy form with separate ids and game number', () => {
+    const html = read('matches/fixture-league/ro8-a-2');
+    const copy = links(html).find((l) => l.url.searchParams.get('template') === 'submit-copy.yml');
+    assert.ok(copy, 'copy link present');
+    assert.equal(copy.url.searchParams.get('event_id'), 'fixture-league');
+    assert.equal(copy.url.searchParams.get('match_id'), 'ro8-a-2');
+    assert.ok(copy.url.searchParams.get('game_number'));
+  });
+
+  await t.test('complete match whose games all have copies shows no panel', () => {
+    assert.ok(!read('matches/fixture-league/ro8-a-1').includes('class="missing"'));
   });
 });

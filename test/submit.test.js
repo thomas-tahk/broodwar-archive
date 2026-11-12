@@ -254,3 +254,10 @@ test('fix: sources cannot be edited; item About is required', () => {
   rejects('fix', { field: 'sources' }, /"sources" cannot be changed/);
   rejects('item', { about: null }, /"About" is required/);
 });
+
+test('values prefilled by the What is missing panel parse: typed fix record, split copy ids', () => {
+  const fix = submit('fix', { record: 'match:fixture-league/ro8-a-1', field: 'format', new_value: 'Bo5' });
+  assert.ok(fix.out.file.endsWith('matches/fixture-league/ro8-a-1.yaml'));
+  const copy = submit('copy', { event_id: 'fixture-league', match_id: 'ro8-a-2', game_number: '1' });
+  assert.ok(copy.out.file.endsWith('matches/fixture-league/ro8-a-2.yaml'));
+});

@@ -1,5 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
+import MissingPanel from '../../components/MissingPanel.astro';
 import GapGrid from '../../components/GapGrid.astro';
 import Season from '../../components/Season.astro';
 import Sources from '../../components/Sources.astro';
@@ -20,6 +21,7 @@ const matches = matchesOf(event.id);
     {series.get(event.series) && <> · Series: <a href={href(`series/${event.series}/`)}>{series.get(event.series).name}</a></>}
     {event.expected_games != null && <> · Expected games: {event.expected_games}</>}
   </p>
+  <MissingPanel record={event} matches={matches} />
   <Season event={event} matches={matches} />
   <GapGrid event={event} matches={matches} />
   <Sources sources={event.sources} fieldSources={event.field_sources} />

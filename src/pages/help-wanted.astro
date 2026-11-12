@@ -9,7 +9,6 @@ const eventName = new Map(events.map((e) => [e.id, e.name]));
 const sections = GAP_TYPES.map((t) => ({ ...t, rows: rows.filter((r) => r.type === t.key) }));
 const labelOf = (r) => (r.isMatch ? `${r.rec.players.map(nameOf).join(' vs ')} · ${stageOf(r.rec)}` : r.rec.name);
 const recordHref = (r) => href(r.isMatch ? `matches/${r.event}/${r.id}/` : `events/${r.id}/`);
-const pageUrl = (r) => new URL(recordHref(r), Astro.site).href;
 ---
 <Base title="Help wanted" nav="help">
   <p class="kicker">Brood War broadcast archive</p>
@@ -30,7 +29,7 @@ const pageUrl = (r) => new URL(recordHref(r), Astro.site).href;
               <span class="sb">{labelOf(r)}</span>
               <span class="info">{r.detail}</span>
             </a>
-            <a class="helpbtn" href={formUrl(REPO_URL, s.form, { recordId: r.recordId, pageUrl: pageUrl(r) })} rel="noopener noreferrer">{s.form === 'copy' ? 'Add a copy' : 'Report the fix'} <span class="vh">for {r.recordId}</span></a>
+            <a class="helpbtn" href={formUrl(REPO_URL, s.form, { recordId: r.recordId })} rel="noopener noreferrer">{s.form === 'copy' ? 'Add a copy' : 'Report the fix'} <span class="vh">for {r.recordId}</span></a>
           </li>
         ))}
       </ul>
