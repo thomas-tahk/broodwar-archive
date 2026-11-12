@@ -1,6 +1,6 @@
-import { execFileSync } from 'node:child_process';
 import path from 'node:path';
 import { events, items, series, featured, resolveRef, href, nameOf } from './catalog.js';
+import { addedDates } from './gitDates.js';
 import { itemYear, sortLatest, sortYears, featuredFrom } from './homeLogic.js';
 
 /** Series that have at least one tier-big event, by name. */
@@ -45,19 +45,7 @@ export function timeline() {
 /** { itemId: ISO date the item file was added in git }, one git call. Empty when git history is unavailable. */
 export function itemAddedDates() {
   const dir = path.relative(process.cwd(), path.resolve(process.cwd(), process.env.CATALOG_DIR || 'catalog'));
-  try {
-    const log = execFileSync('git', ['log', '--diff-filter=A', '--name-only', '--format=@%cI', '--', path.join(dir, 'items')],
-      { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
-    const dates = {};
-    let when = null;
-    for (const line of log.split('\n')) {
-      if (line.startsWith('@')) when = line.slice(1);
-      else if (line.endsWith('.yaml')) dates[path.basename(line, '.yaml')] = when; // later (older) commits overwrite
-    }
-    return dates;
-  } catch {
-    return {};
-  }
+  return addedDates(process.cwd(), path.join(dir, 'items'));
 }
 
 /** Newest-added first, items only, max 6. */

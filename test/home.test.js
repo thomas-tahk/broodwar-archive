@@ -1,5 +1,10 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { execFileSync } from 'node:child_process';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import { addedDates } from '../src/lib/gitDates.js';
 import { itemYear, sortLatest, sortYears, featuredFrom } from '../src/lib/homeLogic.js';
 
 const records = {
@@ -25,6 +30,26 @@ test('latest: newest added first; undated items count as newest in reverse file 
   const addedAt = { a: '2026-01-01T00:00:00+00:00', b: '2026-03-01T00:00:00+00:00', c: '2026-02-01T00:00:00+00:00' };
   assert.deepEqual(sortLatest(items, addedAt).map((i) => i.id), ['d', 'b', 'c', 'a']);
   assert.deepEqual(sortLatest(items, {}).map((i) => i.id), ['d', 'c', 'b', 'a']);
+});
+
+test('git added-dates: a renamed item file still gets an add date (does not pin to the top)', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'bw-git-'));
+  try {
+    const run = (args, date) => execFileSync('git', ['-c', 'user.name=t', '-c', 'user.email=t@example.com', ...args],
+      { cwd: dir, stdio: 'pipe', env: { ...process.env, GIT_COMMITTER_DATE: date, GIT_AUTHOR_DATE: date } });
+    run(['init', '-q'], '2026-01-01T00:00:00Z');
+    fs.mkdirSync(path.join(dir, 'items'));
+    fs.writeFileSync(path.join(dir, 'items/old-name.yaml'), 'id: old-name\nkind: article\ntitle: body long enough for git to detect a rename\n');
+    run(['add', '.'], '2026-01-01T00:00:00Z');
+    run(['commit', '-qm', 'add'], '2026-01-01T00:00:00Z');
+    run(['mv', 'items/old-name.yaml', 'items/new-name.yaml'], '2026-02-01T00:00:00Z');
+    run(['commit', '-qm', 'rename'], '2026-02-01T00:00:00Z');
+    const dates = addedDates(dir, 'items');
+    assert.equal(dates['new-name'], '2026-02-01T00:00:00Z');
+    assert.ok(dates['old-name'], 'original add recorded too');
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
 });
 
 test('years descend and the unknown year is last', () => {
