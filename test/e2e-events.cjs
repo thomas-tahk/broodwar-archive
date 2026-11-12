@@ -3,9 +3,21 @@
 //   node test/e2e-events.cjs   (SITE_URL, OUT optional)
 const { chromium } = require('playwright');
 const fs = require('node:fs');
+const path = require('node:path');
+const { parse } = require('yaml');
+
+// Expected values come from the fixture catalog, never hardcoded.
+const FIX = path.join(__dirname, 'fixtures/catalog');
+const loadAll = (dir) => fs.readdirSync(path.join(FIX, dir)).map((f) => parse(fs.readFileSync(path.join(FIX, dir, f), 'utf8')));
+const events = loadAll('events');
+const bigEvents = events.filter((e) => e.tier === 'big');
+const cupEvents = events.filter((e) => e.kind === 'cup');
+const seriesEvents = events.filter((e) => e.series === 'fixture-series');
+const bigYears = new Set(bigEvents.map((e) => e.year));
+const nonBigOnlyYear = events.map((e) => e.year).find((y) => !bigYears.has(y));
 
 const base = (process.env.SITE_URL || 'http://localhost:4321/broodwar-archive/').replace(/\/?$/, '/');
-const out = process.env.OUT || 'docs/milestones/m2-events-screens';
+const out = process.env.OUT || path.join(require('node:os').tmpdir(), 'bw-events-screens');
 const fail = (msg) => { console.log('FAIL', msg); process.exitCode = 1; };
 
 async function noOverflow(page, label) {
@@ -38,29 +50,31 @@ async function noOverflow(page, label) {
 
     await page.focus('#f-kind');
     await page.screenshot({ path: `${out}/events-focus-${name}.png` });
-    await page.selectOption('#f-year', '2000'); // tier=big is still on and the big event is 2001
+    await page.selectOption('#f-year', String(nonBigOnlyYear)); // tier=big is still on and no big event is in that year
     if (!(await page.isVisible('#ev-none'))) fail('no-matches message not visible');
     await page.click('#ev-none-reset');
     if ((await rows.count()) !== total) fail('reset did not restore');
 
     await page.click('#f-tier button[data-tier="big"]');
     await rows.first().locator('a').first().click();
-    await page.waitForURL('**/events/fixture-big-2001/');
+    await page.waitForURL(/\/events\/[^/]+\/$/);
+    const openedId = page.url().split('/').filter(Boolean).pop();
+    if (!bigEvents.some((e) => e.id === openedId)) fail(`first big row opened ${openedId}, not a big fixture event`);
     console.log(name, 'opened', await page.textContent('h1'));
 
     await page.goBack();
     await page.click('#f-reset');
     await page.selectOption('#f-kind', 'cup');
-    await page.click('a[href$="events/fixture-league/"]');
+    await page.click(`a[href$="events/${cupEvents[0].id}/"]`);
     await page.goBack();
     const shown = await rows.count();
     const kindNow = await page.inputValue('#f-kind');
     console.log(name, 'after Back: kind', kindNow, 'rows', shown);
-    if (shown !== (kindNow === 'cup' ? 1 : total)) fail('restored select disagrees with list');
+    if (shown !== (kindNow === 'cup' ? cupEvents.length : total)) fail('restored select disagrees with list');
     await page.goto(`${base}series/fixture-series/`);
     const seriesCount = await page.locator('.events a').count();
     console.log(name, 'series events', seriesCount);
-    if (seriesCount !== 2) fail(`series page lists ${seriesCount}, want 2`);
+    if (seriesCount !== seriesEvents.length) fail(`series page lists ${seriesCount}, want ${seriesEvents.length}`);
     await page.screenshot({ path: `${out}/series-${name}.png`, fullPage: true });
     await noOverflow(page, `series ${name}`);
 
