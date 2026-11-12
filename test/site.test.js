@@ -170,3 +170,38 @@ test('real catalog: Find page, race matrix and embedded player', async (t) => {
     has(read('matches/2001-sky-osl/final'), 'Open on YouTube');
   });
 });
+
+test('help-wanted page lists every gap with a record link and a prefilled form link', async (t) => {
+  const dir = copyFixture();
+  const edit = (f, from, to) => { const p = `${dir}/${f}`; fs.writeFileSync(p, fs.readFileSync(p, 'utf8').replace(from, to)); };
+  edit('events/fixture-league.yaml', 'completeness: complete', 'completeness: partial');
+  edit('matches/fixture-league/ro8-a-1.yaml', 'completeness: complete', 'completeness: stub');
+  build(dir);
+  const html = read('help-wanted');
+  const c = loadCatalog(dir);
+  const total = (m) => m.games.reduce((n, g) => n + (g.copies ?? []).length, 0);
+  const expected = {
+    event: c.events.filter((e) => e.completeness !== 'complete').length,
+    match: c.matches.filter((m) => m.completeness !== 'complete').length,
+    nocopy: c.matches.filter((m) => total(m) === 0).length,
+    nodate: c.matches.filter((m) => !m.date || !m.winner || !m.score).length,
+  };
+
+  await t.test('counts at top equal the catalog gaps', () => {
+    assert.equal(expected.event, 1);
+    assert.equal(expected.match, 1);
+    assert.equal(expected.nodate, 1);
+    for (const [k, n] of Object.entries(expected)) has(html, `data-gap="${k}" data-count="${n}"`);
+  });
+
+  await t.test('each row has a record link and a form link', () => {
+    const rows = html.match(/<li class="helprow"[\s\S]*?<\/li>/g) ?? [];
+    assert.equal(rows.length, Object.values(expected).reduce((a, b) => a + b, 0));
+    for (const r of rows) {
+      assert.match(r, new RegExp(`class="row" href="${BASE}(events|matches)/`));
+      assert.match(r, /class="helpbtn" href="https:\/\/github\.com\/thomas-tahk\/broodwar-archive\/issues\/new\?template=(new-copy|wrong-info)\.yml&(amp;|#38;)title=%5B[^"]+%5D%20"/);
+    }
+    has(html, 'title=%5Bfixture-league%2Fro8-a-2%5D%20');
+  });
+
+});
