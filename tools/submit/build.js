@@ -31,6 +31,9 @@ function sourceList(text, label = 'Sources') {
   return urls.map((url) => ({ url }));
 }
 
+/** toString options that keep untouched lines byte-identical (no re-wrap, no brace padding). */
+export const YAML_OUT = { lineWidth: 0, flowCollectionPadding: false };
+
 function dump(data) {
   return stringify(data, { lineWidth: 0 });
 }
@@ -135,7 +138,7 @@ export function buildCopy(v, catalogDir) {
   if (!copies?.items) fail(`Game ${set} has no copies list to add to.`);
   if (copies.items.length === 0) copies.flow = false;
   doc.addIn(['games', index, 'copies'], doc.createNode(copyOf(v)));
-  return { file: rel, text: String(doc) };
+  return { file: rel, text: doc.toString(YAML_OUT) };
 }
 
 export function buildItem(v, catalogDir) {
@@ -191,7 +194,7 @@ export function buildFix(v, catalogDir) {
   if (!doc.hasIn(segments)) fail(`Record ${v.record} has no field "${v.field}".`);
   doc.setIn(segments, newValue(v.new_value));
   doc.addIn(['sources'], doc.createNode({ url: v.source, note: 'Correction submitted via issue form' }));
-  return { file: rel, text: String(doc) };
+  return { file: rel, text: doc.toString(YAML_OUT) };
 }
 
 export const BUILDERS = { event: buildEvent, match: buildMatch, copy: buildCopy, item: buildItem, fix: buildFix };
