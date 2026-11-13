@@ -38,16 +38,59 @@ test('fixture catalog renders everything it knows', async (t) => {
     const pages = ['', ...cat.events.map((e) => `events/${e.id}`), ...cat.matches.map((m) => `matches/${m.event}/${m.id}`)];
     for (const p of pages) {
       const html = read(p);
-      has(html, 'href="https://github.com/thomas-tahk/broodwar-archive/blob/main/CONTRIBUTING.md"');
+      has(html, `href="${BASE}help-wanted/"`);
+      for (const k of ["events", "players", "maps", "help-wanted"]) has(html, `href="${BASE}${k}/"`);
       has(html, 'Help fill the gaps');
       has(html, 'href="https://github.com/thomas-tahk/broodwar-archive"');
       has(html, 'Source on GitHub');
     }
   });
 
+  await t.test('home is a front door: league menu, featured, timeline, latest', () => {
+    const html = read('');
+    has(html, `<a href="${BASE}series/fixture-series/">Fixture Series</a>`);
+    has(html, 'Featured');
+    has(html, 'Fixture blurb');
+    has(html, '<h3>2002</h3>');
+    has(html, '<h3>2000</h3>');
+    assert.ok(html.indexOf('<h3>2002</h3>') < html.indexOf('<h3>2000</h3>'), 'years descend');
+    has(html, `class="band" href="${BASE}events/fixture-big-2002/"`);
+    has(html, 'Latest additions');
+    const section = html.split('id="years-h"')[1].split('</section>')[0];
+    const entries = [...section.matchAll(/<a [^>]*>/g)].map((m) => m[0]);
+    assert.ok(entries.length >= 4);
+    for (const a of entries) assert.match(a, /href="[^"]+"/);
+  });
+
   await t.test('home links every event under base', () => {
     const html = read('');
     for (const e of cat.events) has(html, `href="${BASE}events/${e.id}/"`);
+  });
+
+  await t.test('series page groups seasons by year, newest first, with tier and completeness', () => {
+    const html = read('series/fixture-series');
+    has(html, 'Fixture Series');
+    for (const e of cat.events.filter((x) => x.series === 'fixture-series')) {
+      has(html, `href="${BASE}events/${e.id}/"`);
+      has(html, e.name);
+    }
+    assert.ok(!html.includes('fixture-oneoff'), 'one-off event must not be on the series page');
+    const [i2001, i2000] = [html.indexOf('>2001<'), html.indexOf('>2000<')];
+    assert.ok(i2001 >= 0 && i2000 >= 0 && i2001 < i2000, 'both years present, newest first');
+    has(html, 'Big tier');
+    has(html, 'Stub');
+    has(html, '0 matches recorded');
+  });
+
+  await t.test('events page lists every event (stubs too) with filter controls and completeness', () => {
+    const html = read('events');
+    for (const e of cat.events) {
+      has(html, `href="${BASE}events/${e.id}/"`);
+      has(html, `data-tier="${e.tier}" data-kind="${e.kind}" data-year="${e.year}"`);
+    }
+    for (const id of ['f-kind', 'f-year', 'f-series', 'f-reset']) has(html, `id="${id}"`);
+    has(html, 'data-tier="big" aria-pressed="false"');
+    for (const w of ['Stub', 'Partial', 'Complete']) has(html, `>${w}<`);
   });
 
   await t.test('event page links every match, shows per-game best grade and sources', () => {
@@ -100,6 +143,89 @@ test('fixture catalog renders everything it knows', async (t) => {
     }
   });
 
+  await t.test('player page lists games from every event, newest event first, with result and best grade', () => {
+    const html = read('players/alpha');
+    const groups = [...html.matchAll(/<section class="evgroup" aria-label="([^"]+)"/g)].map((m) => m[1]);
+    // Same-year events order by latest match date (zeta 2001-09 > cup 2001-03), not by id.
+    // An undated event from a later year (2002) still comes first: year wins over date.
+    assert.deepEqual(groups, ['Fixture Future 2002', 'Fixture Zeta 2001','Fixture Cup 2001', 'Fixture League 2000']);
+    has(html, `href="${BASE}matches/fixture-cup/semi/"`);
+    has(html, `href="${BASE}matches/fixture-league/final/"`);
+    has(html, `href="${BASE}matches/fixture-league/ro8-a-1/"`);
+    has(html, 'Games (8)');
+    const rows = html.split('<li class="grow">').slice(1);
+    const rowOf = (href) => rows.find((r) => r.includes(`href="${BASE}${href}/"`));
+    assert.match(rowOf('matches/fixture-cup/semi'), /<b>Loss<\/b>[\s\S]*data-grade="C"/);
+    assert.match(rowOf('matches/fixture-league/ro8-a-1'), /<b class="win">Win<\/b>[\s\S]*data-grade="A"/);
+    assert.match(html, /<b>Loss<\/b>\s*<span class="grade" data-grade="X">Footage lost/);
+    assert.ok(!html.includes('Won') && !html.includes('Lost'));
+    // Undated row sorts last inside its event; unknown opponent is plain text, not a link.
+    const zeta = html.split('<section class="evgroup"')[2];
+    assert.ok(zeta.indexOf('2001.09.01') < zeta.indexOf('Date unknown'), 'undated last');
+    const tbd = rowOf('matches/fixture-zeta/tbd');
+    has(tbd, 'vs Unknown');
+    has(tbd, 'Result unknown');
+    assert.ok(!/vs <a/.test(tbd), 'unknown opponent not linked');
+    has(tbd, 'Map unknown');
+    has(html, 'Fixture interview');
+    has(html, 'https://example.com/players/alpha');
+  });
+
+  await t.test('item page shows kind, date, linked records and every external url', () => {
+    const interview = read('items/fixture-interview');
+    has(interview, 'Fixture interview');
+    has(interview, 'interview · Date unknown');
+    has(interview, `href="${BASE}players/alpha/"`);
+    has(interview, `href="${BASE}events/fixture-league/"`);
+    has(interview, `href="${BASE}maps/map-one/"`);
+    has(interview, 'href="https://example.com/fixture-interview" target="_blank" rel="noopener noreferrer"');
+    const note = read('items/fixture-match-note');
+    has(note, 'article · 2000.06.02');
+    has(note, `href="${BASE}matches/fixture-cup/semi/"`);
+    has(note, 'href="https://example.com/fixture-match-note-mirror"');
+    has(note, 'Open on example.com (1)');
+    has(note, 'Open on example.com (2)');
+    has(interview, 'Open on example.com &#8599;');
+  });
+
+  await t.test('an item is listed, linking to its item page, on its player, event, map and match pages', () => {
+    const page = (p, id) => { const html = read(p); has(html, `href="${BASE}items/${id}/"`); return html; };
+    page('players/alpha', 'fixture-interview');
+    page('events/fixture-league', 'fixture-interview');
+    page('maps/map-one', 'fixture-interview');
+    page('matches/fixture-cup/semi', 'fixture-match-note');
+    assert.ok(!read('players/alpha').includes('href="https://example.com/fixture-interview"'), 'rows go to the item page, not out');
+    has(read('events/fixture-zeta'), 'No items linked yet');
+  });
+
+  await t.test('Find item records point to the item page', () => {
+    const { records } = JSON.parse(fs.readFileSync(`${outDir}/find/records.json`, 'utf8'));
+    assert.equal(records.find((r) => r.id === 'item:fixture-match-note').url, 'items/fixture-match-note/');
+  });
+
+  await t.test('map page lists its games and items; sparse pages say so', () => {
+    const two = read('maps/map-two');
+    has(two, `href="${BASE}matches/fixture-cup/semi/"`);
+    has(two, `href="${BASE}matches/fixture-league/final/"`);
+    has(two, `href="${BASE}players/alpha/"`);
+    has(two, 'Games (2)');
+    has(two, 'No items linked yet');
+    has(read('maps/map-one'), 'Fixture interview');
+    has(read('maps/map-three'), 'No games recorded on this map yet.');
+    has(read('players/delta'), 'No games recorded for this player yet.');
+  });
+
+  await t.test('index pages list everyone; match page links player and map', () => {
+    const pl = read('players');
+    for (const p of cat.players) has(pl, `href="${BASE}players/${p.id}/"`);
+    const mp = read('maps');
+    for (const m of cat.maps) has(mp, `href="${BASE}maps/${m.id}/"`);
+    const html = read('matches/fixture-league/final');
+    has(html, `href="${BASE}players/alpha/"`);
+    has(html, `href="${BASE}maps/map-one/"`);
+    has(read('matches/fixture-league/ro8-a-2'), 'Map: Unknown');
+  });
+
   await t.test('lost game shows X and lost text', () => {
     const html = read('matches/fixture-league/final');
     has(html, 'Footage known lost.');
@@ -137,9 +263,40 @@ test('score that is not N-N is shown raw; build fails on bad catalog', () => {
   assert.throws(() => build(dir));
 });
 
+test('featured match card reads "<p1> vs <p2> · <event name>"', () => {
+  const dir = copyFixture();
+  fs.writeFileSync(path.join(dir, 'featured.yaml'), 'featured:\n  - ref: match:fixture-league/final\n');
+  build(dir);
+  has(read(''), 'Alpha vs Charlie · Fixture League 2000');
+});
+
+test('sparse home: featured hidden, undated item under "Year unknown" last, help panel shown', () => {
+  const dir = copyFixture();
+  fs.writeFileSync(path.join(dir, 'featured.yaml'), 'featured: []\n');
+  fs.writeFileSync(path.join(dir, 'items/undated.yaml'), [
+    'id: undated', 'kind: article', 'title: Undated piece', 'date: null', 'language: null',
+    'urls: [https://example.com/undated]', 'links:', '  about: [player:alpha]',
+    'sources: [{url: "https://example.com/undated"}]', ''].join('\n'));
+  build(dir);
+  const html = read('');
+  assert.ok(!html.includes('id="featured-h"'), 'featured section hidden');
+  has(html, 'Year unknown');
+  assert.ok(html.indexOf('<h3>2000</h3>') < html.indexOf('Year unknown'), 'unknown year last');
+  has(html, `href="${BASE}items/undated/"`);
+  has(html, 'Help build the archive');
+  has(html, `href="${BASE}help-wanted/"`);
+});
+
 test('build succeeds with an explicit empty catalog dir', () => {
   build(tmp('bw-empty-'));
   has(read(''), 'No events');
+});
+
+test('empty catalog: /events/ shows the empty state and no filter form', () => {
+  build(tmp('bw-empty-'));
+  const html = read('events');
+  has(html, 'No events in the archive yet');
+  assert.ok(!html.includes('id="f-kind"'), 'no filters when there are no events');
 });
 
 test('real catalog: Find page, race matrix and embedded player', async (t) => {
@@ -147,26 +304,106 @@ test('real catalog: Find page, race matrix and embedded player', async (t) => {
   const games = real.matches.flatMap((m) => m.games);
   build('catalog');
 
-  await t.test('Find page lists every game and is linked from the header', () => {
+  await t.test('Find page shell is linked from the header and points at the prebuilt list', () => {
     const html = read('find');
-    assert.equal((html.match(/<li class="frow"/g) ?? []).length, games.length);
-    assert.equal(games.length, 58);
-    has(html, `href="${BASE}find/"`);
+    has(html, `data-json="${BASE}find/records.json"`);
+    has(html, 'id="q"');
     has(read(''), `href="${BASE}find/"`);
   });
 
-  await t.test('matrix has 6 distinct matchups summing to games with known races', () => {
-    const html = read('find');
-    const cells = [...html.matchAll(/<button type="button" data-mu="([A-Z]{2})"[^>]*aria-label="[^"]*, (\d+) games"/g)];
-    assert.equal(cells.length, 9);
-    const byKey = new Map(cells.map((c) => [c[1], Number(c[2])]));
-    assert.equal(byKey.size, 6);
+  await t.test('records.json lists every game, matchups sum to games with known races', () => {
+    const { records, labels } = JSON.parse(fs.readFileSync(`${outDir}/find/records.json`, 'utf8'));
+    const gameRecs = records.filter((r) => r.kind === 'game');
+    assert.equal(gameRecs.length, games.length);
+    assert.equal(games.length, 64);
     const known = games.filter((g) => g.races?.every((r) => ['T', 'P', 'Z'].includes(r))).length;
-    assert.equal([...byKey.values()].reduce((a, b) => a + b, 0), known);
+    assert.equal(gameRecs.filter((r) => r.matchup).length, known);
+    assert.equal(new Set(gameRecs.map((r) => r.matchup).filter(Boolean)).size, 6);
+    assert.equal(labels.league.osl, 'OnGameNet StarLeague');
   });
 
   await t.test('match page embeds a youtube-nocookie player', () => {
     has(read('matches/2001-sky-osl/final'), 'https://www.youtube-nocookie.com/embed/MRsg5nqqmLU');
     has(read('matches/2001-sky-osl/final'), 'Open on YouTube');
+  });
+});
+
+test('help-wanted page lists every gap with a record link and a prefilled form link', async (t) => {
+  const dir = copyFixture();
+  const edit = (f, from, to) => { const p = `${dir}/${f}`; fs.writeFileSync(p, fs.readFileSync(p, 'utf8').replace(from, to)); };
+  edit('events/fixture-league.yaml', 'completeness: complete', 'completeness: partial');
+  edit('matches/fixture-league/ro8-a-1.yaml', 'completeness: complete', 'completeness: stub');
+  build(dir);
+  const html = read('help-wanted');
+  const unesc = (s) => s.replace(/&#38;|&amp;/g, '&');
+  const rows = (html.match(/<li class="helprow"[\s\S]*?<\/li>/g) ?? []).map((r) => ({
+    record: r.match(/data-record="([^"]+)"/)[1],
+    href: r.match(/class="row" href="([^"]+)"/)[1],
+    form: new URL(unesc(r.match(/class="helpbtn" href="([^"]+)"/)[1])),
+  }));
+
+  await t.test('counts at top are pinned', () => {
+    const counts = { event: 8, match: 1, nocopy: 4, nofields: 3 }; // + home and series fixture events
+    for (const [k, n] of Object.entries(counts)) has(html, `data-gap="${k}" data-count="${n}"`);
+    assert.equal(rows.length, 16);
+  });
+
+  await t.test('each row links to its own record and prefills the form', () => {
+    const byKey = (rec, tmpl) => rows.find((r) => r.record === rec && r.form.searchParams.get('template') === tmpl);
+    assert.equal(byKey('fixture-league', 'submit-fix.yml').href, `${BASE}events/fixture-league/`);
+    assert.equal(byKey('fixture-league/ro8-a-1', 'submit-fix.yml').href, `${BASE}matches/fixture-league/ro8-a-1/`);
+    const own = rows.filter((r) => r.record === 'fixture-league/ro8-a-2');
+    assert.equal(own.length, 2); // no-copy row + missing-fields row
+    for (const r of own) assert.equal(r.href, `${BASE}matches/fixture-league/ro8-a-2/`);
+    const copy = byKey('fixture-league/ro8-a-2', 'submit-copy.yml');
+    assert.equal(copy.form.searchParams.get('event_id'), 'fixture-league');
+    assert.equal(copy.form.searchParams.get('match_id'), 'ro8-a-2');
+    assert.equal(copy.form.searchParams.get('title'), '[fixture-league/ro8-a-2] ');
+    const info = byKey('fixture-league/ro8-a-2', 'submit-fix.yml');
+    assert.equal(info.form.searchParams.get('record'), 'match:fixture-league/ro8-a-2');
+    assert.equal(info.form.searchParams.get('title'), '[fixture-league/ro8-a-2] ');
+    for (const r of rows) assert.equal(r.form.origin + r.form.pathname, 'https://github.com/thomas-tahk/broodwar-archive/issues/new');
+  });
+});
+
+test('"What\'s missing" panel: stub event and no-copy match get prefilled links; complete event gets none', async (t) => {
+  build(FIXTURE);
+  const links = (html) => [...html.matchAll(/<a class="helpbtn" href="([^"]+)"[^>]*>([^<]+)<\/a>/g)]
+    .map((m) => ({ url: new URL(m[1].replace(/&amp;/g, '&')), label: m[2] }));
+
+  await t.test('stub event shows the panel with a typed record link', () => {
+    const html = read('events/fixture-big-2002');
+    has(html, "What's missing");
+    const [help] = links(html);
+    assert.equal(help.label, 'Help fill this');
+    assert.equal(help.url.searchParams.get('template'), 'submit-fix.yml');
+    assert.equal(help.url.searchParams.get('record'), 'event:fixture-big-2002');
+    assert.equal(help.url.searchParams.get('title'), '[fixture-big-2002] ');
+  });
+
+  await t.test('complete event whose games add up shows no panel; a contradiction still surfaces', () => {
+    const lg = read('events/fixture-league');
+    assert.deepEqual(links(lg).map((l) => l.url.searchParams.get('template')), ['submit-match.yml']); // marked complete, but 6 expected vs 5 catalogued
+    const dir = copyFixture();
+    const ev = `${dir}/events/fixture-league.yaml`;
+    fs.writeFileSync(ev, fs.readFileSync(ev, 'utf8').replace('expected_games: 6', 'expected_games: 5'));
+    build(dir);
+    assert.ok(!read('events/fixture-league').includes('class="missing"'));
+    build(FIXTURE);
+  });
+
+  await t.test('match with a copy-less game links the copy form with separate ids and game number', () => {
+    const html = read('matches/fixture-league/ro8-a-2');
+    const copy = links(html).find((l) => l.url.searchParams.get('template') === 'submit-copy.yml');
+    assert.ok(copy, 'copy link present');
+    assert.equal(copy.url.searchParams.get('event_id'), 'fixture-league');
+    assert.equal(copy.url.searchParams.get('match_id'), 'ro8-a-2');
+    assert.ok(copy.url.searchParams.get('game_number'));
+    const fix = links(html).find((l) => l.url.searchParams.get('template') === 'submit-fix.yml');
+    assert.equal(fix?.url.searchParams.get('record'), 'match:fixture-league/ro8-a-2');
+  });
+
+  await t.test('complete match whose games all have copies shows no panel', () => {
+    assert.ok(!read('matches/fixture-league/ro8-a-1').includes('class="missing"'));
   });
 });

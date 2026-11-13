@@ -1,0 +1,9 @@
+# Recurring league. Seasons are events whose `series` is this id.
+id: osl
+name: OnGameNet StarLeague
+aliases: [OSL]
+organizer: null
+broadcaster: OnGameNet
+sources:
+  - url: https://liquipedia.net/starcraft/index.php?title=2001_SKY_OSL&oldid=532826
+    note: Liquipedia page for the 2001 SKY OSL season (names the league, OGN as broadcaster).

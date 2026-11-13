@@ -16,3 +16,4 @@ games:
     lost: false
     copies: []
 sources: []
+completeness: complete

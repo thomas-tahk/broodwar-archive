@@ -1,0 +1,94 @@
+name: "Submit: add a match"
+description: "A series between two players that is not in the archive yet. The event and players must already exist."
+labels: ["submission"]
+body:
+  - type: input
+    id: event_id
+    attributes:
+      label: "Event id"
+      description: "The event this match belongs to. Example: 2001-sky-osl"
+    validations:
+      required: true
+  - type: input
+    id: match_id
+    attributes:
+      label: "Match id"
+      description: "Lowercase letters, numbers and dashes. Example: ro16-a-1"
+    validations:
+      required: true
+  - type: input
+    id: stage
+    attributes:
+      label: "Stage"
+      description: "Example: Round of 16. Blank if unknown."
+    validations:
+      required: false
+  - type: input
+    id: group
+    attributes:
+      label: "Group"
+      description: "Example: A. Blank if unknown."
+    validations:
+      required: false
+  - type: input
+    id: date
+    attributes:
+      label: "Date"
+      description: "YYYY-MM-DD. Blank if unknown."
+    validations:
+      required: false
+  - type: dropdown
+    id: format
+    attributes:
+      label: "Format"
+      description: "Best-of format."
+      options:
+        - "Unknown"
+        - "Bo1"
+        - "Bo3"
+        - "Bo5"
+        - "Bo7"
+    validations:
+      required: true
+  - type: input
+    id: player1
+    attributes:
+      label: "Player 1 id"
+      description: "Player id, not broadcast name. Example: boxer"
+    validations:
+      required: false
+  - type: input
+    id: player2
+    attributes:
+      label: "Player 2 id"
+      description: "Player id. Example: garimto"
+    validations:
+      required: false
+  - type: input
+    id: winner
+    attributes:
+      label: "Winner id"
+      description: "One of the two players. Blank if unknown."
+    validations:
+      required: false
+  - type: input
+    id: score
+    attributes:
+      label: "Score"
+      description: "Example: 1-0. Blank if unknown."
+    validations:
+      required: false
+  - type: textarea
+    id: games
+    attributes:
+      label: "Games"
+      description: "One game per line: set | map id | races | winner id. Use - for unknown. Races are T, P, Z or R for player 1 then player 2. Example: 1 | lost-temple | T P | boxer"
+    validations:
+      required: false
+  - type: textarea
+    id: sources
+    attributes:
+      label: "Sources"
+      description: "Where this comes from. One link per line. At least one."
+    validations:
+      required: true

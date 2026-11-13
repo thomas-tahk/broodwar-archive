@@ -40,3 +40,4 @@ sources:
     note: "OGN official playlist: copies and video titles"
 field_sources:
   date: https://www.youtube.com/watch?v=DGSbH8CKfAA
+completeness: complete

@@ -5,7 +5,15 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
+import { FORMS } from '../tools/submit/forms.js';
+
 const doc = fs.readFileSync('CONTRIBUTING.md', 'utf8');
+
+test('CONTRIBUTING: a missing event points at the event form; tier and kind are documented as required like the form', () => {
+  assert.ok(doc.includes('add the event first with the event form'));
+  for (const id of ['tier', 'event_kind']) assert.equal(FORMS.event.fields.find((f) => f.id === id).required, true);
+  assert.match(doc, /tier \(big, mid or small\) and a kind from the lists; both are required/);
+});
 
 function template(name) {
   const m = doc.match(new RegExp(`<!-- template:${name} -->\\n\`\`\`yaml\\n([\\s\\S]*?)\`\`\``));
@@ -18,6 +26,18 @@ function put(dir, rel, text) {
   fs.writeFileSync(path.join(dir, rel), text);
 }
 
+for (const heading of ['Add without git', 'Add an item', 'Add an event', 'Add a series', 'Completeness', 'Add with git']) {
+  test(`CONTRIBUTING has a "${heading}" section`, () => {
+    assert.match(doc, new RegExp(`^## ${heading}\\b`, 'm'));
+  });
+}
+
+test('CONTRIBUTING puts the no-git path before the git path and links every form', () => {
+  assert.ok(doc.indexOf('## Add without git') < doc.indexOf('## Add with git'));
+  for (const f of ['event', 'match', 'copy', 'item', 'fix']) assert.ok(doc.includes(`template=submit-${f}.yml`), f);
+  assert.ok(doc.includes('accepted-submission'));
+});
+
 test('CONTRIBUTING templates, applied as written, pass the validator', () => {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'contrib-'));
   try {
@@ -29,7 +49,7 @@ test('CONTRIBUTING templates, applied as written, pass the validator', () => {
     put(dir, 'matches/fixture-league/match-id.yaml', template('match').replace('event-id', 'fixture-league'));
     const r = spawnSync('node', ['tools/catalog/validate.js', dir], { encoding: 'utf8' });
     assert.equal(r.status, 0, r.stdout + r.stderr);
-    assert.match(r.stdout, /4 matches, 5 players, 3 maps/);
+    assert.match(r.stdout, /8 matches, 6 players, 4 maps/);
   } finally {
     fs.rmSync(dir, { recursive: true, force: true });
   }

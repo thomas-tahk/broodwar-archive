@@ -1,0 +1,13 @@
+# Test fixture — fictional. Not real data.
+id: fixture-interview
+kind: interview
+title: Fixture interview
+date: null
+language: en
+urls: []
+links:
+  about: [player:alpha]
+  from: [event:fixture-league]
+  features: [map:map-one]
+sources:
+  - url: https://example.com/fixture-interview

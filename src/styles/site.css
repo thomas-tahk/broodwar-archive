@@ -25,7 +25,8 @@ h2{font-size:1.8rem;color:var(--fg);margin:1.8rem 0 .6rem}
 .bar{display:flex;flex-wrap:wrap;gap:.2rem 1.2rem;align-items:center;padding:.3rem 1rem;background:#030a24;border-bottom:4px solid var(--accent2)}
 .brand{font:800 1.7rem "Barlow Condensed",sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--fg);text-decoration:none;min-height:44px;display:inline-flex;align-items:center}
 .brand span{color:var(--accent2);margin-left:.3em}
-.nav{display:flex;gap:.3rem}
+.nav{display:flex;flex-wrap:wrap;gap:0 .3rem}
+@media(max-width:600px){.nav a{padding:0 .55rem;font-size:1.05rem}}
 .nav a{display:inline-flex;align-items:center;min-height:44px;padding:0 1rem;color:var(--fg);text-decoration:none;font:700 1.15rem "Barlow Condensed",sans-serif;text-transform:uppercase;letter-spacing:.05em;border-bottom:4px solid transparent}
 .nav a:hover{border-color:var(--line)}
 .nav a[aria-current=page]{border-color:var(--accent);color:var(--accent)}
@@ -145,9 +146,62 @@ h2{font-size:1.8rem;color:var(--fg);margin:1.8rem 0 .6rem}
 .fsel{min-height:44px;background:var(--panel);border:2px solid var(--line);padding:0 .6rem;max-width:100%}
 .ghost{min-height:44px;padding:0 1rem;background:transparent;border:2px solid var(--mute);cursor:pointer;font-weight:600;margin-top:.6rem}
 .frow[hidden]{display:none}
+/* home: front door */
+.leagues{display:flex;flex-wrap:wrap;gap:.3rem;margin:.8rem 0 0;padding:.3rem 0;border-bottom:2px solid var(--line)}
+.leagues a{display:inline-flex;align-items:center;min-height:44px;padding:0 1rem;background:var(--panel);border-bottom:4px solid var(--accent2);color:var(--fg);font:700 1.2rem "Barlow Condensed",sans-serif;text-transform:uppercase;text-decoration:none}
+.leagues a:hover{background:var(--accent);color:#000}
+.cards,.years,.chips{list-style:none;padding:0;margin:0}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(14rem,1fr));gap:.5rem}
+.cards a{display:flex;flex-direction:column;align-items:flex-start;gap:.3rem;height:100%;min-height:44px;padding:.7rem .8rem;background:var(--panel);border-left:6px solid var(--accent2);color:var(--fg);text-decoration:none}
+.cards strong{font:800 1.4rem "Barlow Condensed",sans-serif;text-transform:uppercase}
+.years>li{padding:.6rem 0;border-top:2px solid var(--line)}
+.years h3{font-size:1.6rem;color:var(--win)}
+.band{display:flex;align-items:center;min-height:44px;margin:.4rem 0;padding:.4rem .8rem;background:linear-gradient(100deg,#0a1a5a,#1830b8 60%,#0a1a5a);border-top:3px solid var(--accent);border-bottom:3px solid var(--accent2);color:var(--fg);font:800 1.5rem "Barlow Condensed",sans-serif;text-transform:uppercase;text-decoration:none}
+.chips{display:flex;flex-wrap:wrap;gap:.4rem;margin:.4rem 0 0}
+.chips a{display:inline-flex;align-items:center;min-height:44px;padding:0 .9rem;background:var(--panel);border:1px solid var(--line);border-radius:22px;color:var(--fg);text-decoration:none}
+.help-panel{margin:2rem 0 0;padding:.2rem 1rem 1rem;border:2px dashed var(--accent);background:var(--panel)}
+.help-links{display:flex;flex-wrap:wrap;gap:0 1.4rem;margin:.4rem 0 0}
+.help-links a{display:inline-flex;align-items:center;min-height:44px;color:var(--win);font-weight:700}
+.chips a .mute{margin-left:.4em}
+.chips a:hover{border-color:var(--accent)}
+/* events + series pages */
+.filters{display:grid;gap:.6rem;margin:1rem 0;align-items:end}
+.filters label,.filters legend{display:grid;gap:.4rem;font:700 .95rem "Barlow Condensed",sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.filters fieldset{border:0;padding:0;margin:0;min-width:0}
+.filters legend{padding:0;margin-bottom:.2rem}
+.filters .ghost{margin-top:0}
+.events .frow:not([hidden]){display:flex;flex-direction:column}
+.events .serieslink{display:flex;flex-direction:row;align-items:center;justify-content:flex-start;min-height:44px;padding:0 .8rem;background:var(--panel);border-left:6px solid var(--accent2);color:var(--accent);font-weight:600}
+.tags{display:flex;flex-wrap:wrap;gap:.3rem;margin:.2rem 0}
+.tag{font:700 .85rem Barlow,sans-serif;text-transform:uppercase;letter-spacing:.04em;padding:.05rem .5rem;border:2px solid var(--mute);color:var(--fg)}
+.tag[data-tier=big]{border-color:var(--accent2);color:var(--accent2)}.tag[data-tier=mid]{border-color:var(--accent);color:var(--accent)}
+.tag[data-completeness=complete]{border-color:var(--gA);color:var(--gA)}.tag[data-completeness=partial]{border-color:var(--gC);color:var(--gC)}
+.tag[data-completeness=stub]{border-style:dashed}
 @media(min-width:760px){
+  .filters{grid-template-columns:auto repeat(3,minmax(0,14rem)) auto}
   .row{grid-template-columns:13rem 1fr 15rem;align-items:center;gap:1rem}
   .row .info{justify-content:flex-end}
   .sb{font-size:1.65rem}
   h1{font-size:3rem}
 }
+.qbox{width:100%;max-width:34rem;box-sizing:border-box;font-size:1rem;color:var(--fg)}
+.qbox:focus-visible{outline-offset:2px}
+.grp:has(+ .qbox){margin-bottom:.5rem}
+label.grp{display:block}
+/* player / map pages */
+.evgroup h3{font:800 1.3rem "Barlow Condensed",sans-serif;text-transform:uppercase;margin:1.2rem 0 .2rem}
+.grow{display:grid;gap:.25rem;background:linear-gradient(90deg,var(--panel2),#0a1650);border-left:6px solid var(--accent2);margin:.4rem 0;padding:.5rem .7rem}
+.grow .when{font:700 1rem "Barlow Condensed",sans-serif;color:var(--mute);text-transform:uppercase}
+.grow .gend{display:flex;flex-wrap:wrap;gap:.3rem .8rem;align-items:center}
+.grow a,.items a{display:inline-flex;align-items:center;min-height:44px}
+.hero .plink{color:inherit;text-decoration:underline;text-underline-offset:.15em;display:inline-block;padding:8px 0;margin:-8px 0}
+.items{list-style:none;margin:0;padding:0}
+@media (min-width:700px){.grow{grid-template-columns:14rem 1fr auto;align-items:center}}
+
+/* what's missing panel (issue #16) */
+.missing{margin:1rem 0;padding:.2rem 1rem 1rem;border:2px dashed var(--accent);background:var(--panel)}
+.missing ul{list-style:none;margin:0;padding:0;display:grid;gap:.6rem}
+.missing li{display:flex;flex-wrap:wrap;gap:.3rem 1rem;align-items:center}
+.helpbtn{display:inline-flex;align-items:center;min-height:44px;padding:0 1rem;border:2px solid var(--accent);color:var(--fg);font-weight:700;text-decoration:none}
+.helpbtn:hover{background:var(--accent);color:#000}
+.helpbtn:focus-visible{outline:3px solid var(--accent);outline-offset:3px}

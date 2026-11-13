@@ -48,3 +48,4 @@ sources:
   - url: https://example.com/fixture-league/bracket
 field_sources:
   games: https://example.com/fixture-league/final-vod-thread
+completeness: complete

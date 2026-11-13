@@ -1,0 +1,38 @@
+# Test fixture — fictional. A Bo1 with two graded copies (best = A).
+id: ro8-a-1
+event: fixture-league
+stage: Round of 8
+group: A
+date: 2000-05-01
+format: Bo1
+players: [alpha, bravo]
+winner: alpha
+score: "1-0"
+games:
+  - set: 1
+    map: map-one
+    races: [T, P]
+    winner: alpha
+    lost: false
+    copies:
+      - url: https://example.com/video/official-1
+        kind: ogn-official
+        title: Fixture official upload
+        uploader: Example TV
+        resolution: 480p
+        fps: 30
+        grade: B
+        grade_note: clean re-encode
+        segment: null
+      - url: https://example.com/video/near-source-1
+        kind: torrent
+        title: null
+        uploader: null
+        resolution: 480i
+        fps: null
+        grade: A
+        grade_note: near-source capture
+        segment: {start: "00:10:00", end: "00:32:00"}
+sources:
+  - url: https://example.com/fixture-league/bracket
+completeness: complete

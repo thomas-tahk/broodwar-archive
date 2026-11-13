@@ -1,0 +1,92 @@
+name: "Submit: add an event"
+description: "A tournament or league that is not in the archive yet."
+labels: ["submission"]
+body:
+  - type: input
+    id: event_id
+    attributes:
+      label: "Event id"
+      description: "Lowercase letters, numbers and dashes. Example: 2002-sky-osl"
+    validations:
+      required: true
+  - type: input
+    id: event_name
+    attributes:
+      label: "Event name"
+      description: "Example: 2002 SKY OSL"
+    validations:
+      required: true
+  - type: input
+    id: year
+    attributes:
+      label: "Year"
+      description: "Four digits."
+    validations:
+      required: true
+  - type: input
+    id: league
+    attributes:
+      label: "League"
+      description: "Example: OSL. Blank if unknown."
+    validations:
+      required: false
+  - type: input
+    id: sponsor
+    attributes:
+      label: "Sponsor"
+      description: "Blank if unknown."
+    validations:
+      required: false
+  - type: input
+    id: broadcaster
+    attributes:
+      label: "Broadcaster"
+      description: "Blank if unknown."
+    validations:
+      required: false
+  - type: input
+    id: organizer
+    attributes:
+      label: "Organizer"
+      description: "Blank if unknown."
+    validations:
+      required: false
+  - type: input
+    id: series_id
+    attributes:
+      label: "Series id"
+      description: "Id of the series this belongs to, if it exists. Example: osl"
+    validations:
+      required: false
+  - type: dropdown
+    id: tier
+    attributes:
+      label: "Tier"
+      description: "How big was it?"
+      options:
+        - "big"
+        - "mid"
+        - "small"
+    validations:
+      required: true
+  - type: dropdown
+    id: event_kind
+    attributes:
+      label: "Kind of event"
+      description: "Pick the closest."
+      options:
+        - "individual-league"
+        - "team-league"
+        - "international"
+        - "cup"
+        - "invitational"
+        - "showmatch"
+    validations:
+      required: true
+  - type: textarea
+    id: sources
+    attributes:
+      label: "Sources"
+      description: "Where this comes from. One link per line. At least one."
+    validations:
+      required: true

@@ -1,0 +1,11 @@
+# Lineage: KPGA Tour (2002) was replaced by the MSL (2003 on).
+id: msl
+name: MBCGame StarCraft League
+aliases: [MSL, KPGA Tour]
+organizer: MBCGame
+broadcaster: MBCGame
+sources:
+  - url: https://liquipedia.net/starcraft/MBCGame_StarCraft_League
+    note: MSL formed 2003, replaced the KPGA Tour, broadcast by MBCGame.
+  - url: https://liquipedia.net/starcraft/List_of_KPGA_Tours
+    note: Lists the four KPGA Tours of 2002-2003.

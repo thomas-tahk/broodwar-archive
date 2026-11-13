@@ -1,0 +1,13 @@
+# Test fixture — fictional. Not real data.
+id: fixture-match-note
+kind: article
+title: Fixture match note
+date: 2000-06-02
+language: en
+urls:
+  - https://example.com/fixture-match-note
+  - https://example.com/fixture-match-note-mirror
+links:
+  about: [match:fixture-cup/semi]
+sources:
+  - url: https://example.com/fixture-match-note

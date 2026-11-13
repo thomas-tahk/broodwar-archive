@@ -7,7 +7,15 @@ const catalog = loadCatalog(dir);
 const byId = (list) => new Map(list.map((x) => [x.id, x]));
 const players = byId(catalog.players);
 export const maps = byId(catalog.maps);
+export const allPlayers = [...catalog.players].sort((a, b) => (a.name ?? a.id).localeCompare(b.name ?? b.id));
+export const allMaps = [...catalog.maps].sort((a, b) => (a.name ?? a.id).localeCompare(b.name ?? b.id));
+/** True when the id has a player record (so a page exists for it). */
+export const hasPlayer = (id) => players.has(id);
 export const events = [...catalog.events].sort((a, b) => (b.year ?? 0) - (a.year ?? 0) || a.id.localeCompare(b.id));
+
+export const TIER_LABELS = { big: 'Big', mid: 'Mid', small: 'Small' };
+export const COMPLETENESS_LABELS = { stub: 'Stub', partial: 'Partial', complete: 'Complete' };
+export const KIND_LABELS = { 'individual-league': 'Individual league', 'team-league': 'Team league', international: 'International', cup: 'Cup', invitational: 'Invitational', showmatch: 'Showmatch' };
 
 /** Matches of one event, dated first (ascending), undated last. */
 export function matchesOf(eventId) {
@@ -17,6 +25,35 @@ export function matchesOf(eventId) {
 }
 
 export const allMatches = catalog.matches;
+
+export const series = byId(catalog.series);
+export const items = catalog.items;
+/** Ordered featured picks: [{ ref: "event:2001-sky-osl", blurb? }]. */
+export const featured = catalog.featured;
+
+/** Seasons (events) of one series, by year, newest first. */
+export const eventsOfSeries = (seriesId) => events.filter((e) => e.series === seriesId);
+
+/** Items whose links (about / from / features) include the ref, e.g. itemsLinkingTo("player:boxer"). */
+export function itemsLinkingTo(ref) {
+  return items.filter((item) => Object.values(item.links ?? {}).some((refs) => refs.includes(ref)));
+}
+
+/** The record a ref points to, or null. ref is "type:id" (match: "event/match"). */
+export function resolveRef(ref) {
+  const [type, ...rest] = ref.split(':');
+  const id = rest.join(':');
+  const lookup = {
+    series: () => series.get(id),
+    event: () => events.find((e) => e.id === id),
+    match: () => catalog.matches.find((m) => m.fullId === id),
+    player: () => players.get(id),
+    map: () => maps.get(id),
+    item: () => items.find((i) => i.id === id),
+  }[type];
+  const record = lookup?.();
+  return record ? { type, record } : null;
+}
 
 export function playerOf(id) {
   return players.get(id) ?? { id, name: null, hangul: null, race: null };
@@ -70,7 +107,7 @@ export function sideRace(match, i) {
 export const copyCount = (m) => m.games.reduce((n, g) => n + (g.copies ?? []).length, 0);
 
 /** Plain-word quality labels (letter grades stay visible but small). */
-export const GRADE_WORDS = { A: 'Original', B: 'Re-encode', C: 'Degraded', D: 'Damaged', X: 'Lost' };
+export const GRADE_WORDS = { A: 'Original', B: 'Re-encode', C: 'Degraded', D: 'Damaged', X: 'Footage lost' };
 export const COPY_KINDS = { 'ogn-official': 'Original broadcast', 'ogn-ai-upscale': 'AI upscale', 'fan-upload': 'Fan upload', torrent: 'Torrent', other: 'Other copy' };
 
 /** "41:25" when the grade note states a length; null otherwise (never guessed). */
@@ -92,3 +129,36 @@ export function embedOf(url, segment = null) {
 
 /** "YouTube" or the host name, for "Open on ..." links. */
 export const siteName = (url) => (['youtube.com', 'youtu.be'].includes(host(url)) ? 'YouTube' : host(url));
+
+/** Latest known match date among rows, '' when none is dated. */
+const latestDate = (rows) => rows.reduce((max, r) => (r.match.date && r.match.date > max ? r.match.date : max), '');
+const byDateDesc = (a, b) => (b.match.date ?? '').localeCompare(a.match.date ?? '') || a.match.id.localeCompare(b.match.id) || a.game.set - b.game.set;
+
+/**
+ * Games matching `pick(match, game)`, grouped by event. Groups: latest known match date desc, then
+ * year desc, then id. Rows inside a group: match date desc, undated last.
+ * [{ event, rows: [{ match, game }] }]
+ */
+export function gamesGroupedByEvent(pick) {
+  const rows = catalog.matches.flatMap((match) => match.games.filter((g) => pick(match, g)).map((game) => ({ match, game })));
+  return events
+    .map((event) => ({ event, rows: rows.filter((r) => r.match.event === event.id).sort(byDateDesc) }))
+    .filter((grp) => grp.rows.length)
+    .sort((a, b) => (b.event.year ?? 0) - (a.event.year ?? 0) || latestDate(b.rows).localeCompare(latestDate(a.rows)) || a.event.id.localeCompare(b.event.id));
+}
+export const gamesOfPlayer = (id) => gamesGroupedByEvent((m) => m.players.includes(id));
+export const gamesOnMap = (id) => gamesGroupedByEvent((_, g) => g.map === id);
+
+/** Where a ref lives on the site. */
+export function refHref(type, record) {
+  if (type === 'match') return href(`matches/${record.event}/${record.id}/`);
+  const dir = { series: 'series', event: 'events', item: 'items', player: 'players', map: 'maps' }[type];
+  return dir ? href(`${dir}/${record.id}/`) : null;
+}
+
+/** Name to show for any resolved record; matches read "<p1> vs <p2> · <event name>". */
+export function labelOf(type, r) {
+  if (type !== 'match') return r.name ?? r.title ?? r.id;
+  const eventName = events.find((e) => e.id === r.event)?.name ?? r.event;
+  return `${nameOf(r.players?.[0])} vs ${nameOf(r.players?.[1])} · ${eventName}`;
+}

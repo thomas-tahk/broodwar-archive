@@ -10,3 +10,8 @@ expected_games: 6
 sources:
   - url: https://example.com/fixture-league
     note: fictional fixture source
+series: fixture-series
+tier: mid
+kind: cup
+tags: []
+completeness: complete

@@ -17,3 +17,4 @@ games:
     copies: []
 sources:
   - url: https://example.com/fixture-league/bracket
+completeness: complete

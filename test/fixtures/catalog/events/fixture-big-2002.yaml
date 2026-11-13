@@ -1,0 +1,17 @@
+# Test fixture — fictional. Not real data.
+id: fixture-big-2002
+name: Fixture Big League 2002
+league: FIX
+sponsor: null
+year: 2002
+broadcaster: Example TV
+organizer: null
+expected_games: null
+sources:
+  - url: https://example.com/fixture-big-2002
+    note: fictional fixture source
+series: fixture-series
+tier: big
+kind: individual-league
+tags: []
+completeness: stub

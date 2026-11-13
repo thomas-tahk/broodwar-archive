@@ -1,0 +1,21 @@
+---
+import Base from '../../layouts/Base.astro';
+import Race from '../../components/Race.astro';
+import { allPlayers, allMatches, href } from '../../lib/catalog.js';
+
+const count = (id) => allMatches.reduce((n, m) => n + (m.players.includes(id) ? m.games.length : 0), 0);
+---
+<Base title="Players" nav="players">
+  <p class="kicker">Brood War broadcast archive</p>
+  <h1>Players</h1>
+  {allPlayers.length === 0 ? <p class="state">No players in the catalog yet.</p> : (
+    <ul class="rows">
+      {allPlayers.map((p) => (
+        <li><a class="row" href={href(`players/${p.id}/`)}>
+          <span class="sb"><span><Race race={p.race ?? null} /> {p.name ?? p.id}</span></span>
+          <span class="info">{p.hangul ?? 'Hangul unknown'} · {count(p.id)} game{count(p.id) === 1 ? '' : 's'}</span>
+        </a></li>
+      ))}
+    </ul>
+  )}
+</Base>

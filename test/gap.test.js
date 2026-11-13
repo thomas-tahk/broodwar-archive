@@ -31,7 +31,7 @@ test('fixture event gap grid', () => {
     ['ro8-a-1', 1, 'A', 'false', 'Original', 'Alpha vs Bravo · G1'],
     ['ro8-a-2', 1, 'none', 'true', 'No copy', 'Bravo vs Charlie · G1'],
     ['final', 1, 'D', 'true', 'Damaged', 'Alpha vs Charlie · G1'],
-    ['final', 2, 'X', 'true', 'Lost', 'Alpha vs Charlie · G2'],
+    ['final', 2, 'X', 'true', 'Footage lost', 'Alpha vs Charlie · G2'],
     ['final', 3, 'none', 'true', 'Not graded', 'Alpha vs Charlie · G3'],
   ];
   for (const [m, set, grade, gap, text, label] of expected) {
@@ -47,8 +47,9 @@ test('fixture event gap grid', () => {
   assert.ok(html.includes('1 more game expected (per source) is not catalogued yet'));
   assert.equal((html.match(/data-placeholder="true"/g) ?? []).length, 1);
   assert.ok(!html.includes('data-placeholder-count'));
-  assert.ok(html.includes('href="https://github.com/thomas-tahk/broodwar-archive/issues/new/choose"'));
-  assert.ok(html.includes('Know where a copy is? Add it'));
+  assert.ok(!html.includes('issues/new/choose'), 'no generic issue-chooser link');
+  assert.equal(count(html, /class="gap-help" href="[^"]*template=submit-copy\.yml[^"]*game_number=\d/g), count(html, /data-gap="true"/g), 'one prefilled copy link per gap cell');
+  assert.ok(/template=submit-match\.yml&amp;[^"]*event_id=fixture-league/.test(html), 'shortfall links to the add-match form');
 });
 
 test('event with no matches shows only placeholders, no summary', () => {
@@ -62,7 +63,7 @@ test('event with no matches shows only placeholders, no summary', () => {
   assert.equal((html.match(/data-placeholder="true"/g) ?? []).length, 0);
   assert.equal((html.match(/data-placeholder-count="66"/g) ?? []).length, 1);
   assert.ok(html.includes('66 games not catalogued yet'));
-  assert.ok(html.includes('Know where a copy is? Add it'));
+  assert.ok(html.includes('template=submit-match.yml'));
   assert.ok(html.includes('66 more games expected (per source) are not catalogued yet'));
   assert.ok(!html.includes('gap-summary'));
 });
@@ -97,6 +98,5 @@ test('collapse threshold: shortfall 7 collapses to one block', () => {
 test('no gaps and no shortfall: no call to action', () => {
   const html = withCatalog(1, ['final', 'ro8-a-2']); // only the A-graded game
   assert.ok(html.includes('data-good="1" data-total="1"'));
-  assert.ok(!html.includes('Know where a copy is? Add it'));
   assert.ok(!html.includes('gap-help'));
 });

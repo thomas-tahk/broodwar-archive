@@ -1,0 +1,47 @@
+---
+// Help wanted (issue #17): every gap in the catalog, with a link to the record and a prefilled issue form.
+import Base from '../layouts/Base.astro';
+import { events, allMatches, href, nameOf, stageOf, REPO_URL } from '../lib/catalog.js';
+import { helpRows, formUrl, GAP_TYPES } from '../lib/help.js';
+
+const rows = helpRows(events, allMatches);
+const eventName = new Map(events.map((e) => [e.id, e.name]));
+const sections = GAP_TYPES.map((t) => ({ ...t, rows: rows.filter((r) => r.type === t.key) }));
+const labelOf = (r) => (r.isMatch ? `${r.rec.players.map(nameOf).join(' vs ')} · ${stageOf(r.rec)}` : r.rec.name);
+const recordHref = (r) => href(r.isMatch ? `matches/${r.event}/${r.id}/` : `events/${r.id}/`);
+---
+<Base title="Help wanted" nav="help">
+  <p class="kicker">Brood War broadcast archive</p>
+  <h1>Help wanted</h1>
+  <p class="meta">Every gap below is a record you can fix. Open it to see what is known, or use its button to tell us what you know. Biggest events first.</p>
+  <ul class="helpcounts" aria-label="Gap totals">
+    {sections.map((s) => <li data-gap={s.key} data-count={s.rows.length}><b>{s.rows.length}</b> {s.title.toLowerCase()}</li>)}
+  </ul>
+  {rows.length === 0 && <p class="state">No known gaps right now. Nothing is missing from the catalog.</p>}
+  {sections.filter((s) => s.rows.length > 0).map((s) => (
+    <section aria-labelledby={`h-${s.key}`}>
+      <h2 id={`h-${s.key}`}>{s.title} ({s.rows.length})</h2>
+      <ul class="rows">
+        {s.rows.map((r) => (
+          <li class="helprow" data-tier={r.tier} data-record={r.recordId}>
+            <a class="row" href={recordHref(r)}>
+              <span class="when">{r.tier} · {r.year || 'Year unknown'}{r.isMatch && ` · ${eventName.get(r.event)}`}</span>
+              <span class="sb">{labelOf(r)}</span>
+              <span class="info">{r.detail}</span>
+            </a>
+            <a class="helpbtn" href={formUrl(REPO_URL, s.form, { recordId: r.recordId })} rel="noopener noreferrer">{s.form === 'copy' ? 'Add a copy' : 'Help fill this'} <span class="vh">for {r.recordId}</span></a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  ))}
+  <style>
+    .helpcounts{list-style:none;margin:1rem 0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.5rem}
+    .helpcounts li{border:2px solid var(--accent2);padding:.5rem .7rem}
+    .helpcounts b{display:block;font:700 1.8rem "Barlow Condensed",sans-serif;color:var(--accent)}
+    .helprow{display:grid;gap:.3rem;margin:.4rem 0}
+    .helprow .row{margin:0}
+    .helprow .helpbtn{justify-self:start}
+    .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  </style>
+</Base>

@@ -1,0 +1,16 @@
+# Test fixture — fictional. Second event so a player spans events.
+id: fixture-cup
+name: Fixture Cup 2001
+league: FIX
+sponsor: null
+year: 2001
+broadcaster: Example TV
+organizer: null
+expected_games: 1
+sources:
+  - url: https://example.com/fixture-cup
+series: fixture-series
+tier: mid
+kind: cup
+tags: []
+completeness: partial

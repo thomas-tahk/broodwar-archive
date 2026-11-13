@@ -1,0 +1,16 @@
+# Test fixture — fictional. Same year as fixture-cup but later dates; id sorts after it.
+id: fixture-zeta
+name: Fixture Zeta 2001
+league: FIX
+sponsor: null
+year: 2001
+broadcaster: Example TV
+organizer: null
+expected_games: 2
+sources:
+  - url: https://example.com/fixture-zeta
+series: fixture-series
+tier: mid
+kind: cup
+tags: []
+completeness: partial

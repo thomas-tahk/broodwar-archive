@@ -35,3 +35,4 @@ games:
         segment: {start: "00:10:00", end: "00:32:00"}
 sources:
   - url: https://example.com/fixture-league/bracket
+completeness: complete

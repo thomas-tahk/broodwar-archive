@@ -1,0 +1,53 @@
+name: "Submit: add an item"
+description: "An article, interview, VOD list or other write-up about the archive's subjects."
+labels: ["submission"]
+body:
+  - type: input
+    id: item_id
+    attributes:
+      label: "Item id"
+      description: "Lowercase letters, numbers and dashes."
+    validations:
+      required: true
+  - type: input
+    id: item_kind
+    attributes:
+      label: "Kind of item"
+      description: "Lowercase word. Example: interview, article, vod-list"
+    validations:
+      required: true
+  - type: input
+    id: title
+    attributes:
+      label: "Title"
+      description: "Title of the item."
+    validations:
+      required: true
+  - type: input
+    id: date
+    attributes:
+      label: "Date"
+      description: "YYYY-MM-DD. Blank if unknown."
+    validations:
+      required: false
+  - type: input
+    id: language
+    attributes:
+      label: "Language"
+      description: "Example: en, ko. Blank if unknown."
+    validations:
+      required: false
+  - type: textarea
+    id: links
+    attributes:
+      label: "Links"
+      description: "One link per line. At least one. These are also the sources."
+    validations:
+      required: true
+  - type: textarea
+    id: about
+    attributes:
+      label: "About"
+      description: "What it is about, one per line, as kind:id. Example: player:boxer, event:2001-sky-osl, match:2001-sky-osl/final"
+    validations:
+      required: true

@@ -19,3 +19,8 @@ sources:
     note: OGN AI-upscale playlist, 55 videos, 1080p/30fps, one game per video.
   - url: https://github.com/thomas-tahk/broodwar-archive/blob/main/docs/research/2026-10-10-slice-one-survey.html
     note: Project survey (2026-10-10). Source of the provisional B grade for OGN's official uploads.
+series: osl
+tier: big
+kind: individual-league
+tags: []
+completeness: complete

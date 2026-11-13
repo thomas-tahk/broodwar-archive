@@ -2,10 +2,12 @@
 import Base from '../../../layouts/Base.astro';
 import GradeBadge from '../../../components/GradeBadge.astro';
 import MatchHero from '../../../components/MatchHero.astro';
+import MissingPanel from '../../../components/MissingPanel.astro';
 import QualityLegend from '../../../components/QualityLegend.astro';
 import Race from '../../../components/Race.astro';
+import ItemList from '../../../components/ItemList.astro';
 import Sources from '../../../components/Sources.astro';
-import { allMatches, events, maps, playerOf, host, href, embedOf, siteName, lengthOf, COPY_KINDS } from '../../../lib/catalog.js';
+import { allMatches, events, maps, playerOf, hasPlayer, host, href, embedOf, siteName, lengthOf, COPY_KINDS } from '../../../lib/catalog.js';
 import { bestGrade } from '../../../../tools/catalog/grades.js';
 
 export function getStaticPaths() {
@@ -27,10 +29,12 @@ const refSources = [
   ...[...new Set(match.games.map((g) => g.map).filter(Boolean))].map((id) => ({ label: `Map ${maps.get(id)?.name ?? id}`, sources: maps.get(id)?.sources, fieldSources: maps.get(id)?.field_sources })),
 ].filter((r) => r.sources?.length);
 ---
-<Base title={`${a.name ?? 'Unknown'} vs ${b.name ?? 'Unknown'}`} nav="season">
+<Base title={`${a.name ?? 'Unknown'} vs ${b.name ?? 'Unknown'}`} nav="events">
   <p class="crumbs"><a href={href(`events/${match.event}/`)}>&larr; {event?.name ?? match.event}</a></p>
   <MatchHero match={match} />
   <p class="meta">Date: {match.date ?? 'Unknown'} · Format: {match.format ?? 'Unknown'} · Result: {match.winner ? `${playerOf(match.winner).name ?? 'Unknown'} won${match.score ? ` (${match.score})` : ''}` : 'Unknown'}</p>
+
+  <MissingPanel record={match} />
 
   <h2>Games ({match.games.length})</h2>
   <div class="gs js-only grid" role="group" aria-label="Choose a game">
@@ -50,7 +54,7 @@ const refSources = [
       <section class="game" id={`game-${g.set}`} data-game={g.set} aria-label={`Game ${g.set}`}>
         <header>
           <h3>Game {g.set}</h3>
-          <span class="mono">Map: {mapName(g)}{mapVersion(g) && ` (${mapVersion(g)})`}</span>
+          <span class="mono">Map: {g.map && maps.has(g.map) ? <a href={href(`maps/${g.map}/`)}>{mapName(g)}</a> : mapName(g)}{mapVersion(g) && ` (${mapVersion(g)})`}</span>
           <span class="mono">Winner: {winnerName(g)}</span>
           <span class="mono">{sides.map((_, i) => <Race race={raceOf(g, i)} />)}</span>
           <GradeBadge grade={bestGrade(g)} none={copies.length === 0} />
@@ -96,6 +100,7 @@ const refSources = [
     );
   })}
   <QualityLegend />
+  <ItemList ref={`match:${match.event}/${match.id}`} />
   <Sources sources={match.sources} fieldSources={match.field_sources} />
   {refSources.map((r) => <Sources heading={r.label} sources={r.sources} fieldSources={r.fieldSources} />)}
 <script is:inline>

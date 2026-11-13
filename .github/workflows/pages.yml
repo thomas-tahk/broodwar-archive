@@ -19,6 +19,8 @@ jobs:
       cancel-in-progress: false
     steps:
       - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0 # home "Latest additions" reads git dates
       - uses: actions/setup-node@v5
         with:
           node-version-file: .nvmrc

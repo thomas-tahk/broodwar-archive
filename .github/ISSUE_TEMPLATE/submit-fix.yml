@@ -1,0 +1,32 @@
+name: "Submit: fix a record"
+description: "Something in the archive is wrong. Change one field."
+labels: ["submission"]
+body:
+  - type: input
+    id: record
+    attributes:
+      label: "Record"
+      description: "Which record. Examples: event:2001-sky-osl, player:boxer, match:2001-sky-osl/final"
+    validations:
+      required: true
+  - type: input
+    id: field
+    attributes:
+      label: "Field"
+      description: "Field to change. Examples: name, year, winner, games.1.map (games are counted from 1, like the game number)"
+    validations:
+      required: true
+  - type: input
+    id: new_value
+    attributes:
+      label: "New value"
+      description: "The correct value. Write null for unknown."
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: "Source"
+      description: "A link that shows the correct value."
+    validations:
+      required: true

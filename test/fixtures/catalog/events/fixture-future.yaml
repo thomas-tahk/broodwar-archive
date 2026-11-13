@@ -1,0 +1,16 @@
+# Test fixture — fictional. Later year, no dated matches: must still sort above older years.
+id: fixture-future
+name: Fixture Future 2002
+league: FIX
+sponsor: null
+year: 2002
+broadcaster: Example TV
+organizer: null
+expected_games: 1
+sources:
+  - url: https://example.com/fixture-future
+series: fixture-series
+tier: mid
+kind: cup
+tags: []
+completeness: partial

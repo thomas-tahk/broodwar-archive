@@ -1,10 +1,57 @@
 # Contributing
 
-No coding or git needed. You only need a free GitHub account.
+You only need a free GitHub account. No coding needed. Two ways to help: fill in a form (no git), or edit files on github.com (git path, further down). The form path is easiest.
 
-You can also just [open an issue](https://github.com/thomas-tahk/broodwar-archive/issues/new/choose) and we'll do the edit for you.
+Not sure what to work on? The [help-wanted page](https://thomas-tahk.github.io/broodwar-archive/help-wanted/) lists records with missing results or no known copy.
 
-## Add a copy you found
+## Add without git
+
+1. Open the form that fits. Each one opens a GitHub issue, which is just a web page with boxes to fill in:
+   - [Add an event](https://github.com/thomas-tahk/broodwar-archive/issues/new?template=submit-event.yml)
+   - [Add a match](https://github.com/thomas-tahk/broodwar-archive/issues/new?template=submit-match.yml)
+   - [Add a copy you found](https://github.com/thomas-tahk/broodwar-archive/issues/new?template=submit-copy.yml)
+   - [Add an item](https://github.com/thomas-tahk/broodwar-archive/issues/new?template=submit-item.yml)
+   - [Fix a record](https://github.com/thomas-tahk/broodwar-archive/issues/new?template=submit-fix.yml)
+2. Fill in the boxes and press **Submit new issue**. Leave blank anything you don't know. Never guess.
+3. A maintainer reads it. If it looks right, they add the label `accepted-submission`.
+4. A bot turns your issue into a pull request (a proposed change to the files) and runs the automatic check (the validator). It comments the result on your issue.
+5. A maintainer merges the pull request. Your addition goes live on the site.
+
+There is no form for a series (a recurring league such as OSL). [Open a plain issue](https://github.com/thomas-tahk/broodwar-archive/issues/new/choose) and we'll add it.
+
+## Add an item
+
+An item is anything that is not a match: an article, an interview, a photo set, a replay pack, a showmatch video, a document. We link to it, never host it. Use the item form above.
+
+You give: an id (lowercase letters, digits, dashes), a kind (one lowercase word such as `interview`; a new kind is just a new word), a title, the link, and who or what it is about (a player, event, match or map that already exists). Every item needs a source. Fields: [docs/catalog-format.md](docs/catalog-format.md#item-anything-that-is-not-a-match).
+
+## Add an event
+
+An event is one tournament or season, such as the 2001 SKY OSL. Use the event form above.
+
+You give: an id, a name, a year. Also pick a tier (big, mid or small) and a kind from the lists; both are required, so pick the closest. Add the league and the rest if you know them. Tier only decides how prominent the event looks; small events are just as welcome. Every event needs a source. Fields and tier rule: [docs/catalog-format.md](docs/catalog-format.md#event).
+
+## Add a series
+
+A series is a recurring league whose yearly seasons are events: OSL, MSL, Proleague, WCG. One-off events have no series. There is no form yet, so [open an issue](https://github.com/thomas-tahk/broodwar-archive/issues/new/choose) with the name, a source link and the events that belong to it, or add a file with git (see below). `catalog/series/osl.yaml` is an example. Fields: [docs/catalog-format.md](docs/catalog-format.md#series-recurring-leagues-only).
+
+## Completeness
+
+Every event and match says how finished it is:
+
+| Value | Meaning |
+|---|---|
+| `stub` | The record exists. Most results and details are unknown. |
+| `partial` | Some results or details are missing. |
+| `complete` | Everything the sources give is recorded. |
+
+Completeness covers results and details only. Whether a copy (a video) exists is tracked separately, by the grades below. A thin, sourced stub is a welcome start. Filled in gaps? Say so in your submission and the maintainer raises the value. Details: [docs/catalog-format.md](docs/catalog-format.md#completeness).
+
+## Add with git
+
+The rest of this page is the git path: editing files on github.com. Use it for anything the forms don't cover.
+
+### Add a copy you found
 
 1. Go to the match file on github.com: `catalog/matches/<event>/<match>.yaml`.
 2. Click the **pencil** icon (Edit this file), top right of the file. If GitHub shows a **Fork this repository** prompt, accept it. It's normal.
@@ -39,7 +86,7 @@ Order of work:
 
 1. Check that both players and the map already exist: `catalog/players/<id>.yaml`, `catalog/maps/<id>.yaml`. Missing ones come first.
 2. On github.com open the repository, click **Add file**, then **Create new file**. Type the whole path in the name box, e.g. `catalog/players/flash.yaml`. Paste the template, replace the example values, then **Commit changes...**, **Propose changes**, **Create pull request**.
-3. Last, the match: `catalog/matches/<event-id>/<match-id>.yaml`, same way. The event (`catalog/events/<event-id>.yaml`) must already exist. If it doesn't, [open an issue](https://github.com/thomas-tahk/broodwar-archive/issues/new/choose) and we'll add it.
+3. Last, the match: `catalog/matches/<event-id>/<match-id>.yaml`, same way. The event (`catalog/events/<event-id>.yaml`) must already exist. If it doesn't, [add the event first with the event form](https://github.com/thomas-tahk/broodwar-archive/issues/new?template=submit-event.yml).
 
 The file name is the id plus `.yaml`. Ids use only lowercase `a-z`, digits `0-9` and `-`. No spaces, no capitals. The `id:` inside the file must equal the file name.
 
@@ -83,6 +130,7 @@ format: Bo1
 players: [player-one, player-two]
 winner: null                   # one of the two players, or null
 score: null                    # e.g. "2-1"
+completeness: partial          # stub | partial | complete
 games:
   - set: 1
     map: map-id

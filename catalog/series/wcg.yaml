@@ -1,0 +1,9 @@
+# Recurring league. Seasons are events whose `series` is this id.
+id: wcg
+name: World Cyber Games
+aliases: [WCG]
+organizer: World Cyber Games
+broadcaster: null
+sources:
+  - url: https://liquipedia.net/starcraft/World_Cyber_Games/2001
+    note: Liquipedia page for WCG 2001 (series WCG, organizer World Cyber Games).

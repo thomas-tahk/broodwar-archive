@@ -36,3 +36,4 @@ games:
 field_sources: {dat: https://example.com/x}
 sources:
   - url: https://example.com/fixture-league/bracket
+completeness: complete

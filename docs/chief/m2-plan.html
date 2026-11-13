@@ -1,0 +1,121 @@
+<title>Archive M2 Plan</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+/* Layout: one reading column of lessons, then a tabbed phone-frame mockup bench, then the questions. Single deliberate dark look (Broadcast, the direction he picked). */
+:root{
+  color-scheme:dark;
+  --bg:#07123a;--panel:#0b1a55;--panel2:#0d1f66;--line:#2a45b8;
+  --ac:#00d4ff;--ac2:#ff7a00;--gold:#ffe14d;--tx:#ffffff;--mu:#b9c8f5;
+  --T:#4aa8ff;--P:#ffd23f;--Z:#d070ff;
+  --display:'Barlow Condensed','Arial Narrow',sans-serif;
+  --body:'Barlow',system-ui,sans-serif;
+  --mono:'Share Tech Mono',ui-monospace,monospace;
+}
+body{background:var(--bg);color:var(--tx);font:16px/1.55 var(--body)}
+.wrap{max-width:980px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 60px}
+h1,h2,h3{font-family:var(--display);text-transform:uppercase;letter-spacing:.03em;text-wrap:balance;margin:0}
+h1{font-size:clamp(32px,7vw,52px);line-height:1}
+h2{font-size:28px;margin:44px 0 10px;display:flex;gap:10px;align-items:center}
+h2 .tag{background:var(--ac2);color:#000;font-size:16px;padding:2px 10px;transform:skewX(-12deg)}
+h3{font-size:21px;color:var(--ac);margin-bottom:4px}
+p{margin:0 0 10px;max-width:68ch}
+a{color:var(--ac)}
+.kicker{font:700 14px var(--display);letter-spacing:.14em;color:var(--ac2);text-transform:uppercase}
+.lede{color:var(--mu);font-size:18px;margin-top:10px}
+.lessons{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+.lesson{background:var(--panel);border-left:6px solid var(--ac2);padding:14px 16px;min-width:0}
+.lesson p{font-size:15px;color:var(--mu);margin:0 0 8px}
+.lesson p b{color:var(--tx)}
+.src{font:13px var(--mono);color:var(--mu)}
+.src a{color:var(--ac)}
+/* model diagram */
+.model{overflow-x:auto;background:#050d2b;border:2px solid var(--line);padding:14px;margin-top:12px}
+.model svg{display:block;min-width:640px;width:100%;height:auto}
+.model text{font-family:var(--display);fill:var(--tx)}
+.callout{background:#050d2b;border:2px dashed var(--line);padding:12px 14px;margin-top:12px;font-size:15px;color:var(--mu)}
+.callout b{color:var(--gold)}
+/* mockup bench */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0}
+.tabs button{min-height:48px;padding:0 18px;background:var(--panel);color:var(--tx);border:0;border-bottom:4px solid var(--line);font:700 19px var(--display);text-transform:uppercase;cursor:pointer}
+.tabs button[aria-pressed=true]{background:var(--ac);color:#000;border-color:var(--ac2)}
+.tabs button:focus-visible,.m button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.bench{display:grid;grid-template-columns:minmax(0,390px) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:760px){.bench{grid-template-columns:1fr}}
+.phone{border:3px solid var(--line);border-radius:22px;padding:10px;background:#030a24;max-width:390px;width:100%}
+.screen{border-radius:14px;overflow:hidden;background:var(--bg);min-height:640px}
+.why h3{margin-top:4px}
+.why ul{margin:6px 0 12px;padding-left:20px;color:var(--mu)}
+.why li{margin:4px 0}
+.why .good{color:#34e08f;font-weight:600}
+.why .bad{color:#ff9d3c;font-weight:600}
+.note{font-size:13px;color:var(--mu);font-style:italic}
+/* mockup internals */
+.m{font-size:13px;line-height:1.35}
+.m .hdr{display:flex;align-items:center;gap:8px;padding:10px 12px;background:#050d2b;border-bottom:3px solid var(--ac)}
+.m .logo{font:800 20px var(--display);text-transform:uppercase;letter-spacing:.05em}
+.m .logo i{font-style:normal;color:var(--ac2)}
+.m .hdr .sp{flex:1}
+.m .icon{width:36px;height:36px;display:grid;place-items:center;background:var(--panel);border:0;color:var(--tx);font:700 16px var(--display);cursor:pointer}
+.m .lg{display:flex;gap:4px;overflow-x:auto;padding:8px 12px;background:#0a1650}
+.m .lg button{flex:none;min-height:34px;padding:0 12px;background:var(--panel2);color:var(--tx);border:0;border-bottom:3px solid var(--line);font:700 15px var(--display);text-transform:uppercase;cursor:pointer}
+.m .lg button.on{background:var(--ac2);color:#000;border-color:var(--gold)}
+.m .sec{padding:10px 12px}
+.m .lbl{font:700 13px var(--display);color:var(--ac);letter-spacing:.12em;text-transform:uppercase;margin:0 0 6px}
+.m .feat{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
+.m .card{flex:none;width:210px;background:linear-gradient(135deg,#1830b8,#0a1a5a);border-top:3px solid var(--ac2);padding:8px 10px}
+.m .card .vs{font:800 18px var(--display);text-transform:uppercase}
+.m .card .vs b{color:var(--gold)}
+.m .card small{display:block;color:var(--mu)}
+.m .era{display:grid;grid-template-columns:44px 1fr;gap:6px;margin:4px 0}
+.m .era .yr{font:800 18px var(--display);color:var(--ac2)}
+.m .chips{display:flex;flex-wrap:wrap;gap:4px}
+.m .chip{background:var(--panel);border:1px solid var(--line);padding:2px 7px;font-size:12px}
+.m .chip.big{background:var(--ac);color:#000;border-color:var(--ac);font-weight:700}
+.m .chip.int{background:var(--gold);color:#000;border-color:var(--gold);font-weight:700}
+.m .new{display:grid;grid-template-columns:1fr auto;gap:4px;border-bottom:1px solid var(--line);padding:5px 0}
+.m .new span:last-child{color:var(--mu);font-size:11px}
+.m .kind{font:12px var(--mono);color:var(--ac2);text-transform:uppercase}
+.m .search{display:flex;gap:6px;align-items:center;background:#050d2b;border:2px solid var(--ac);padding:8px 10px;color:var(--mu)}
+.m .search.huge{font-size:16px;padding:12px}
+.m .mega{background:#050d2b;border-bottom:3px solid var(--ac2);padding:10px 12px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.m .mega div{background:var(--panel);padding:6px 8px}
+.m .mega b{font:800 16px var(--display);text-transform:uppercase;display:block}
+.m .mega span{color:var(--mu);font-size:11px}
+.m .facet{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0}
+.m .facet .chip{min-height:26px;display:inline-flex;align-items:center}
+.m .tiles{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.m .tile{background:linear-gradient(135deg,#1830b8,#0a1a5a);border-left:4px solid var(--ac2);padding:8px}
+.m .tile b{font:800 17px var(--display);text-transform:uppercase;display:block}
+.m .tile span{color:var(--mu);font-size:11px}
+.m .res{border-left:4px solid var(--ac2);background:var(--panel);padding:6px 8px;margin:4px 0}
+.m .res .kind{float:right}
+.m .band{background:linear-gradient(90deg,#1534b0,#0b1d70);border-left:6px solid var(--ac);padding:6px 8px;margin:4px 0;font:700 15px var(--display);text-transform:uppercase}
+.m .band small{font:400 11px var(--body);color:var(--mu);text-transform:none;display:block}
+.m .spine{border-left:3px solid var(--ac2);margin-left:6px;padding-left:10px}
+.m .yearhd{font:800 22px var(--display);color:var(--ac2);margin:8px 0 2px -22px;display:flex;align-items:center;gap:6px}
+.m .yearhd::before{content:"";width:9px;height:9px;background:var(--ac2);border:2px solid var(--bg);outline:2px solid var(--ac2)}
+.m .drawer{position:relative;background:#050d2b;border-top:3px solid var(--ac);padding:8px 12px}
+.m .ex{font-size:10px;color:var(--mu);text-align:center;padding:6px;border-top:1px solid var(--line)}
+/* questions */
+.q{background:var(--panel);border-left:6px solid var(--ac);padding:12px 16px;margin:10px 0}
+.q h3{color:var(--tx)}
+.q .rec{color:var(--gold);font-weight:600}
+.q p{color:var(--mu);font-size:15px}
+.reply{background:#050d2b;border:2px solid var(--ac2);padding:12px 16px;margin-top:16px}
+code{font-family:var(--mono);background:#050d2b;padding:1px 5px;color:var(--gold)}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
+</style><div class="wrap">
+<div class="kicker">Broodwar Archive · M2 plan · needs your OK</div>
+<h1>M2 · Browse the whole archive</h1>
+<p class="lede">Built from your answers: A's league menu plus B's timeline on home, series only for recurring leagues, one flexible item for everything that isn't a match, the tier rule, contributor stage 1.</p>
+<h2><span class="tag">✓</span>Done when</h2>
+<div class="callout" style="font-size:17px;color:var(--tx)">On my phone I open the archive home, tap <b>OSL</b> in the league menu and open a second OSL season. Back on home I scroll the timeline to 2001, open a <b>WCG 2001</b> match, then an <b>interview</b> about a player, and on that player's page see their games from more than one event. On Find I filter league = OSL, year = 2001, and the counts match.</div>
+<h2><span class="tag">10</span>Issues</h2>
+<p>Issue 1 goes first; 2–9 then run in parallel; 10 last. Builders are the frontend and database specialists plus a new archive-specific <b>cataloger</b> that only adds sourced data (never guesses names, dates or races).</p>
+<div class="q"><h3>1 · Catalog v2 schema</h3><p>Series files, new event fields (series, tier, kind, tags), item files; 2001 SKY OSL migrated; tier rule written down.</p><p><span class="rec">Done check:</span> Validator tests for every new field; a broken item fails. <span class="src">· builder: database · waits on: —</span></p></div><div class="q"><h3>2 · Home: league menu, featured, timeline, latest</h3><p>League bar under the header, featured picks carousel, year-by-year timeline (big events as bands, the rest as chips), latest additions strip.</p><p><span class="rec">Done check:</span> Phone + laptop screen test; every timeline entry opens. <span class="src">· builder: frontend · waits on: 1</span></p></div><div class="q"><h3>3 · League pages + all-events list</h3><p>OSL page with every season by year; one list of every event, filterable by tier, kind, year.</p><p><span class="rec">Done check:</span> Screen test. <span class="src">· builder: frontend · waits on: 1</span></p></div><div class="q"><h3>4 · Player + map pages</h3><p>Every game a player or map appears in, across all events, plus items about them.</p><p><span class="rec">Done check:</span> Screen test on a player in two events. <span class="src">· builder: frontend · waits on: 1</span></p></div><div class="q"><h3>5 · Item pages</h3><p>Interview/article/photo pages, and each one listed on the player, event and match pages it links to.</p><p><span class="rec">Done check:</span> Screen test. <span class="src">· builder: frontend · waits on: 1</span></p></div><div class="q"><h3>6 · Find v2</h3><p>Text box plus filters: kind, year, tier, league, player, race matchup grid, map, copy quality, with live counts.</p><p><span class="rec">Done check:</span> Unit tests on search + OSL/2001 counts on screen. <span class="src">· builder: frontend · waits on: 1</span></p></div><div class="q"><h3>7 · Second OSL season</h3><p>The OSL season next to 2001 SKY, every match and known copy, sourced.</p><p><span class="rec">Done check:</span> Validator passes; match count equals the bracket. <span class="src">· builder: cataloger · waits on: 1</span></p></div><div class="q"><h3>8 · WCG 2001 + one KPGA Tour season</h3><p>An international and the MSL-side lineage, same standard.</p><p><span class="rec">Done check:</span> Validator; counts equal the brackets. <span class="src">· builder: cataloger · waits on: 1</span></p></div><div class="q"><h3>9 · First items + featured picks</h3><p>6+ real items across 3+ kinds (interviews, articles, photo sets, a showmatch VOD), each linked; first featured picks.</p><p><span class="rec">Done check:</span> Validator; each item links somewhere. <span class="src">· builder: cataloger · waits on: 1</span></p></div><div class="q"><h3>10 · How-to-contribute for new kinds</h3><p>CONTRIBUTING + issue forms for adding an item or an event.</p><p><span class="rec">Done check:</span> Contributing test covers them. <span class="src">· builder: frontend · waits on: 1, 5</span></p></div>
+<h2><span class="tag">✗</span>Not in M2</h2>
+<p style="color:var(--mu)">Video restoration, the no-git submission form, trusted reviewers, the bigger search engine (only past ~5–8k games), the custom domain (waits on you naming one).</p>
+<div class="reply">Reply <code>approve</code> (or what to change). Then the fleet builds it and you get one preview link at the end.</div>
+</div>
